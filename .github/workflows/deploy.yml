@@ -1,0 +1,27 @@
+name: Deploy reece.page
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /srv/reece-page
+            git pull
+            npm ci
+            npm run build
+            npm prune --omit=dev
+            npm run db:migrate
+            sudo systemctl restart reece-page
+            sleep 2
+            curl -fsS http://127.0.0.1:3000/health/ready
+
