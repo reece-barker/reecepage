@@ -1,0 +1,30 @@
+<article>
+  <div class="container">
+    <header class="page-head article-head">
+      {{> breadcrumbs}}
+      <h1 class="match-cut-title">{{article.title}}</h1>
+      <p class="lead load-fade">{{article.summary}}</p>
+      <p class="meta-line">
+        <span>By <a href="/about" rel="author">{{site.name}}</a></span>
+        <time datetime="{{isoDate article.date}}">{{longDate article.date}}</time>
+        {{#if article.updated}}<span>Updated <time datetime="{{isoDate article.updated}}">{{longDate article.updated}}</time></span>{{/if}}
+        <span>{{article.readingMinutes}} min read</span>
+      </p>
+    </header>
+    <div class="with-aside project-body">
+      <div>
+        {{> todo-panel todo=article.todo}}
+        <div class="prose">{{{html}}}</div>
+      </div>
+      {{#if article.headings.length}}
+      <aside class="toc" aria-labelledby="toc-title">
+        <h2 id="toc-title">On this page</h2>
+        <ol>{{#each article.headings}}<li><a href="#{{id}}">{{text}}</a></li>{{/each}}</ol>
+      </aside>
+      {{/if}}
+    </div>
+    <nav class="next-prev" aria-label="More writing">
+      <a class="next-prev__next" href="/writing"><small>Back to</small><strong>All writing</strong></a>
+    </nav>
+  </div>
+</article>

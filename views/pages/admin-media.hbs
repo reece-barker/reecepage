@@ -1,0 +1,104 @@
+<div class="container">
+  <header class="page-head">
+    <h1>Media admin</h1>
+    <p class="lead">Upload pictures and videos, describe them, then publish. Published items show on <a href="/media">/media</a>. To put one in an article, paste its code (like <code>[[media:my-photo-1a2b3c]]</code>) on its own line in the Markdown.</p>
+  </header>
+
+  {{#if notice}}<div class="alert alert--success" role="status">{{icon "check"}}<span>{{notice}}</span></div>{{/if}}
+  {{#if error}}<div class="alert alert--error" role="alert">{{icon "alert"}}<span>{{error}}</span></div>{{/if}}
+
+  <section class="admin-panel" aria-labelledby="upload-title">
+    <h2 id="upload-title">Upload</h2>
+    <form class="form" data-media-upload data-csrf="{{csrfToken}}" novalidate>
+      <div class="field">
+        <label class="label" for="upload-file">File</label>
+        <p class="hint" id="upload-file-hint">JPEG, PNG, WebP or AVIF up to {{limits.imageMb}} MB, MP4 or WebM up to {{limits.videoMb}} MB. Videos play best as MP4 (H.264) with the moov atom at the start.</p>
+        <input class="input" id="upload-file" name="file" type="file" accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm" aria-describedby="upload-file-hint" required>
+      </div>
+      <div class="field">
+        <label class="label" for="upload-title-input">Title</label>
+        <input class="input" id="upload-title-input" name="title" type="text" maxlength="160" required>
+      </div>
+      <div class="field">
+        <label class="label" for="upload-alt">Description for people who cannot see it (alt text)</label>
+        <p class="hint" id="upload-alt-hint">Required for pictures. Say what it shows, as you would on the phone.</p>
+        <input class="input" id="upload-alt" name="alt" type="text" maxlength="300" aria-describedby="upload-alt-hint">
+      </div>
+      <div class="field">
+        <label class="label" for="upload-caption">Caption (optional)</label>
+        <textarea class="textarea" id="upload-caption" name="caption" rows="2" maxlength="2000"></textarea>
+      </div>
+      <div class="field">
+        <label class="label" for="upload-credit">Credit or licence (optional)</label>
+        <input class="input" id="upload-credit" name="credit" type="text" maxlength="1000">
+      </div>
+      <div class="cluster">
+        <button class="button" type="submit" data-submit><span data-submit-label>Upload</span> {{icon "upload"}}</button>
+        <progress max="100" value="0" hidden data-upload-progress aria-label="Upload progress"></progress>
+      </div>
+      <p class="form-status" role="status" aria-live="polite" data-upload-status></p>
+    </form>
+  </section>
+
+  <section aria-labelledby="library-admin-title">
+    <h2 id="library-admin-title">Library ({{length items}})</h2>
+    {{#unless items.length}}<p>Nothing uploaded yet.</p>{{/unless}}
+    <ul class="admin-media-list" role="list">
+      {{#each items}}
+      <li class="admin-media-item">
+        <div class="admin-media-item__preview">
+          {{#if isVideo}}
+          <video controls preload="metadata" {{#if posterSrc}}poster="{{posterSrc}}"{{/if}} src="{{src}}"></video>
+          {{else}}
+          <img src="{{src}}" alt="" loading="lazy">
+          {{/if}}
+          <p class="admin-media-item__meta">{{#if published}}<strong>Published</strong>{{else}}Not published{{/if}}{{#if featured}}, featured on the home page{{/if}}. {{mime}}{{#if width}}, {{width}} x {{height}}{{/if}}{{#if durationSeconds}}, {{clock durationSeconds}}{{/if}}.</p>
+          <p class="admin-media-item__code">Article code: <code>{{shortcode}}</code></p>
+        </div>
+        <form class="form admin-media-item__form" method="post" action="/admin/media/{{id}}">
+          <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+          <div class="field">
+            <label class="label" for="title-{{id}}">Title</label>
+            <input class="input" id="title-{{id}}" name="title" value="{{title}}" maxlength="160" required>
+          </div>
+          <div class="field">
+            <label class="label" for="alt-{{id}}">Alt text</label>
+            <input class="input" id="alt-{{id}}" name="alt" value="{{alt}}" maxlength="300">
+          </div>
+          <div class="field">
+            <label class="label" for="caption-{{id}}">Caption</label>
+            <textarea class="textarea" id="caption-{{id}}" name="caption" rows="2" maxlength="2000">{{caption}}</textarea>
+          </div>
+          <div class="field">
+            <label class="label" for="credit-{{id}}">Credit</label>
+            <input class="input" id="credit-{{id}}" name="credit" value="{{credit}}" maxlength="1000">
+          </div>
+          <label class="check"><input type="checkbox" name="published" {{#if published}}checked{{/if}}> <span>Published</span></label>
+          {{#if isVideo}}<label class="check"><input type="checkbox" name="featured" {{#if featured}}checked{{/if}}> <span>Featured (the video on the home page)</span></label>{{/if}}
+          <div class="cluster"><button class="button" type="submit">Save</button></div>
+        </form>
+        {{#if isVideo}}
+        <div class="admin-media-item__extras">
+          <form class="form" data-media-extra="captions" data-id="{{id}}" data-csrf="{{../csrfToken}}">
+            <label class="label" for="captions-{{id}}">Captions (.vtt or .srt){{#if captionsSrc}}, replaces the current ones{{/if}}</label>
+            <input class="input" id="captions-{{id}}" type="file" accept=".vtt,.srt,text/vtt">
+            <button class="button button--secondary button--small" type="submit">Add captions</button>
+            <p class="form-status" role="status" aria-live="polite"></p>
+          </form>
+          <form class="form" data-media-extra="poster" data-id="{{id}}" data-csrf="{{../csrfToken}}">
+            <label class="label" for="poster-{{id}}">Poster picture (shown before it plays)</label>
+            <input class="input" id="poster-{{id}}" type="file" accept="image/jpeg,image/png,image/webp,image/avif">
+            <button class="button button--secondary button--small" type="submit">Set poster</button>
+            <p class="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+        {{/if}}
+        <form method="post" action="/admin/media/{{id}}/delete" class="admin-media-item__delete" data-confirm-delete>
+          <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+          <button class="button button--secondary button--small button--danger" type="submit" data-delete-button>Delete {{title}}</button>
+        </form>
+      </li>
+      {{/each}}
+    </ul>
+  </section>
+</div>

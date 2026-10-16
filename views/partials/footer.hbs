@@ -1,0 +1,36 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div>
+        <img class="site-footer__mark theme-light-only" src="{{asset "images/brand/reece-dove-symbol-colour.svg"}}" alt="" width="48" height="39" loading="lazy">
+        <img class="site-footer__mark theme-dark-only" src="{{asset "images/brand/reece-dove-symbol-colour-on-dark.svg"}}" alt="" width="48" height="39" loading="lazy">
+        <p class="site-footer__slogan">{{site.tagline}}</p>
+      </div>
+      <nav aria-labelledby="footer-site">
+        <h2 id="footer-site">Site</h2>
+        <ul role="list">
+          {{#each primaryNav}}<li><a href="{{href}}">{{label}}</a></li>{{/each}}
+          {{#each moreNav}}<li><a href="{{href}}">{{label}}</a></li>{{/each}}
+        </ul>
+      </nav>
+      <div>
+        <h2 id="footer-elsewhere">Get in touch</h2>
+        <ul role="list" aria-labelledby="footer-elsewhere">
+          <li><a href="mailto:{{site.email}}">{{site.email}}</a></li>
+          {{#each profiles}}<li><a href="{{url}}" rel="me noopener">{{name}}</a></li>{{/each}}
+          {{#if features.writing}}<li><a href="/writing/feed.xml">Writing feed (Atom)</a></li>{{/if}}
+        </ul>
+      </div>
+      <nav aria-labelledby="footer-legal">
+        <h2 id="footer-legal">Legal</h2>
+        <ul role="list">
+          {{#each legalNav}}<li><a href="{{href}}">{{label}}</a></li>{{/each}}
+        </ul>
+      </nav>
+    </div>
+    <div class="site-footer__bottom">
+      <p>&copy; {{year}} {{site.legal_name}}</p>
+      <p><a href="/cookies">Cookie settings</a></p>
+    </div>
+  </div>
+</footer>

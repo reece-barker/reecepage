@@ -1,0 +1,13 @@
+# The three branches of the tree on the home page. limb is the index the tree script uses to light the right branch
+- id: code
+  limb: 0
+  title: Code
+  text: Applied Computer Science at Saxion. I like building small tools that fix real annoyances, and I teach myself whatever a project needs.
+- id: earth
+  limb: 1
+  title: Earth
+  text: Sustainability ambassador. I care about the changes that really cut waste or energy, and I get suspicious when something is only green on the label.
+- id: faith
+  limb: 2
+  title: Faith
+  text: My faith sits underneath all of it. Looking after creation is part of how I live it out, and it is why the green side of tech matters to me.

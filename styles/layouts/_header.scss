@@ -1,0 +1,219 @@
+@use "../abstracts/mixins" as *;
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: var(--space-3);
+  z-index: 100;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  padding: var(--space-3) var(--space-4);
+  font-weight: 750;
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform var(--duration-2) var(--ease-out);
+
+  &:focus {
+    transform: none;
+  }
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+  border-bottom: var(--border-thin) solid transparent;
+  transition: border-color var(--duration-2) ease;
+
+  // The line under the header only shows once the page has scrolled. Pure CSS where scroll driven animation
+  // exists, the script adds .is-scrolled elsewhere
+  &.is-scrolled {
+    border-bottom-color: var(--color-line);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    animation: header-line linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 80px;
+  }
+}
+
+@keyframes header-line {
+  to {
+    border-bottom-color: var(--color-line);
+  }
+}
+
+.site-header__inner {
+  min-height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+  // Big enough to tap, the logo itself is a little smaller
+  min-height: 44px;
+  text-decoration: none;
+
+  img {
+    height: 2.3rem;
+    width: auto;
+  }
+}
+
+// Light and dark versions of the logo, only one is ever shown
+.theme-dark-only {
+  display: none !important;
+}
+
+:root[data-theme="dark"] {
+  .theme-dark-only {
+    display: block !important;
+  }
+
+  .theme-light-only {
+    display: none !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .theme-dark-only {
+      display: block !important;
+    }
+
+    .theme-light-only {
+      display: none !important;
+    }
+  }
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.site-nav__list {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.25rem, 1.5vw, 1.25rem);
+  list-style: none;
+  padding: 0;
+}
+
+.site-nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-2);
+  font-weight: 650;
+  text-decoration: none;
+
+  // The current page gets a leaf under its name, a square not a line
+  &[aria-current="page"]::after,
+  &[aria-current="true"]::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    width: 7px;
+    height: 7px;
+    background: var(--color-highlight);
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  @include hover {
+    text-decoration: underline;
+    text-decoration-color: var(--color-highlight);
+    text-decoration-thickness: 3px;
+  }
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: var(--border-thin) solid transparent;
+  border-radius: var(--radius-2);
+  background: none;
+  color: inherit;
+  transition: background-color var(--duration-1) ease, border-color var(--duration-1) ease;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  @include hover {
+    background: var(--color-bg-sunken);
+    border-color: var(--color-line);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.menu-button {
+  display: none;
+  gap: var(--space-2);
+  width: auto;
+  padding-inline: var(--space-3);
+  font-weight: 700;
+}
+
+// Small screens: with JavaScript the links fold into a menu button. Without it they simply wrap below the logo
+@include down(md) {
+  html.js {
+    .menu-button {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .site-nav__list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: var(--space-3) var(--gutter) var(--space-5);
+      background: var(--color-bg);
+      border-bottom: var(--border-thin) solid var(--color-line);
+      box-shadow: var(--shadow-raised);
+    }
+
+    .site-nav__list:not(.is-open) {
+      display: none;
+    }
+
+    .site-nav__link {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: var(--step-2);
+      min-height: 52px;
+      padding-inline: 0;
+
+      &[aria-current]::after {
+        left: auto;
+        right: 0;
+        bottom: 50%;
+        transform: translateY(50%) rotate(45deg);
+      }
+    }
+  }
+
+  html:not(.js) .site-header__inner {
+    flex-wrap: wrap;
+    padding-block: var(--space-2);
+  }
+}

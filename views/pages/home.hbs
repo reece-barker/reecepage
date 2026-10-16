@@ -1,0 +1,119 @@
+<section class="grove" aria-labelledby="hero-title" data-grove>
+  <div class="grove__intro">
+    <h1 class="hero-name matte-words" id="hero-title">{{matteWords site.name}}</h1>
+    <p class="hero-slogan load-fade">{{site.tagline}}</p>
+    <p class="hero-lede load-fade load-fade--2">I grew up in Munich and study Applied Computer Science at Saxion in Enschede. I write software, build hardware and co-founded a startup whose AI runs the climate of a room, so it stays comfortable and wastes less energy.</p>
+    <div class="hero-actions load-fade load-fade--3">
+      <a class="button" href="/projects" data-track="Home: see projects">See my projects {{icon "arrow"}}</a>
+      <a class="link-action" href="/contact" data-track="Home: get in touch">Get in touch</a>
+    </div>
+  </div>
+
+  <div class="grove__stage" aria-hidden="true" data-tree-stage>
+    <img class="grove__poster theme-light-only" src="{{asset "images/tree/tree-poster-light.webp"}}" alt="" width="900" height="900" fetchpriority="low">
+    <img class="grove__poster theme-dark-only" src="{{asset "images/tree/tree-poster-dark.webp"}}" alt="" width="900" height="900" fetchpriority="low">
+    <canvas data-tree-canvas></canvas>
+  </div>
+
+  <div class="grove__branches">
+    <h2>One tree, three branches</h2>
+    <p class="section-intro">Everything I do grows from one of these. <span class="grove__hint" aria-hidden="true">Point at a branch and it lights up on the tree.</span></p>
+    <ul class="branch-list" role="list">
+      {{#each branches}}
+      <li class="branch-row branch-{{id}}" data-limb="{{limb}}">
+        <h3><span class="pip" aria-hidden="true"></span>{{title}}</h3>
+        <p>{{text}}</p>
+        {{#if (eq id "faith")}}
+        <a class="link-action" href="/about#people-and-faith">What it means for my work</a>
+        {{else}}
+        <a class="link-action" href="/projects?branch={{id}}">{{title}} projects {{icon "arrow"}}</a>
+        {{/if}}
+      </li>
+      {{/each}}
+    </ul>
+  </div>
+</section>
+
+{{#if intro}}
+<section class="section home-intro" aria-labelledby="intro-title">
+  <div class="container home-intro__grid">
+    <div class="home-intro__text">
+      <h2 id="intro-title">Meet me</h2>
+      {{#if intro.durationSeconds}}<p class="updated-note">A video introduction, {{clock intro.durationSeconds}} long{{#if intro.captionsSrc}}, with captions{{/if}}</p>{{/if}}
+      <p>{{#if intro.caption}}{{intro.caption}}{{else}}Where I grew up, what I study, what I have built and what I want to work on next, in one video.{{/if}}</p>
+      <p><a class="link-action" href="/media">More on the media page {{icon "arrow"}}</a></p>
+    </div>
+    <div class="home-intro__video">{{{introHtml}}}</div>
+  </div>
+</section>
+
+{{/if}}
+<section class="section section--sunken" aria-labelledby="work-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 id="work-title">Selected work</h2>
+        <p class="section-intro">A startup, a robot production line, a sensor that listens to traffic and a tool for a school's IT team.</p>
+      </div>
+      <a class="link-action" href="/projects">All projects {{icon "arrow"}}</a>
+    </div>
+    <ul class="project-list" role="list">
+      {{#each featured}}{{> project-row}}{{/each}}
+    </ul>
+  </div>
+</section>
+
+{{#if now}}
+<section class="section" aria-labelledby="now-title">
+  <div class="container home-now">
+    <div>
+      <h2 id="now-title">Right now</h2>
+      <p class="updated-note">Updated <time datetime="{{isoDate now.updated}}">{{longDate now.updated}}</time></p>
+    </div>
+    <div>
+      <ul class="now-list" role="list">
+        {{#each now.items}}
+        <li data-reveal>
+          <span class="pip" aria-hidden="true"></span>
+          <h3>{{#if link}}<a href="{{link}}">{{title}}</a>{{else}}{{title}}{{/if}}</h3>
+          <p>{{text}}</p>
+        </li>
+        {{/each}}
+      </ul>
+      {{#if now.next}}
+      <div class="now-next">
+        <h3>Next</h3>
+        <ul>{{#each now.next}}<li>{{this}}</li>{{/each}}</ul>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</section>
+{{/if}}
+
+<section class="section section--inverse" aria-labelledby="keep-title">
+  <div class="container home-faith">
+    <div>
+      <h2 id="keep-title">Looking after it</h2>
+      <p class="home-faith__note">Till it and keep it. I think good tech should do the same for the world it runs in.</p>
+    </div>
+    <figure class="verse">
+      <blockquote>
+        <p>The LORD God took the man and put him in the garden of Eden to till it and keep it.</p>
+      </blockquote>
+      <figcaption>Genesis 2:15, Revised Standard Version</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="hi-title">
+  <div class="container home-contact">
+    <h2 id="hi-title">Say hello</h2>
+    <p class="lead">Open to internships, green tech projects and good conversations about either.</p>
+    <a class="email-link" href="mailto:{{site.email}}" data-track="Email link">{{site.email}}</a>
+    <div class="cluster">
+      <a class="button button--secondary" href="/contact" data-track="Home: send a message">Send a message {{icon "arrow"}}</a>
+      {{#if latest}}<a class="link-action" href="{{latest.url}}">Latest writing: {{latest.title}}</a>{{/if}}
+    </div>
+  </div>
+</section>

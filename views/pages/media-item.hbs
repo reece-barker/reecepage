@@ -1,0 +1,11 @@
+<div class="container container--text">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1>{{item.title}}</h1>
+    {{#if item.durationSeconds}}<p class="updated-note">Video, {{clock item.durationSeconds}}</p>{{/if}}
+  </header>
+  <div class="media-single">
+    {{{figureHtml}}}
+  </div>
+  <p class="media-back"><a class="link-action" href="/media">{{icon "arrow-left"}} All media</a></p>
+</div>

@@ -1,0 +1,59 @@
+<div class="container container--text">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1>Impressum</h1>
+    <p class="lead">Who runs this website and how to reach him. Legal notice under section 5 of the German Digital Services Act (DDG).</p>
+  </header>
+
+  <div class="legal-text prose">
+    <section class="legal-section" id="de" lang="de" aria-labelledby="impressum-de">
+      <h2 id="impressum-de">Angaben nach § 5 DDG</h2>
+      <dl>
+        <dt>Anbieter</dt>
+        <dd>{{lv legal.owner.name "Name"}}<br>{{lv legal.owner.street "Straße"}}<br>{{lv legal.owner.postcode "PLZ"}} {{lv legal.owner.city "Ort"}}<br>{{lv legal.owner.country "Land"}}</dd>
+        <dt>E-Mail</dt>
+        <dd><a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a></dd>
+        {{#if legal.owner.show_phone}}
+        <dt>Telefon</dt>
+        <dd>{{#if legal.owner.phone}}<a href="{{telHref legal.owner.phone}}">{{legal.owner.phone}}</a>{{else}}{{lv legal.owner.phone "LEGAL_PHONE in .env"}}{{/if}}</dd>
+        {{else}}
+        <dt>Kontaktformular</dt>
+        <dd><a href="/contact">reece.page/contact</a>, Nachrichten erreichen mich unmittelbar.</dd>
+        {{/if}}
+        {{#if legal.owner.register}}<dt>Registereintrag</dt><dd>{{legal.owner.register}}</dd>{{/if}}
+        {{#if legal.owner.vat_id}}<dt>Umsatzsteuer-Identifikationsnummer nach § 27a UStG</dt><dd>{{legal.owner.vat_id}}</dd>{{/if}}
+        {{#if legal.owner.wirtschafts_id}}<dt>Wirtschafts-Identifikationsnummer nach § 139c AO</dt><dd>{{legal.owner.wirtschafts_id}}</dd>{{/if}}
+      </dl>
+      <h3>Verantwortlich für den Inhalt</h3>
+      <p>Soweit diese Website journalistisch-redaktionell gestaltete Inhalte enthält, ist verantwortlich im Sinne des § 18 Abs. 2 MStV: {{lv legal.owner.name "Name"}}, Anschrift wie oben.</p>
+      <h3>Verbraucherstreitbeilegung</h3>
+      <p>Ich bin weder bereit noch verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG).</p>
+      <h3>Weitere Rechtstexte</h3>
+      <p><a href="/privacy#de">Datenschutzerklärung</a>, <a href="/terms">Nutzungsbedingungen</a>, <a href="/copyright">Urheberrecht und Marken</a>, <a href="/accessibility">Barrierefreiheit</a>, <a href="/cookies">Cookies</a>.</p>
+    </section>
+
+    <section class="legal-section" id="en" lang="en-GB" aria-labelledby="impressum-en">
+      <h2 id="impressum-en">English</h2>
+      <dl>
+        <dt>Provider</dt>
+        <dd>{{lv legal.owner.name "name"}}<br>{{lv legal.owner.street "street"}}<br>{{lv legal.owner.postcode "postcode"}} {{lv legal.owner.city "city"}}<br>{{lv legal.owner.country "country"}}</dd>
+        <dt>Email</dt>
+        <dd><a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a></dd>
+        {{#if legal.owner.show_phone}}
+        <dt>Telephone</dt>
+        <dd>{{#if legal.owner.phone}}<a href="{{telHref legal.owner.phone}}">{{legal.owner.phone}}</a>{{else}}{{lv legal.owner.phone "LEGAL_PHONE in .env"}}{{/if}}</dd>
+        {{else}}
+        <dt>Contact form</dt>
+        <dd><a href="/contact">reece.page/contact</a>, messages reach me directly.</dd>
+        {{/if}}
+        {{#if legal.owner.register}}<dt>Register</dt><dd>{{legal.owner.register}}</dd>{{/if}}
+        {{#if legal.owner.vat_id}}<dt>VAT number (section 27a UStG)</dt><dd>{{legal.owner.vat_id}}</dd>{{/if}}
+        {{#if legal.owner.wirtschafts_id}}<dt>Business ID (section 139c AO)</dt><dd>{{legal.owner.wirtschafts_id}}</dd>{{/if}}
+      </dl>
+      <h3>Responsible for the content</h3>
+      <p>Where this website contains journalistic or editorial content, the person responsible under section 18(2) of the German Interstate Media Treaty (MStV) is {{lv legal.owner.name "name"}}, address as above.</p>
+      <h3>Consumer dispute resolution</h3>
+      <p>I am neither willing nor obliged to take part in dispute resolution before a consumer arbitration board (section 36 VSBG).</p>
+    </section>
+  </div>
+</div>

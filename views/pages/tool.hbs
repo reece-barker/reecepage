@@ -1,0 +1,9 @@
+<article class="container">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1>{{tool.title}}</h1>
+    <p class="lead">{{tool.summary}}</p>
+    {{#if tool.launchUrl}}<p><a class="button" href="{{tool.launchUrl}}">Open {{tool.title}} {{icon "arrow"}}</a></p>{{/if}}
+  </header>
+  <div class="prose project-body">{{{tool.html}}}</div>
+</article>

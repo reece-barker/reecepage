@@ -1,0 +1,65 @@
+@use "../abstracts/mixins" as *;
+
+.site-footer {
+  margin-top: auto;
+  background: var(--color-bg-sunken);
+  border-top: var(--border-thin) solid var(--color-line);
+  padding-block: var(--space-8) var(--space-6);
+  font-size: var(--step--1);
+}
+
+.site-footer__grid {
+  display: grid;
+  gap: var(--space-7) var(--space-6);
+
+  @include up(md) {
+    grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr));
+  }
+}
+
+.site-footer__slogan {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  line-height: 1.2;
+  max-width: 14ch;
+}
+
+.site-footer__mark {
+  width: 3rem;
+  height: auto;
+  margin-bottom: var(--space-4);
+}
+
+.site-footer h2 {
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  font-weight: 800;
+  letter-spacing: 0;
+  margin-bottom: var(--space-3);
+}
+
+.site-footer ul {
+  list-style: none;
+  padding: 0;
+
+  li + li {
+    margin-top: var(--space-1);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+}
+
+.site-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  justify-content: space-between;
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: var(--border-thin) solid var(--color-line);
+  color: var(--color-text-muted);
+}

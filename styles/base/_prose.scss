@@ -1,0 +1,135 @@
+@use "../abstracts/mixins" as *;
+
+// Long form text: about page, project write ups, articles and the legal pages
+.prose {
+  max-width: var(--measure);
+
+  // Space between blocks, also inside the sections the legal pages are split into. Headings get more room above
+  // than below, so each one clearly belongs to the text under it
+  > * + *,
+  section > * + *,
+  .legal-section > * + * {
+    margin-top: var(--space-4);
+  }
+
+  h2 {
+    font-size: var(--step-3);
+  }
+
+  * + h2 {
+    margin-top: var(--space-7);
+  }
+
+  h3 {
+    font-size: var(--step-2);
+  }
+
+  * + h3 {
+    margin-top: var(--space-6);
+  }
+
+  :is(h2, h3, h4) + * {
+    margin-top: var(--space-3);
+  }
+
+  h4 {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    font-weight: 800;
+    margin-top: var(--space-5);
+  }
+
+  > :first-child {
+    margin-top: 0;
+  }
+
+  // Lists use a leaf square as the bullet instead of a dot, the same square that marks the branches
+  ul {
+    list-style: none;
+    padding-left: 1.4em;
+
+    li {
+      position: relative;
+    }
+
+    li::before {
+      content: "";
+      position: absolute;
+      left: -1.25em;
+      top: 0.62em;
+      width: 0.42em;
+      height: 0.42em;
+      background: var(--color-leaf);
+      transform: rotate(45deg);
+    }
+  }
+
+  ol {
+    padding-left: 1.4em;
+
+    li::marker {
+      font-family: var(--font-display);
+      color: var(--color-text-muted);
+    }
+  }
+
+  li + li {
+    margin-top: var(--space-2);
+  }
+
+  blockquote {
+    border-left: 3px solid var(--color-highlight);
+    padding-left: var(--space-5);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    line-height: 1.4;
+  }
+
+  img {
+    border-radius: var(--radius-2);
+  }
+
+  figure figcaption {
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: var(--step--1);
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: var(--border-thin) solid var(--color-line);
+    vertical-align: top;
+  }
+
+  pre {
+    overflow-x: auto;
+    background: var(--color-code-bg);
+    padding: var(--space-4);
+    border-radius: var(--radius-2);
+
+    code {
+      padding: 0;
+      background: none;
+    }
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.lead {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  max-width: 36em;
+  color: var(--color-text);
+}

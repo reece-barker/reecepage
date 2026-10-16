@@ -1,0 +1,111 @@
+@use "../abstracts/mixins" as *;
+
+// The motion system. Three moves, used everywhere and nothing else:
+//   1. the matte reveal: text uncovers from below through its own box, like a title card behind a mask
+//   2. the leaf pop: a square scales up from nothing, the way leaves appear on the tree
+//   3. the match cut: a title keeps its place when you move from a list to its page (cross document view transitions)
+// Content is always visible without JavaScript. Scripts only add the "js" class that arms the reveals.
+
+@keyframes matte-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(0.35em);
+  }
+  to {
+    clip-path: inset(0 0 -10% 0);
+    transform: none;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes leaf-pop {
+  from {
+    transform: scale(0) rotate(45deg);
+  }
+  to {
+    transform: scale(1) rotate(45deg);
+  }
+}
+
+@include motion-ok {
+  // Page load: the h1 uncovers word by word. The words are wrapped by the server so this needs no JavaScript
+  // (delays come from nth-child because the CSP blocks inline style attributes, which is a good thing)
+  .matte-words .word {
+    display: inline-block;
+    animation: matte-in var(--duration-4) var(--ease-out) both;
+    animation-delay: 80ms;
+
+    @for $i from 2 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{80 + ($i - 1) * 70}ms;
+      }
+    }
+  }
+
+  .load-fade {
+    animation: fade-up var(--duration-4) var(--ease-out) both;
+    animation-delay: 300ms;
+
+    &.load-fade--2 {
+      animation-delay: 420ms;
+    }
+
+    &.load-fade--3 {
+      animation-delay: 540ms;
+    }
+  }
+
+  // Scroll reveals, armed only when the script runs (html.js), so nothing stays hidden if it does not
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity var(--duration-4) var(--ease-out), transform var(--duration-4) var(--ease-out);
+    transition-delay: calc(var(--reveal-index, 0) * 60ms);
+  }
+
+  html.js [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  // Match cuts between pages, where the browser supports cross document view transitions (Chrome, Edge, Safari 18)
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--duration-2);
+    animation-timing-function: var(--ease-out);
+  }
+
+  ::view-transition-group(*) {
+    animation-duration: var(--duration-3);
+    animation-timing-function: var(--ease-in-out);
+  }
+}
+
+// The header and the footer stay put while the page changes underneath
+.site-header {
+  view-transition-name: site-header;
+}
+
+.site-footer {
+  view-transition-name: site-footer;
+}
+
+// The title on a project or article page shares its name with the link that was clicked in the list (main.js sets
+// it on that link), so the browser morphs one into the other
+.match-cut-title {
+  view-transition-name: match-cut;
+}

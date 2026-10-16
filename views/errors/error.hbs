@@ -1,0 +1,15 @@
+<div class="container error-page">
+  <div class="fallen-leaf" aria-hidden="true"></div>
+  <h1>{{title}}</h1>
+  {{#if isCsrf}}
+  <p class="lead">For your security, forms only work for a while after the page was loaded. Go back, reload the page and send it again. Nothing was sent.</p>
+  <div class="cluster"><a class="button" href="/contact">Back to the contact form {{icon "arrow"}}</a></div>
+  {{else if (eq status 429)}}
+  <p class="lead">That was a lot of requests in a short time. Please wait {{#if retryMinutes}}{{retryMinutes}} {{plural retryMinutes "minute" "minutes"}}{{else}}a moment{{/if}} and try again, or email <a href="mailto:{{site.email}}">{{site.email}}</a>.</p>
+  <div class="cluster"><a class="button" href="/">Home page {{icon "arrow"}}</a></div>
+  {{else}}
+  <p class="lead">The page could not be shown. It has been logged and I will look at it. Please try again in a moment, or email <a href="mailto:{{site.email}}">{{site.email}}</a>.</p>
+  {{#if requestId}}<p class="muted">Reference: <code>{{requestId}}</code></p>{{/if}}
+  <div class="cluster"><a class="button" href="/">Home page {{icon "arrow"}}</a></div>
+  {{/if}}
+</div>

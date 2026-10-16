@@ -1,0 +1,37 @@
+<div class="container container--text">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1>Accessibility</h1>
+    <p class="lead">How accessible this website is, what is known not to work yet, and how to tell me about a problem.</p>
+  </header>
+  <div class="legal-text prose">
+    <section class="legal-section" aria-labelledby="a11y-en">
+      <h2 id="a11y-en">Statement</h2>
+      <h3>Status of this statement</h3>
+      <p>This statement is voluntary. I believe this website is not covered by the German BITV 2.0 (public bodies) or the Accessibility Strengthening Act (BFSG), because it sells nothing. I still build it to meet level AA of the Web Content Accessibility Guidelines (WCAG) 2.2.</p>
+      <h3>What has been checked</h3>
+      <p>The site has not been audited by an independent body. Every page was checked with the axe automated accessibility engine in a browser, at several screen sizes and in both themes. Colour contrast was calculated for every colour pair used. Keyboard use was tested by hand: every link, button and form field can be reached and used with the keyboard, focus is always visible, and a skip link leads to the main content. The structure screen readers read out (headings, landmarks, names of links, buttons and fields, reading order) was reviewed page by page in the browser's accessibility tree. A full test with VoiceOver or NVDA is still to be done.</p>
+      <h3>What the site does</h3>
+      <ul>
+        <li>Text contrast of at least 4.5 to 1 in the light and the dark theme.</li>
+        <li>Headings in order, landmarks, labelled form fields, errors described in words and linked from a summary.</li>
+        <li>Layouts that adapt to the screen and text that scales with the browser's settings and zoom.</li>
+        <li>Respect for your system settings for dark mode and reduced motion. With reduced motion there are no animations, and the tree on the home page is drawn once without moving.</li>
+        <li>All content can be read without JavaScript.</li>
+      </ul>
+      <h3>Known limitations</h3>
+      <ul>
+        <li>Videos have captions that are switched on by default and a written transcript underneath, and never play by themselves.</li>
+        <li>The tree on the home page is a decorative three dimensional drawing. It is hidden from screen readers, and everything it shows (the three branches) is also written out as text next to it.</li>
+        <li>Some project pages are still missing photos and diagrams. When they are added they will have descriptions.</li>
+      </ul>
+      <h3>Report a barrier</h3>
+      <p>If something does not work for you, or you need content in another form, please write to <a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a> or use the <a href="/contact">contact form</a>. Naming the page and the assistive technology you use helps. I will reply and fix what I can.</p>
+      <p>Version of {{longDate legal.updated}}.</p>
+    </section>
+    <section class="legal-section" lang="de" aria-labelledby="a11y-de">
+      <h2 id="a11y-de">Deutsch</h2>
+      <p>Diese Erklärung ist freiwillig. Die Website soll die Stufe AA der WCAG 2.2 erfüllen. Sie wurde mit automatisierten Werkzeugen und von Hand mit der Tastatur geprüft, die für Screenreader maßgebliche Struktur wurde Seite für Seite kontrolliert; ein vollständiger Test mit VoiceOver oder NVDA steht noch aus. Videos haben standardmäßig eingeschaltete Untertitel und ein Transkript. Der Baum auf der Startseite ist eine dekorative Grafik; alles, was er zeigt, steht auch als Text daneben. Barrieren melden Sie bitte an <a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a> oder über das <a href="/contact">Kontaktformular</a>. Stand: {{longDateDe legal.updated}}.</p>
+    </section>
+  </div>
+</div>

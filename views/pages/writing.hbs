@@ -1,0 +1,26 @@
+<div class="container">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1 class="matte-words">{{matteWords "Writing"}}</h1>
+    <p class="lead load-fade">Notes on building software properly and keeping it light. <a href="/writing/feed.xml">Follow with the Atom feed</a>.</p>
+  </header>
+  {{#if articles.length}}
+  <ul class="project-list" role="list">
+    {{#each articles}}
+    <li class="project-row branch-code" data-reveal>
+      <div class="project-row__meta">
+        <time datetime="{{isoDate date}}">{{longDate date}}</time>
+        <span>{{readingMinutes}} min read</span>
+      </div>
+      <div>
+        <h2 class="project-row__title"><a href="{{url}}" data-match-cut="{{slug}}">{{title}}</a></h2>
+        <p class="project-row__summary">{{summary}}</p>
+      </div>
+      <span class="project-row__arrow" aria-hidden="true">{{icon "arrow"}}</span>
+    </li>
+    {{/each}}
+  </ul>
+  {{else}}
+  <p class="alert alert--note">{{icon "info"}}<span>Nothing published yet. The first article is on its way.</span></p>
+  {{/if}}
+</div>

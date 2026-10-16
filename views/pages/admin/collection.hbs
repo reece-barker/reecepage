@@ -1,0 +1,25 @@
+<div class="container admin">
+  <header class="page-head">
+    <p><a class="link-action" href="/admin">{{icon "arrow-left"}} Admin</a></p>
+    <h1>{{schema.title}}</h1>
+    <p class="lead">{{schema.help}}</p>
+  </header>
+  {{#if saved}}<div class="alert alert--success" role="status">{{icon "check"}}<span>Saved.</span></div>{{/if}}
+  {{#if deleted}}<div class="alert alert--success" role="status">{{icon "check"}}<span>Deleted.</span></div>{{/if}}
+  {{#if editing}}<p><a class="button" href="/admin/content/{{collection}}/new">New {{schema.singular}} {{icon "arrow"}}</a></p>{{/if}}
+  <div class="table-scroll" tabindex="0" role="region" aria-label="{{schema.title}}">
+    <table class="admin-table">
+      <thead><tr><th scope="col">Title</th><th scope="col">Address</th><th scope="col">State</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+      <tbody>
+        {{#each items}}
+        <tr>
+          <td><strong>{{title}}</strong></td>
+          <td><code>{{slug}}</code></td>
+          <td>{{#if draft}}Draft{{else}}{{#if (eq hasPage false)}}Listed, no page{{else}}Live{{/if}}{{/if}}{{#if todo.length}}, {{todo.length}} todo{{/if}}</td>
+          <td class="admin-table__actions"><a href="/admin/content/{{../collection}}/{{slug}}">Edit<span class="visually-hidden"> {{title}}</span></a>{{#unless draft}}{{#unless (eq hasPage false)}} <a href="{{url}}">View<span class="visually-hidden"> {{title}}</span></a>{{/unless}}{{/unless}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

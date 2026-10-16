@@ -1,0 +1,198 @@
+@use "../abstracts/mixins" as *;
+
+// Project page: the title keeps its name from the list, so the browser can morph one into the other (match cut)
+.project-head {
+  .meta-line {
+    margin-bottom: var(--space-4);
+  }
+
+  .lead {
+    margin-top: var(--space-5);
+  }
+}
+
+.project-body {
+  padding-bottom: var(--section-space);
+}
+
+.project-links {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-6);
+}
+
+// Article
+.article-head .meta-line {
+  margin-top: var(--space-4);
+}
+
+// About
+.about-intro {
+  display: grid;
+  gap: var(--space-6);
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    align-items: end;
+  }
+}
+
+.about-mark {
+  width: 9rem;
+  height: auto;
+
+  @include down(lg) {
+    display: none;
+  }
+}
+
+.about-section + .about-section {
+  border-top: var(--border-thin) solid var(--color-line);
+}
+
+// Contact
+.contact-grid {
+  display: grid;
+  gap: var(--space-8);
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  }
+}
+
+.contact-direct {
+  h2 {
+    font-size: var(--step-2);
+  }
+
+  // A second heading starts a new group, so it needs more room above than the stack gives
+  * + h2 {
+    margin-top: var(--space-6);
+  }
+}
+
+.contact-send {
+  > * + * {
+    margin-top: var(--space-5);
+  }
+
+  h2 {
+    font-size: var(--step-2);
+  }
+}
+
+.form-privacy {
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  max-width: 38rem;
+}
+
+// Legal pages are long, so a narrower measure and a quieter heading scale
+.legal-text {
+  h2 {
+    font-size: var(--step-2);
+  }
+
+  h3 {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-3) var(--space-5);
+    padding: var(--space-5);
+    background: var(--color-bg-raised);
+    border: var(--border-thin) solid var(--color-line);
+    border-radius: var(--radius-2);
+
+    @include up(sm) {
+      grid-template-columns: 12rem minmax(0, 1fr);
+    }
+  }
+
+  dt {
+    font-weight: 700;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+.lang-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  margin-bottom: var(--space-6);
+}
+
+.legal-section + .legal-section {
+  margin-top: var(--space-8);
+  padding-top: var(--space-7);
+  border-top: var(--border-thin) solid var(--color-line);
+}
+
+.placeholder-value {
+  background: var(--color-highlight-soft);
+  outline: 1px dashed var(--color-highlight);
+  padding: 0 0.2em;
+}
+
+// Error pages: one fallen leaf, a sentence and the ways back
+.error-page {
+  padding-block: var(--space-9);
+
+  .fallen-leaf {
+    width: 1.2rem;
+    height: 1.2rem;
+    background: var(--color-leaf);
+    transform: rotate(20deg);
+    margin-bottom: var(--space-6);
+
+    @include motion-ok {
+      animation: leaf-fall 1.6s var(--ease-out) both;
+    }
+  }
+
+  p {
+    margin-top: var(--space-4);
+    max-width: 34em;
+  }
+
+  .cluster {
+    margin-top: var(--space-6);
+  }
+}
+
+@keyframes leaf-fall {
+  0% {
+    transform: translate(-40px, -120px) rotate(-60deg);
+    opacity: 0;
+  }
+  60% {
+    transform: translate(10px, -10px) rotate(40deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 0) rotate(20deg);
+  }
+}
+
+.thanks {
+  padding-block: var(--space-9);
+
+  .pip {
+    width: 1rem;
+    height: 1rem;
+    margin-bottom: var(--space-5);
+
+    @include motion-ok {
+      animation: leaf-pop var(--duration-4) var(--ease-out) both;
+    }
+  }
+}

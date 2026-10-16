@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="14 14 249 202" width="249" height="202" role="img" aria-labelledby="t">
+  <title id="t">Dove symbol</title>
+  <metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Description rdf:about=""><dc:creator>Reece Norman Barker, reece.page</dc:creator><dc:rights>© 2026 Reece Norman Barker, reece.page. All rights reserved. Reece dove brand v1.3.</dc:rights><dc:publisher>reece.page</dc:publisher></rdf:Description></rdf:RDF></metadata>
+  <!-- Short form symbol, built from circles and rects only, no strokes and no fonts -->
+  <path fill="#ffffff" d="M120 146A149.4 149.4 0 0 1 44 70A72.17 72.17 0 0 1 120 146Z"/>
+  <path fill="#ffffff" d="M74 176A62.25 62.25 0 0 1 22 208A44.83 44.83 0 0 1 74 176ZM80 172A60.14 60.14 0 0 1 24 178A48.56 48.56 0 0 1 80 172Z"/>
+  <path fill="#ffffff" d="M60 182A102.76 102.76 0 0 1 180 127A87.6 87.6 0 0 1 60 182Z"/>
+  <path fill="#ffffff" d="M132 148A75.5 75.5 0 0 1 126 22A171.75 171.75 0 0 1 132 148Z"/>
+  <path fill="#ffffff" d="M216 121A36.39 36.39 0 0 1 255 97.5A66.79 66.79 0 0 1 216 121Z"/>
+  <path fill="#ffffff" d="M194 107L225 119L194 131Z"/>
+  <path fill="#ffffff" d="M172 118A18 18 0 1 1 208 118A18 18 0 1 1 172 118Z"/>
+  <circle cx="196" cy="114" r="3.6" fill="#ffffff"/>
+</svg>

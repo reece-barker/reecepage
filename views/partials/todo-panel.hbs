@@ -1,0 +1,7 @@
+{{!-- Development only. Lists what is still missing so placeholders never get published as if they were facts --}}
+{{#if showTodo}}
+<aside class="todo-panel" aria-label="Missing details, only shown in development">
+  <strong>Still missing on this page (only visible in development)</strong>
+  <ul>{{#each todo}}<li>{{this}}</li>{{/each}}</ul>
+</aside>
+{{/if}}

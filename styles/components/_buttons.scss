@@ -1,0 +1,182 @@
+@use "../abstracts/mixins" as *;
+
+// Buttons are rectangles with barely rounded corners. On hover a leaf (the brand square) turns in at the left edge
+// and the label moves over to make room for it, so the change is visible without relying on colour alone.
+.button {
+  --button-bg: var(--color-accent);
+  --button-fg: var(--color-on-accent);
+  --button-border: var(--color-accent);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: var(--space-3) var(--space-5);
+  border: var(--border-thick) solid var(--button-border);
+  border-radius: var(--radius-1);
+  background: var(--button-bg);
+  color: var(--button-fg);
+  font-weight: 750;
+  font-size: var(--step-0);
+  line-height: 1.2;
+  text-decoration: none;
+  overflow: hidden;
+  transition: background-color var(--duration-2) var(--ease-out), color var(--duration-2) var(--ease-out),
+    padding var(--duration-2) var(--ease-out), border-color var(--duration-2) var(--ease-out);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: var(--space-4);
+    top: 50%;
+    width: 0.55em;
+    height: 0.55em;
+    background: var(--color-highlight);
+    transform: translate(-1.6em, -50%) rotate(0deg) scale(0.4);
+    opacity: 0;
+    transition: transform var(--duration-3) var(--ease-out), opacity var(--duration-2) ease;
+  }
+
+  svg {
+    width: 1.1em;
+    height: 1.1em;
+    flex: none;
+    transition: transform var(--duration-2) var(--ease-out);
+  }
+
+  @include hover {
+    padding-left: calc(var(--space-5) + 1.1em);
+    padding-right: calc(var(--space-5) - 0.3em);
+
+    &::before {
+      opacity: 1;
+      transform: translate(0, -50%) rotate(45deg) scale(1);
+    }
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+
+  &:focus-visible {
+    @include focus-ring(3px);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 0 rgb(0 0 0 / 0.18);
+  }
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  // While a form is sending: the label stays (screen readers hear "Sending"), three leaves pulse after it
+  &[aria-busy="true"] {
+    cursor: progress;
+    pointer-events: none;
+
+    .button__busy {
+      display: inline-flex;
+    }
+  }
+}
+
+.button__busy {
+  display: none;
+  gap: 3px;
+
+  span {
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    transform: rotate(45deg);
+    animation: leaf-blink 900ms ease-in-out infinite;
+
+    // Only runs while a form is sending. With reduced motion the dots just sit there, the label still says Sending
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+
+  span:nth-child(2) {
+    animation-delay: 150ms;
+  }
+
+  span:nth-child(3) {
+    animation-delay: 300ms;
+  }
+}
+
+@keyframes leaf-blink {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.button--secondary {
+  --button-bg: transparent;
+  --button-fg: var(--color-text);
+  --button-border: var(--color-line-strong);
+
+  @include hover {
+    --button-bg: var(--color-bg-sunken);
+    --button-border: var(--color-text);
+  }
+}
+
+.button--small {
+  min-height: 40px;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--step--1);
+}
+
+// A link that reads as an action: thick blush underline that floods up behind the words on hover
+.link-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  font-weight: 750;
+  text-decoration: none;
+  // A little padding that the negative margin hands back, so the blush fill on hover has room round the words while
+  // the link still lines up with the text around it. At rest the underline only runs under the words (content box)
+  padding-inline: var(--space-2);
+  margin-inline: calc(var(--space-2) * -1);
+  background: linear-gradient(var(--color-highlight), var(--color-highlight)) left calc(100% - 8px) / 100% 3px no-repeat;
+  background-origin: content-box;
+  background-clip: content-box;
+  transition: background-size var(--duration-2) var(--ease-out), background-position var(--duration-2) var(--ease-out);
+
+  svg {
+    width: 1em;
+    height: 1em;
+    transition: transform var(--duration-2) var(--ease-out);
+  }
+
+  @include hover {
+    // Olive on blush in both themes, cream on blush would be unreadable in the dark one
+    color: #33412a;
+    background-origin: padding-box;
+    background-clip: padding-box;
+    background-size: 100% calc(100% - 12px);
+    background-position: left 6px;
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}

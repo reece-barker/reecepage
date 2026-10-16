@@ -1,0 +1,56 @@
+@use "sass:map";
+@use "tokens";
+
+@mixin up($size) {
+  @media (min-width: map.get(tokens.$breakpoints, $size)) {
+    @content;
+  }
+}
+
+@mixin down($size) {
+  @media (max-width: calc(#{map.get(tokens.$breakpoints, $size)} - 0.02rem)) {
+    @content;
+  }
+}
+
+// Only for devices that can really hover, so effects dont get stuck on after a tap on a phone
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin motion-ok {
+  @media (prefers-reduced-motion: no-preference) {
+    @content;
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+// The focus ring: a solid outline in the text colour with a blush halo, visible on cream, olive and night
+@mixin focus-ring($offset: 3px) {
+  outline: 3px solid var(--color-focus);
+  outline-offset: $offset;
+  box-shadow: 0 0 0 calc(#{$offset} + 6px) color-mix(in srgb, var(--color-focus-halo) 45%, transparent);
+}
+
+@mixin display-type {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -0.012em;
+  line-height: var(--leading-tight);
+}

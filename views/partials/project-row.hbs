@@ -1,0 +1,13 @@
+<li class="project-row branch-{{branch}}" data-limb="{{#if (eq branch "code")}}0{{else}}1{{/if}}" data-reveal>
+  <div class="project-row__meta">
+    {{!-- The hidden commas make a screen reader say "Earth, Startup, Ongoing" instead of running the words together --}}
+    <span class="branch-tag"><span class="pip" aria-hidden="true"></span>{{branchLabel branch}}<span class="visually-hidden">,</span></span>
+    <span>{{kind}}<span class="visually-hidden">,</span></span>
+    <span>{{period}}</span>
+  </div>
+  <div>
+    <h3 class="project-row__title"><a href="{{url}}" data-match-cut="{{slug}}" data-track="Project opened">{{title}}</a></h3>
+    <p class="project-row__summary">{{summary}}</p>
+  </div>
+  <span class="project-row__arrow" aria-hidden="true">{{icon "arrow"}}</span>
+</li>

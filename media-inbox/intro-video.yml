@@ -1,0 +1,11 @@
+# The long form introduction video. source points at the original on the Mac so it doesnt have to be copied in here,
+# run npm run media:import and it lands in the media library, published and on the home page
+source: ~/Movies/Reece videos/reece-barker-long-form-v3.mp4
+title: Introducing Reece Barker
+captions: reece-barker-long-form-v3.srt
+credit: >-
+  Music composed for this video. Piano: Salamander Grand Piano by Alexander Holm (CC BY 3.0). Strings and
+  percussion: VSCO 2 Community Edition (CC0). Full credits on the copyright page.
+faststart: true
+publish: true
+feature: true

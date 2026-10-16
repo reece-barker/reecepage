@@ -1,0 +1,45 @@
+// Brand fonts, self hosted (no request ever goes to Google Fonts, so no visitor ip leaves the site).
+// Both are under the SIL Open Font Licence, the licence files sit next to the fonts.
+// swap means the text shows straight away in a fallback font and switches when the brand font arrives.
+
+@font-face {
+  font-family: "Young Serif";
+  src: url("../fonts/YoungSerif-Regular-latin.woff2") format("woff2"), url("../fonts/YoungSerif-Regular-latin.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("../fonts/NunitoSans-Variable-latin.woff2") format("woff2"), url("../fonts/NunitoSans-Variable-latin.woff") format("woff");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Nunito Sans";
+  src: url("../fonts/NunitoSans-Italic-Variable-latin.woff2") format("woff2"), url("../fonts/NunitoSans-Italic-Variable-latin.woff") format("woff");
+  font-weight: 400 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+// Metric matched fallbacks, so the swap from Georgia or Arial to the real font barely moves the text (less layout shift).
+// The numbers come from measuring a sample sentence in both fonts with fonttools, see docs/DESIGN-SYSTEM.md
+@font-face {
+  font-family: "Young Serif Fallback";
+  src: local("Georgia");
+  size-adjust: 111%;
+  ascent-override: 94%;
+  descent-override: 33%;
+}
+
+@font-face {
+  font-family: "Nunito Sans Fallback";
+  src: local("Arial");
+  size-adjust: 97.6%;
+  ascent-override: 103.6%;
+  descent-override: 36.2%;
+}

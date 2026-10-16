@@ -1,0 +1,43 @@
+// reece.page styles. Order matters: tokens, then base, layout, components and finally page specific rules.
+@use "abstracts/tokens";
+@use "base/fonts";
+@use "base/reset";
+@use "base/base";
+@use "base/prose";
+@use "base/motion";
+@use "layouts/layout";
+@use "layouts/header";
+@use "layouts/footer";
+@use "components/buttons";
+@use "components/projects";
+@use "components/forms";
+@use "components/misc";
+@use "components/consent";
+@use "components/media";
+@use "components/profile";
+@use "components/admin";
+@use "pages/home";
+@use "pages/pages";
+
+@media print {
+  .site-header,
+  .site-footer,
+  .consent,
+  .grove__stage,
+  .sun-dot,
+  .hero-actions,
+  .next-prev,
+  .skip-link {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+  }
+}

@@ -1,0 +1,7 @@
+{{!-- Loaded only after the visitor allowed it on the cookie banner or the cookie settings page --}}
+{{#if (eq analytics.provider "plausible")}}
+<script defer data-domain="{{analytics.plausible.domain}}" data-api="{{analytics.plausible.api_host}}/api/event" src="{{analytics.plausible.script_url}}"></script>
+{{/if}}
+{{#if (eq analytics.provider "umami")}}
+<script defer data-website-id="{{analytics.umami.website_id}}" data-do-not-track="true" src="{{analytics.umami.script_url}}"></script>
+{{/if}}

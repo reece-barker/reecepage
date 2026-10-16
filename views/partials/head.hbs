@@ -1,0 +1,42 @@
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{meta.title}}</title>
+  <meta name="description" content="{{meta.description}}">
+  <meta name="robots" content="{{meta.robots}}">
+  <link rel="canonical" href="{{meta.canonical}}">
+  {{!-- Runs before anything is painted: marks that scripts work and applies a saved theme, so there is no flash of the wrong one --}}
+  <script nonce="{{cspNonce}}">document.documentElement.classList.add("js");try{var t=localStorage.getItem("rp-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="preload" href="{{asset "fonts/YoungSerif-Regular-latin.woff2"}}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{{asset "fonts/NunitoSans-Variable-latin.woff2"}}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{asset "css/main.css"}}">
+  <meta name="theme-color" content="#f9f4e8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1e261a" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  {{#if features.writing}}<link rel="alternate" type="application/atom+xml" title="{{site.name}}, writing" href="/writing/feed.xml">{{/if}}
+  <meta name="author" content="{{site.name}}">
+  <meta name="tdm-reservation" content="1">
+  <meta property="og:type" content="{{meta.og.type}}">
+  <meta property="og:title" content="{{meta.og.title}}">
+  <meta property="og:description" content="{{meta.og.description}}">
+  <meta property="og:url" content="{{meta.og.url}}">
+  <meta property="og:site_name" content="{{meta.og.siteName}}">
+  <meta property="og:locale" content="{{meta.og.locale}}">
+  <meta property="og:image" content="{{meta.og.image}}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{meta.og.imageAlt}}">
+  {{#if meta.article}}
+  <meta property="article:published_time" content="{{meta.article.published}}">
+  <meta property="article:modified_time" content="{{meta.article.modified}}">
+  <meta property="article:author" content="{{baseUrl}}/about">
+  {{/if}}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{meta.og.title}}">
+  <meta name="twitter:description" content="{{meta.og.description}}">
+  <meta name="twitter:image" content="{{meta.og.image}}">
+  <meta name="twitter:image:alt" content="{{meta.og.imageAlt}}">
+  <script type="application/ld+json" nonce="{{cspNonce}}">{{jsonLd meta.jsonLd}}</script>

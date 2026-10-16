@@ -1,0 +1,117 @@
+@use "../abstracts/mixins" as *;
+
+html {
+  background: var(--color-bg);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+  font-optical-sizing: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+// Links are underlined (colour alone never marks a link). The underline turns blush and thicker on hover
+a {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--color-line-strong);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--duration-1) ease, text-decoration-thickness var(--duration-1) ease;
+
+  @include hover {
+    text-decoration-color: var(--color-highlight);
+    text-decoration-thickness: 3px;
+  }
+}
+
+:focus-visible {
+  @include focus-ring;
+}
+
+// Keyboard focus stays visible even right under the sticky header
+:target {
+  scroll-margin-top: calc(var(--header-height) + var(--space-5));
+}
+
+h1,
+h2,
+h3,
+h4 {
+  @include display-type;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-5);
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-2);
+}
+
+h4 {
+  font-size: var(--step-1);
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+strong,
+b {
+  font-weight: 750;
+}
+
+small {
+  font-size: var(--step--1);
+}
+
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--color-code-bg);
+  padding: 0.1em 0.3em;
+  border-radius: var(--radius-1);
+}
+
+::selection {
+  background: var(--color-highlight);
+  color: #33412a;
+}
+
+hr {
+  border: 0;
+  border-top: var(--border-thin) solid var(--color-line);
+  margin-block: var(--space-6);
+}
+
+.visually-hidden {
+  @include visually-hidden;
+}
+
+.muted {
+  color: var(--color-text-muted);
+}
+
+.no-js-hidden {
+  html:not(.js) & {
+    display: none !important;
+  }
+}

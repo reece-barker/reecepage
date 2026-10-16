@@ -1,0 +1,36 @@
+# Skills with the work that shows them. No self ratings or percentage bars, the evidence links do the talking
+- group: Software
+  items:
+    - name: JavaScript and the web
+      evidence: [scan-assistant, reece-page]
+    - name: Node.js, Express and MySQL
+      evidence: [reece-page]
+    - name: Browser extensions
+      evidence: [scan-assistant]
+    - name: Microsoft Power Platform
+      evidence: [mis-purchase-orders]
+- group: Hardware and automation
+  items:
+    - name: ABB robots and RobotStudio
+      evidence: [lego-bulldozer-production-line]
+    - name: PLCs, SCADA and vision systems
+      evidence: [lego-bulldozer-production-line, lego-sorting-machine]
+    - name: Raspberry Pi
+      evidence: [traffic-sound-profiling]
+    - name: Embedded C and C++
+      note: Saxion coursework
+- group: Data
+  items:
+    - name: Signal processing and change detection
+      evidence: [traffic-sound-profiling]
+    - name: Machine learning
+      evidence: [lego-sorting-machine]
+      note: Saxion coursework
+    - name: MATLAB
+      evidence: [traffic-sound-profiling]
+- group: Languages
+  items:
+    - name: English
+      note: First language
+    - name: German
+      note: B2, used at work

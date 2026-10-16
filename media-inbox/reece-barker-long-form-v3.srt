@@ -1,0 +1,319 @@
+1
+00:00:01,450 --> 00:00:06,720
+This is Reece Barker. British, raised in Munich, studying in the Netherlands.
+
+2
+00:00:06,720 --> 00:00:10,600
+He writes software, builds hardware, and co-founded a startup.
+
+3
+00:00:10,600 --> 00:00:13,640
+But the easiest way to understand him is to start at the beginning.
+
+4
+00:00:13,640 --> 00:00:18,130
+Reece started primary school in West Sussex, on the south coast of England,
+
+5
+00:00:18,130 --> 00:00:23,090
+before his family moved to Munich. That's where he grew up, at Munich International School,
+
+6
+00:00:23,090 --> 00:00:26,830
+and where German went from a school subject to a second language.
+
+7
+00:00:26,830 --> 00:00:30,690
+He speaks it at B2 level today, and he's still working on it.
+
+8
+00:00:30,690 --> 00:00:35,950
+Outside class he volunteered in the school's Makers Lab, helping other students build their ideas,
+
+9
+00:00:35,950 --> 00:00:41,980
+and designed laser-cut trophies for the cubing club. He wrote his first lines of code at twelve.
+
+10
+00:00:41,980 --> 00:00:47,330
+At fifteen he shipped his first real product, a real-time extension for a web framework,
+
+11
+00:00:47,330 --> 00:00:51,230
+and recorded a thirty minute walkthrough explaining exactly how it worked.
+
+12
+00:00:52,060 --> 00:00:58,060
+For his IB Diploma he took Computer Science, German and Geography at higher level.
+
+13
+00:00:58,060 --> 00:01:04,820
+And it was Geography that changed everything. His Geography teacher made the subject come alive.
+
+14
+00:01:04,820 --> 00:01:10,080
+She showed him how the planet actually works, and how much is at stake.
+
+15
+00:01:10,080 --> 00:01:15,280
+Reece is the first to say that without her, he wouldn't be doing what he does today.
+
+16
+00:01:15,280 --> 00:01:21,690
+His extended essay looked at London's Ultra Low Emission Zone, and whether it really cut CO2.
+
+17
+00:01:21,690 --> 00:01:26,710
+It was the first time his two interests met. Data, and the environment.
+
+18
+00:01:27,450 --> 00:01:29,070
+At sixteen he went freelance.
+
+19
+00:01:29,670 --> 00:01:35,640
+Over almost three years he built full-stack web platforms with secure logins and live monitoring.
+
+20
+00:01:35,640 --> 00:01:40,330
+He also built a support and ticketing system for online communities in the entertainment space,
+
+21
+00:01:40,330 --> 00:01:45,880
+connected to the APIs they already relied on, and sold it commercially on two marketplaces.
+
+22
+00:01:45,880 --> 00:01:50,090
+For the flow meter manufacturer Bronkhorst, he built a customer configurator
+
+23
+00:01:50,090 --> 00:01:54,740
+that checks real physics constraints as you type. He delivered it in a week.
+
+24
+00:01:54,740 --> 00:02:00,190
+Alongside all that, he spent three summers in the IT department at Munich International School.
+
+25
+00:02:00,190 --> 00:02:05,400
+Today he's back there on contract, supporting IT and building on Microsoft's Power Platform,
+
+26
+00:02:05,400 --> 00:02:08,680
+including the purchase order system the finance team works with.
+
+27
+00:02:08,680 --> 00:02:13,830
+He also built his own browser extension for the IT team, to scan the school's iPads in and out,
+
+28
+00:02:13,830 --> 00:02:17,880
+match them against class lists, and turn it all into a report automatically.
+
+29
+00:02:17,880 --> 00:02:22,060
+In 2024 he moved to the Netherlands to study Applied Computer Science
+
+30
+00:02:22,060 --> 00:02:25,790
+at Saxion University of Applied Sciences in Enschede.
+
+31
+00:02:25,790 --> 00:02:31,450
+His first year ended with his propaedeutic diploma, cum laude. The degree goes deep.
+
+32
+00:02:31,450 --> 00:02:38,720
+Embedded C and C++, real-time operating systems, signal processing. In his first year he helped build
+
+33
+00:02:38,720 --> 00:02:43,450
+an autonomous robot that explores a maze and finds the shortest way out on its own.
+
+34
+00:02:43,450 --> 00:02:46,810
+And in one project, his two old interests met again.
+
+35
+00:02:46,810 --> 00:02:52,080
+He built a Raspberry Pi that listens to passing traffic and profiles it by sound alone,
+
+36
+00:02:52,080 --> 00:02:57,050
+to understand emissions without a single camera. It scored nine out of ten.
+
+37
+00:02:57,050 --> 00:03:01,110
+At Saxion's International Project Week, he earned the highest distinction.
+
+38
+00:03:01,110 --> 00:03:07,100
+Now he's in the Industrial Automation minor, where a team of thirteen is designing a full production line,
+
+39
+00:03:07,100 --> 00:03:13,880
+with eight ABB robots, vision systems and PLCs, to assemble a LEGO bulldozer every five minutes.
+
+40
+00:03:13,880 --> 00:03:19,410
+Alongside it, he's helping build a machine that sorts loose LEGO parts, by colour, by size,
+
+41
+00:03:19,410 --> 00:03:26,050
+and with a camera that recognises each piece. Next comes a European Project Semester at TH Augsburg,
+
+42
+00:03:26,050 --> 00:03:29,480
+then an internship and a graduation project in industry.
+
+43
+00:03:30,340 --> 00:03:33,650
+He was also selected for the Saxion Honours Programme,
+
+44
+00:03:33,650 --> 00:03:37,600
+a track for students who want more than the standard curriculum.
+
+45
+00:03:37,600 --> 00:03:41,390
+For Reece it's been about people as much as projects.
+
+46
+00:03:41,390 --> 00:03:46,910
+Working with students from completely different fields. Building a real social circle.
+
+47
+00:03:46,910 --> 00:03:50,120
+Learning skills far outside computer science,
+
+48
+00:03:50,120 --> 00:03:54,500
+and asking bigger questions about who he is and what actually matters.
+
+49
+00:03:54,500 --> 00:04:01,920
+He even chose an honest question to work on for the year. Why does he perform best when the pressure hits?
+
+50
+00:04:01,920 --> 00:04:07,480
+One moment stood out. His lecture on sustainable software, Smart Tech, Greener Planet,
+
+51
+00:04:07,480 --> 00:04:11,130
+was the moment all three of his peers picked out.
+
+52
+00:04:11,880 --> 00:04:16,400
+Out of Saxion also came his startup, co-founded with three classmates.
+
+53
+00:04:16,400 --> 00:04:20,380
+The idea starts with something simple. Every room has a climate.
+
+54
+00:04:20,380 --> 00:04:26,630
+Temperature, humidity, air quality, light. Their AI connects to the systems a building already has,
+
+55
+00:04:26,630 --> 00:04:30,040
+and controls them together, adjusting to who is actually there.
+
+56
+00:04:30,040 --> 00:04:33,380
+At home, that's comfort with less wasted energy.
+
+57
+00:04:33,380 --> 00:04:37,920
+In industry, it's stable conditions for people, products and machines.
+
+58
+00:04:37,920 --> 00:04:42,700
+And in healthcare, where it matters most, it's a room tuned to each patient,
+
+59
+00:04:42,700 --> 00:04:45,040
+to support better care and recovery.
+
+60
+00:04:45,040 --> 00:04:49,000
+The team has already laid the legal groundwork and a twelve month roadmap,
+
+61
+00:04:49,000 --> 00:04:53,970
+and they're working toward their second prototype using funding from the Saxion Entrepreneurship Programme
+
+62
+00:04:53,970 --> 00:04:57,360
+which awarded them €2,500 in initial funding.
+
+63
+00:04:57,360 --> 00:05:01,920
+Reece belongs to the first generation to grow up alongside modern AI.
+
+64
+00:05:01,920 --> 00:05:07,620
+He uses large language models every day, to build, to research and to learn faster.
+
+65
+00:05:07,620 --> 00:05:13,740
+And he's studied what happens underneath, with electives in machine learning, deep learning and TinyML.
+
+66
+00:05:13,740 --> 00:05:19,390
+Using it that much has taught him exactly where it falls short. It can be confidently wrong.
+
+67
+00:05:19,390 --> 00:05:24,990
+It needs clear limits, and people who check the work. That's why he wants to help build it well.
+
+68
+00:05:24,990 --> 00:05:28,980
+He believes AI can do real good for the planet and for society,
+
+69
+00:05:28,980 --> 00:05:31,780
+from cutting wasted energy to improving care,
+
+70
+00:05:31,780 --> 00:05:37,110
+as long as the people building it choose that path on purpose, and steer clear of the darker one.
+
+71
+00:05:37,930 --> 00:05:42,810
+Ask the people around Reece what he's like, and you'll hear the same few things.
+
+72
+00:05:42,810 --> 00:05:49,190
+He's easy to be around, he's funny, and he's someone you can count on. He's close with his family,
+
+73
+00:05:49,190 --> 00:05:54,940
+and keeps a circle of friends he trusts completely. Underneath all of it is his faith.
+
+74
+00:05:55,580 --> 00:06:03,360
+You see it in how he works and how he treats people. Being honest when it's inconvenient. Being patient.
+
+75
+00:06:03,360 --> 00:06:09,430
+Doing good work even when nobody is checking. And helping people because it's the right thing to do.
+
+76
+00:06:10,250 --> 00:06:14,850
+So what does he want next? It's simple to say, and harder to do.
+
+77
+00:06:14,850 --> 00:06:19,240
+As a sustainability ambassador, he wants his work to match what he believes.
+
+78
+00:06:19,240 --> 00:06:24,530
+Projects that genuinely make people's lives better, and leave the planet in better shape than he found it.
+
+79
+00:06:24,530 --> 00:06:30,590
+Software, hardware, automation, AI. For him, they're all tools for the same goal.
+
+80
+00:06:30,940 --> 00:06:35,220
+If you'd like to work with him, or just talk, you'll find him at reece.page.

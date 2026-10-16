@@ -1,0 +1,116 @@
+<div class="container cv-page">
+  <div class="cv-tools no-print">
+    {{> breadcrumbs}}
+    <div class="cluster">
+      {{#if pdf}}<a class="button" href="/cv/reece-barker-cv.pdf" download data-track="CV downloaded">{{icon "arrow"}} Download as PDF</a>{{/if}}
+      <p class="updated-note">One page, A4. {{#if pdf}}PDF made {{longDate pdf.date}}.{{/if}}</p>
+    </div>
+  </div>
+
+  <article class="cv-sheet" aria-labelledby="cv-name">
+    <header class="cv-head">
+      <div>
+        <h1 id="cv-name">{{site.legal_name}}</h1>
+        <p class="cv-headline">{{cv.headline}}</p>
+      </div>
+      <img class="cv-mark" src="{{asset "images/brand/reece-dove-symbol-colour.svg"}}" alt="" width="72" height="58">
+      <ul class="cv-contact" role="list">
+        <li><a href="mailto:{{site.email}}">{{site.email}}</a></li>
+        {{#if phone}}<li><a href="{{telHref phone}}">{{phone}}</a></li>{{/if}}
+        <li><a href="{{baseUrl}}">{{site.domain}}</a></li>
+        {{#each profiles}}<li><a href="{{url}}">{{shortUrl url}}</a></li>{{/each}}
+        {{#if cv.location}}<li>{{cv.location}}</li>{{/if}}
+      </ul>
+    </header>
+
+    <div class="cv-body">
+      <div class="cv-main">
+        <section aria-labelledby="cv-profile">
+          <h2 id="cv-profile">Profile</h2>
+          <p>{{cv.profile}}</p>
+          {{#if cv.availability}}<p class="cv-availability">{{cv.availability}}</p>{{/if}}
+        </section>
+
+        <section aria-labelledby="cv-experience">
+          <h2 id="cv-experience">Experience</h2>
+          <ol class="cv-list" role="list">
+            {{#each work}}
+            <li>
+              <div class="cv-item-head"><h3>{{title}}</h3><span class="cv-when">{{when}}</span></div>
+              <p class="cv-place">{{place}}</p>
+              {{#if text}}<p>{{text}}</p>{{/if}}
+            </li>
+            {{/each}}
+          </ol>
+        </section>
+
+        <section aria-labelledby="cv-education">
+          <h2 id="cv-education">Education</h2>
+          <ol class="cv-list" role="list">
+            {{#each education}}
+            <li>
+              <div class="cv-item-head"><h3>{{title}}</h3><span class="cv-when">{{when}}</span></div>
+              <p class="cv-place">{{place}}</p>
+              {{#if text}}<p>{{text}}</p>{{/if}}
+            </li>
+            {{/each}}
+          </ol>
+        </section>
+
+        {{#if projects.length}}
+        <section aria-labelledby="cv-projects">
+          <h2 id="cv-projects">Selected projects</h2>
+          <ul class="cv-list" role="list">
+            {{#each projects}}
+            <li>
+              <div class="cv-item-head"><h3><a href="{{../baseUrl}}{{url}}">{{title}}</a></h3><span class="cv-when">{{period}}</span></div>
+              <p>{{summary}}</p>
+            </li>
+            {{/each}}
+          </ul>
+        </section>
+        {{/if}}
+      </div>
+
+      <aside class="cv-side" aria-label="Skills, languages and more">
+        {{#each skills}}
+        <section>
+          <h2>{{group}}</h2>
+          <ul class="cv-tags" role="list">{{#each items}}<li>{{name}}</li>{{/each}}</ul>
+        </section>
+        {{/each}}
+        {{#if cv.languages.length}}
+        <section>
+          <h2>Languages</h2>
+          <ul class="cv-plain" role="list">{{#each cv.languages}}<li><strong>{{name}}</strong> {{level}}</li>{{/each}}</ul>
+        </section>
+        {{/if}}
+        {{#if cv.extras.length}}
+        <section>
+          <h2>Also</h2>
+          <ul class="cv-plain" role="list">{{#each cv.extras}}<li>{{this}}</li>{{/each}}</ul>
+        </section>
+        {{/if}}
+        {{#if cv.interests}}
+        <section>
+          <h2>Interests</h2>
+          <p>{{cv.interests}}</p>
+        </section>
+        {{/if}}
+        <section>
+          <h2>References</h2>
+          {{#if referees.length}}
+          <ul class="cv-plain" role="list">
+            {{#each referees}}
+            <li><strong>{{name}}</strong><br>{{role}}, {{organisation}}{{#if contact_public}}{{#if email}}<br><a href="mailto:{{email}}">{{email}}</a>{{/if}}{{#if phone}}<br>{{phone}}{{/if}}{{/if}}</li>
+            {{/each}}
+          </ul>
+          {{#unless allContactsPublic}}<p class="cv-note">Contact details on request.</p>{{/unless}}
+          {{else}}
+          <p>Available on request.</p>
+          {{/if}}
+        </section>
+      </aside>
+    </div>
+  </article>
+</div>

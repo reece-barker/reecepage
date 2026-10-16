@@ -1,0 +1,35 @@
+<div class="container">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1 class="matte-words">{{matteWords "References"}}</h1>
+    <p class="lead load-fade">What people I have worked with say. Each quote is published with their permission.</p>
+  </header>
+
+  {{#if references.length}}
+  <ul class="reference-list" role="list">
+    {{#each references}}
+    <li class="reference">
+      <figure>
+        <blockquote><p>{{quote}}</p></blockquote>
+        <figcaption>
+          <strong>{{name}}</strong>
+          <span>{{role}}, {{organisation}}</span>
+          {{#if relationship}}<span class="reference__relationship">{{relationship}}</span>{{/if}}
+          {{#if date}}<span class="reference__date"><time datetime="{{isoDate date}}">{{monthYear date}}</time></span>{{/if}}
+        </figcaption>
+      </figure>
+      {{#if contact_public}}
+      <ul class="reference__contact cluster" role="list">
+        {{#if email}}<li><a class="link-action" href="mailto:{{email}}">{{icon "mail"}} {{email}}</a></li>{{/if}}
+        {{#if phone}}<li><a class="link-action" href="{{telHref phone}}">{{phone}}</a></li>{{/if}}
+        {{#if linkedin}}<li><a class="link-action" href="{{linkedin}}" rel="noopener">LinkedIn {{icon "external"}}</a></li>{{/if}}
+      </ul>
+      {{/if}}
+    </li>
+    {{/each}}
+  </ul>
+  <p class="reference-note">Want to speak to one of them? Some contact details are only shared on request, <a href="/contact">ask me</a> and I will put you in touch.</p>
+  {{else}}
+  <p class="alert alert--note">{{icon "info"}}<span>References are available on request. <a href="/contact">Get in touch</a> and I will put you in contact with people I have worked with.</span></p>
+  {{/if}}
+</div>

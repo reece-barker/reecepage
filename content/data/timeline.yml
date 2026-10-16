@@ -1,0 +1,43 @@
+# Education and work, newest first. when is free text on purpose: some things are known by year, some by age
+- when: From February 2027
+  title: European Project Semester
+  place: TH Augsburg
+  kind: education
+  text: A semester of project work in an international team.
+  planned: true
+- when: 2026 to February 2027
+  title: Industrial Automation minor
+  place: Saxion
+  kind: education
+  text: Robotics, PLCs, SCADA and vision systems, around a production line with eight ABB robots.
+- when: 2024 to 2026
+  title: IT support and Power Platform developer, on contract
+  place: Munich International School
+  kind: work
+  text: Supporting IT and building apps and automations on Microsoft's Power Platform, including the purchase order system the finance team uses.
+- when: Since 2024
+  title: Applied Computer Science
+  place: Saxion University of Applied Sciences, Enschede
+  kind: education
+  text: First year completed with the propaedeutic diploma, cum laude. Embedded C and C++, real time operating systems, signal processing and machine learning. Selected for the Saxion Honours Programme. Highest distinction at Saxion's International Project Week.
+- when: Three summers, the last in 2024
+  title: IT department, summer work
+  place: Munich International School
+  kind: work
+  text: Summer work in the IT department, the last summer covering IT and finance.
+- when: From age sixteen, almost three years
+  title: Freelance developer
+  place: Self employed
+  kind: work
+  text: Full stack web platforms with secure logins and live monitoring, a support and ticketing system sold on two marketplaces, and a configurator for Bronkhorst.
+- when: Until 2024
+  title: IB Diploma
+  place: Munich International School
+  kind: education
+  text: Computer Science, German and Geography at higher level. Extended essay on whether London's Ultra Low Emission Zone cut CO2.
+- when: Childhood
+  title: Primary school in West Sussex, then Munich
+  place: England and Germany
+  kind: education
+  text: I started school on the south coast of England before my family moved to Munich, where I grew up at Munich International School.
+  cv: false

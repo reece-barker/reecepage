@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-labelledby="t">
+  <title id="t">Reece leaf pattern</title>
+  <metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Description rdf:about=""><dc:creator>Reece Norman Barker, reece.page</dc:creator><dc:rights>© 2026 Reece Norman Barker, reece.page. All rights reserved. Reece dove brand v1.3.</dc:rights><dc:publisher>reece.page</dc:publisher></rdf:Description></rdf:RDF></metadata>
+  <!-- Seamless tile, 240 by 240, leaves are plain circle arc shapes -->
+  <path fill="#33412a" d="M0 0H240V240H0Z"/>
+  <path fill="#536548" d="M22 30A61.44 61.44 0 0 1 72 70A61.44 61.44 0 0 1 22 30Z"/>
+  <path fill="#46573c" d="M110 20A61.45 61.45 0 0 1 150 74A61.45 61.45 0 0 1 110 20Z"/>
+  <path fill="#607354" d="M176 36A42.12 42.12 0 0 1 222 18A42.12 42.12 0 0 1 176 36Z"/>
+  <path fill="#46573c" d="M20 120A55.28 55.28 0 0 1 54 170A55.28 55.28 0 0 1 20 120Z"/>
+  <path fill="#536548" d="M96 104A51.25 51.25 0 0 1 150 132A51.25 51.25 0 0 1 96 104Z"/>
+  <path fill="#46573c" d="M176 100A60.56 60.56 0 0 1 206 156A60.56 60.56 0 0 1 176 100Z"/>
+  <path fill="#607354" d="M60 196A52.94 52.94 0 0 1 112 224A52.94 52.94 0 0 1 60 196Z"/>
+  <path fill="#536548" d="M140 190A73.45 73.45 0 0 1 210 214A73.45 73.45 0 0 1 140 190Z"/>
+  <path fill="#4b5b40" d="M88 58A4 4 0 1 1 96 58A4 4 0 1 1 88 58Z"/>
+  <path fill="#4b5b40" d="M122 168A4 4 0 1 1 130 168A4 4 0 1 1 122 168Z"/>
+  <path fill="#4b5b40" d="M32.5 96A3.5 3.5 0 1 1 39.5 96A3.5 3.5 0 1 1 32.5 96Z"/>
+  <path fill="#4b5b40" d="M210.5 76A3.5 3.5 0 1 1 217.5 76A3.5 3.5 0 1 1 210.5 76Z"/>
+  <path fill="#4b5b40" d="M27 212A3 3 0 1 1 33 212A3 3 0 1 1 27 212Z"/>
+</svg>

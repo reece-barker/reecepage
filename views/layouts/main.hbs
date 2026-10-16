@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en-GB" dir="ltr"{{#if errorReporting}} data-error-reporting{{/if}}>
+<head>
+{{> head}}
+</head>
+<body class="{{bodyClass}}">
+  <a class="skip-link" href="#main">Skip to the content</a>
+  {{> header}}
+  <main id="main" tabindex="-1">
+    {{{body}}}
+  </main>
+  {{> footer}}
+  {{#if consent.ask}}{{> consent-banner}}{{/if}}
+  <script src="{{asset "js/main.js"}}" defer></script>
+  {{#each scripts}}
+  <script type="module" src="{{asset this}}"></script>
+  {{/each}}
+  {{#if analytics}}{{> analytics}}{{/if}}
+</body>
+</html>

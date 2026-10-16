@@ -1,0 +1,107 @@
+<div class="container">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1 class="matte-words">{{matteWords "Get in touch"}}</h1>
+    <p class="lead load-fade">About an internship, a project, the startup or anything else. I read every message myself.</p>
+  </header>
+
+  <div class="contact-grid section--tight">
+    <div class="contact-direct stack">
+      <h2>Email me directly</h2>
+      <p><a class="email-link" href="mailto:{{site.email}}" data-track="Email link">{{site.email}}</a></p>
+      <div class="cluster no-js-hidden">
+        <button class="button button--secondary button--small" type="button" data-copy="{{site.email}}">{{icon "copy"}} Copy the address</button>
+        <p class="copy-status" data-copy-status role="status" aria-live="polite"></p>
+      </div>
+      {{#if profiles.length}}
+      <h2>Elsewhere</h2>
+      <ul class="profile-links" role="list">
+        {{#each profiles}}<li><a class="link-action" href="{{url}}" rel="me noopener">{{name}} {{icon "external"}}</a></li>{{/each}}
+      </ul>
+      {{/if}}
+    </div>
+
+    <div class="contact-send">
+      <h2>Or send a message here</h2>
+      {{#if formAvailable}}
+      {{#if (eq notice "resubmit")}}
+      <div class="alert alert--note" role="alert" data-notice="resubmit">
+        {{icon "info"}}
+        <div><h3>Please press Send once more</h3><p>The form could not be checked, usually because it was open for a long time or sent very quickly. Your text is still here.</p></div>
+      </div>
+      {{/if}}
+      {{#if (eq notice "failed")}}
+      <div class="alert alert--error" role="alert" data-notice="failed">
+        {{icon "alert"}}
+        <div><h3>Your message could not be sent</h3><p>Something went wrong on my side. Your text is still below, please copy it and email it to <a href="mailto:{{site.email}}">{{site.email}}</a> instead.</p></div>
+      </div>
+      {{/if}}
+      {{#if errorList.length}}
+      <div class="alert alert--error" role="alert" tabindex="-1" data-error-summary>
+        {{icon "alert"}}
+        <div>
+          <h3>Please fix {{plural errorList.length "this" "these"}} {{errorList.length}} {{plural errorList.length "thing" "things"}}</h3>
+          <ul>{{#each errorList}}<li><a href="#field-{{field}}">{{message}}</a></li>{{/each}}</ul>
+        </div>
+      </div>
+      {{/if}}
+
+      <form class="form" method="post" action="/contact" novalidate data-contact-form>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="form_token" value="{{formToken}}">
+
+        <div class="field">
+          <label class="label" for="field-name">Your name</label>
+          <input class="input" id="field-name" name="name" type="text" autocomplete="name" required maxlength="120" value="{{values.name}}"
+            {{#if errors.name}}aria-invalid="true" aria-describedby="error-name"{{/if}}>
+          {{#if errors.name}}<p class="field-error" id="error-name">{{icon "alert"}}<span>{{errors.name}}</span></p>{{/if}}
+        </div>
+
+        <div class="field">
+          <label class="label" for="field-email">Your email address</label>
+          <p class="hint" id="hint-email">So I can reply. I never add it to a mailing list.</p>
+          <input class="input" id="field-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required maxlength="254" value="{{values.email}}"
+            aria-describedby="hint-email{{#if errors.email}} error-email{{/if}}" {{#if errors.email}}aria-invalid="true"{{/if}}>
+          {{#if errors.email}}<p class="field-error" id="error-email">{{icon "alert"}}<span>{{errors.email}}</span></p>{{/if}}
+        </div>
+
+        <div class="field">
+          <label class="label" for="field-topic">What is it about?</label>
+          <select class="select" id="field-topic" name="topic" required {{#if errors.topic}}aria-invalid="true" aria-describedby="error-topic"{{/if}}>
+            {{#each topics}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{value}}</option>{{/each}}
+          </select>
+          {{#if errors.topic}}<p class="field-error" id="error-topic">{{icon "alert"}}<span>{{errors.topic}}</span></p>{{/if}}
+        </div>
+
+        <div class="field">
+          <label class="label" for="field-message">Your message</label>
+          <textarea class="textarea" id="field-message" name="message" required minlength="10" maxlength="5000" rows="8"
+            aria-describedby="message-count{{#if errors.message}} error-message{{/if}}" {{#if errors.message}}aria-invalid="true"{{/if}} data-count-chars>{{values.message}}</textarea>
+          <p class="char-count" id="message-count" data-char-count>Up to 5,000 characters</p>
+          {{#if errors.message}}<p class="field-error" id="error-message">{{icon "alert"}}<span>{{errors.message}}</span></p>{{/if}}
+        </div>
+
+        {{!-- Left empty by people. It is hidden from view and from screen readers, bots fill it in --}}
+        <div class="field field--trap" aria-hidden="true">
+          <label for="field-website">Leave this field empty</label>
+          <input id="field-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <p class="form-privacy">I use what you send only to reply to you. It is stored for up to {{retentionDays}} days and then deleted. More in the <a href="/privacy#contact-form">privacy policy</a>.</p>
+
+        <div>
+          <button class="button" type="submit" data-submit>
+            <span data-submit-label>Send message</span>
+            <span class="button__busy" aria-hidden="true"><span></span><span></span><span></span></span>
+          </button>
+        </div>
+      </form>
+      {{else}}
+      <div class="alert alert--note">
+        {{icon "info"}}
+        <div><h3>The form is switched off at the moment</h3><p>Please email <a href="mailto:{{site.email}}">{{site.email}}</a>, it reaches me the same way.</p></div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,229 @@
+@use "../abstracts/mixins" as *;
+
+// The grove: the opening of the home page. Words on the left, the tree on the right, and the tree stays in view
+// while the three branches scroll past so pointing at one can light it up. On small screens the tree sits between
+// the introduction and the branches instead.
+.grove {
+  position: relative;
+  display: grid;
+  grid-template-areas: "intro" "stage" "branches";
+  width: min(100% - 2 * var(--gutter), var(--width-page));
+  margin-inline: auto;
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-areas: "intro stage" "branches stage";
+    column-gap: var(--space-6);
+  }
+}
+
+.grove__intro {
+  grid-area: intro;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: var(--space-7) var(--space-6);
+
+  @include up(lg) {
+    min-height: calc(100svh - var(--header-height));
+    padding-block: var(--space-8);
+  }
+}
+
+.hero-name {
+  font-size: clamp(3rem, 1.6rem + 6.4vw, 6.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  max-width: none;
+}
+
+.hero-slogan {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  line-height: 1.2;
+  margin-top: var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.hero-lede {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  max-width: 32em;
+  margin-top: var(--space-6);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  margin-top: var(--space-6);
+}
+
+.grove__stage {
+  grid-area: stage;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  max-height: 72vh;
+  width: 100%;
+  margin-inline: auto;
+
+  @include up(lg) {
+    position: sticky;
+    top: var(--header-height);
+    height: calc(100svh - var(--header-height));
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  canvas,
+  .grove__poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .grove__poster {
+    object-fit: contain;
+    transition: opacity var(--duration-4) ease;
+  }
+
+  // Once the live tree draws its first frame the still picture fades away
+  &.is-live .grove__poster {
+    opacity: 0;
+  }
+
+  canvas {
+    opacity: 0;
+    transition: opacity var(--duration-3) ease;
+  }
+
+  &.is-live canvas {
+    opacity: 1;
+  }
+}
+
+.grove__branches {
+  grid-area: branches;
+  padding-bottom: var(--section-space);
+
+  @include up(lg) {
+    padding-top: var(--space-6);
+  }
+
+  > h2 {
+    margin-bottom: var(--space-3);
+  }
+}
+
+.branch-list {
+  list-style: none;
+  padding: 0;
+  margin-top: var(--space-6);
+  border-top: var(--border-thin) solid var(--color-line);
+}
+
+.branch-row {
+  position: relative;
+  padding: var(--space-5) 0;
+  border-bottom: var(--border-thin) solid var(--color-line);
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.45em;
+    font-size: var(--step-4);
+    line-height: 1;
+  }
+
+  .pip {
+    width: 0.42em;
+    height: 0.42em;
+  }
+
+  p {
+    margin-top: var(--space-3);
+    max-width: 34em;
+  }
+
+  .link-action {
+    margin-top: var(--space-2);
+  }
+
+  &.is-lit .pip,
+  &:focus-within .pip {
+    transform: rotate(45deg) scale(1.2);
+  }
+}
+
+.grove__hint {
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  // The hint only makes sense once the live tree is there, so it fades in then. Fading instead of hiding means the
+  // paragraph doesnt jump when it shows up
+  opacity: 0;
+  transition: opacity var(--duration-3) ease;
+
+  html[data-tree-ready] & {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    display: none;
+  }
+}
+
+// Selected work, right now, the verse and the closing invitation are ordinary sections below the grove
+.home-now {
+  @include up(lg) {
+    display: grid;
+    grid-template-columns: 18rem minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  .now-next {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: var(--border-thin) solid var(--color-line);
+
+    h3 {
+      font-family: var(--font-body);
+      font-size: var(--step-0);
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    ul {
+      margin-top: var(--space-2);
+      padding-left: 1.2em;
+    }
+  }
+}
+
+.home-faith {
+  display: grid;
+  gap: var(--space-6);
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    align-items: end;
+  }
+
+  .home-faith__note {
+    max-width: 30em;
+  }
+}
+
+.home-contact {
+  text-align: left;
+
+  .email-link {
+    display: inline-block;
+    margin-top: var(--space-5);
+  }
+
+  .cluster {
+    margin-top: var(--space-6);
+  }
+}

@@ -1,0 +1,59 @@
+<div class="container container--text">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1>Cookies and settings</h1>
+    <p class="lead">What this website stores in your browser, and your settings for anything optional.</p>
+  </header>
+
+  <div class="legal-text prose">
+    {{#if saved}}
+    <div class="alert alert--success" role="status">{{icon "check"}}<div><h2>Your settings are saved</h2><p>You can change them here at any time.</p></div></div>
+    {{/if}}
+
+    <section class="legal-section" aria-labelledby="settings-title">
+      <h2 id="settings-title">Your settings</h2>
+      {{#if (eq analyticsProvider "none")}}
+      <p>There is nothing to set at the moment. This website uses no analytics, no advertising and no tracking, so it never asks for consent. Everything it stores is listed below and is needed for something you asked for.</p>
+      {{else}}
+      <form class="form" method="post" action="/cookies">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="return_to" value="/cookies">
+        <fieldset class="stack">
+          <legend class="label">Optional</legend>
+          <label class="check">
+            <input type="checkbox" name="analytics" value="yes" {{#if consent.analytics}}checked{{/if}}>
+            <span><strong>Count my visit anonymously</strong> with {{#if (eq analyticsProvider "umami")}}Umami{{else}}Plausible{{/if}}. No cookies, no advertising, no profile of you. It tells me which pages are read.</span>
+          </label>
+        </fieldset>
+        <p>Strictly necessary storage (below) cannot be switched off, the site would not work without it.</p>
+        <div class="cluster">
+          <button class="button" type="submit" name="choice" value="save">Save my settings</button>
+          <button class="button button--secondary" type="submit" name="choice" value="reject">Turn everything optional off</button>
+        </div>
+      </form>
+      {{/if}}
+    </section>
+
+    <section class="legal-section" aria-labelledby="stored-title">
+      <h2 id="stored-title">What is stored</h2>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Table of what is stored">
+        <table>
+          <thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Why</th><th scope="col">How long</th></tr></thead>
+          <tbody>
+            <tr><td><code>rp.csrf</code></td><td>Cookie, strictly necessary</td><td>Only on pages with a form. Proves that a form was sent from this website and not from another one (protection against cross site request forgery).</td><td>Until you close the browser</td></tr>
+            <tr><td><code>rp-theme</code></td><td>Local storage, strictly necessary</td><td>Remembers light or dark theme, only after you press the theme button.</td><td>Until you clear it in your browser</td></tr>
+            {{#if (not (eq analyticsProvider "none"))}}
+            <tr><td><code>{{consentCookieName}}</code></td><td>Cookie, strictly necessary</td><td>Remembers your choice on this page or on the banner, so you are not asked again on every page.</td><td>{{consentDays}} days</td></tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+      <p>Strictly necessary storage needs no consent under § 25(2) no. 2 of the German TDDDG, because it is needed for a service you asked for. Your browser also keeps a normal cache of files like fonts and styles so pages load faster, which you can clear in its settings.</p>
+    </section>
+
+    <section class="legal-section" lang="de" aria-labelledby="cookies-de">
+      <h2 id="cookies-de">Deutsch</h2>
+      <p>Diese Website speichert nur, was für einen von Ihnen gewünschten Dienst unbedingt erforderlich ist (§ 25 Abs. 2 Nr. 2 TDDDG): ein Sicherheits-Cookie <code>rp.csrf</code> auf Seiten mit Formular (bis zum Schließen des Browsers) und, nur nach Betätigung des Schalters, Ihre Auswahl des Farbschemas im lokalen Speicher (<code>rp-theme</code>).{{#if (eq analyticsProvider "none")}} Reichweitenmessung, Werbung oder Tracking finden nicht statt, deshalb wird keine Einwilligung abgefragt.{{else}} Die Reichweitenmessung wird nur mit Ihrer Einwilligung geladen; Ihre Auswahl wird im Cookie <code>{{consentCookieName}}</code> für {{consentDays}} Tage gespeichert und kann oben jederzeit geändert werden.{{/if}} Weitere Angaben enthält die <a href="/privacy#de">Datenschutzerklärung</a>.</p>
+    </section>
+  </div>
+</div>

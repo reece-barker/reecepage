@@ -1,0 +1,21 @@
+# The one page CV at /cv. Experience, skills and projects come from their own files
+headline: Applied Computer Science student at Saxion University of Applied Sciences
+profile: >-
+  Raised in Munich, studying Applied Computer Science in Enschede. I write software, build hardware and co-founded a
+  startup whose AI runs the climate of a room. On contract at Munich International School I support IT and build on
+  Microsoft's Power Platform. I want to work on technology that makes people's lives better and wastes less.
+location: Munich, Germany and Enschede, Netherlands
+availability: ""
+show_phone: true
+languages:
+  - name: English
+    level: First language
+  - name: German
+    level: B2
+projects:
+  - microclimate-startup
+  - lego-bulldozer-production-line
+extras:
+  - Saxion Honours Programme, second year
+  - Sustainability ambassador
+interests: ""

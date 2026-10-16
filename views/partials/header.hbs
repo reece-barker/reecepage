@@ -1,0 +1,22 @@
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand-link" href="/" {{#if (eq currentPath "/")}}aria-current="page"{{/if}}>
+      <img class="theme-light-only" src="{{asset "images/brand/reece-dove-long-horizontal-colour.svg"}}" alt="Reece, home" width="150" height="40">
+      <img class="theme-dark-only" src="{{asset "images/brand/reece-dove-long-horizontal-colour-on-dark.svg"}}" alt="Reece, home" width="150" height="40">
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <button class="icon-button menu-button" type="button" aria-expanded="false" aria-controls="site-nav-list" data-menu-button>
+        {{icon "menu"}}<span>Menu</span>
+      </button>
+      <ul class="site-nav__list" id="site-nav-list" role="list">
+        {{#each primaryNav}}
+        <li><a class="site-nav__link" href="{{href}}" {{#if (isCurrent href ../currentPath)}}aria-current="{{#if (eq href ../currentPath)}}page{{else}}true{{/if}}"{{/if}}>{{label}}</a></li>
+        {{/each}}
+      </ul>
+      <button class="icon-button no-js-hidden" type="button" data-theme-toggle aria-label="Use the dark theme">
+        <span class="theme-light-only">{{icon "moon"}}</span>
+        <span class="theme-dark-only">{{icon "sun"}}</span>
+      </button>
+    </nav>
+  </div>
+</header>

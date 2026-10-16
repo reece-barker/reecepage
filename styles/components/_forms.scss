@@ -1,0 +1,169 @@
+@use "../abstracts/mixins" as *;
+
+.form {
+  display: grid;
+  gap: var(--space-5);
+  max-width: 38rem;
+}
+
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.label {
+  font-weight: 750;
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--step--1);
+  margin-top: calc(var(--space-1) * -1);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-thick) solid var(--color-line-strong);
+  border-radius: var(--radius-1);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  // 16px or more stops iOS from zooming into the field when it gets focus
+  font-size: max(16px, var(--step-0));
+  transition: border-color var(--duration-1) ease, box-shadow var(--duration-1) ease;
+
+  &:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  &:focus-visible {
+    @include focus-ring(1px);
+    border-color: var(--color-text);
+  }
+
+  &[aria-invalid="true"] {
+    border-color: var(--color-danger);
+    border-left-width: 6px;
+  }
+}
+
+.textarea {
+  min-height: 11rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.select {
+  appearance: none;
+  padding-right: 2.75rem;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 1.25rem) 55%, calc(100% - 0.85rem) 55%;
+  background-size: 0.4rem 0.4rem;
+  background-repeat: no-repeat;
+}
+
+// The field bots fill in and people never see. Hidden with clipping, not display:none, which some bots skip
+.field--trap {
+  @include visually-hidden;
+}
+
+// Error text always has an icon and words, never just red
+.field-error {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  color: var(--color-danger);
+  font-weight: 700;
+
+  svg {
+    flex: none;
+    width: 1.1em;
+    height: 1.1em;
+    margin-top: 0.2em;
+  }
+}
+
+.char-count {
+  justify-self: end;
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+
+  &.is-over {
+    color: var(--color-danger);
+    font-weight: 700;
+  }
+}
+
+.alert {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border: var(--border-thin) solid var(--color-line-strong);
+  border-left: 6px solid var(--color-text);
+  border-radius: var(--radius-1);
+  background: var(--color-bg-raised);
+
+  svg {
+    flex: none;
+    width: 1.3rem;
+    height: 1.3rem;
+    margin-top: 0.15em;
+  }
+
+  h2,
+  h3 {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: var(--step-0);
+    letter-spacing: 0;
+    margin-bottom: var(--space-1);
+  }
+
+  ul {
+    padding-left: 1.2em;
+  }
+
+  a {
+    font-weight: 700;
+  }
+}
+
+.alert--error {
+  border-left-color: var(--color-danger);
+
+  svg {
+    color: var(--color-danger);
+  }
+}
+
+.alert--success {
+  border-left-color: var(--color-success);
+
+  svg {
+    color: var(--color-success);
+  }
+}
+
+.alert--note {
+  border-left-color: var(--color-highlight);
+}
+
+.check {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  min-height: 44px;
+  cursor: pointer;
+
+  input {
+    flex: none;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-top: 0.15rem;
+    accent-color: var(--color-accent);
+  }
+}

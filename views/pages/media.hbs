@@ -1,0 +1,40 @@
+<div class="container">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1 class="matte-words">{{matteWords "Media"}}</h1>
+    <p class="lead load-fade">A video introduction, and pictures and clips of the things I build.</p>
+  </header>
+
+  {{#if featured}}
+  <section class="media-feature" aria-labelledby="feature-title">
+    <h2 id="feature-title">{{featured.title}}</h2>
+    {{#if featured.durationSeconds}}<p class="updated-note">{{clock featured.durationSeconds}}{{#if featured.captionsSrc}}, with captions and a transcript{{/if}}</p>{{/if}}
+    {{{featuredHtml}}}
+  </section>
+  {{/if}}
+
+  {{#if items.length}}
+  <section class="media-library" aria-labelledby="library-title">
+    <h2 id="library-title">{{#if featured}}More pictures and videos{{else}}Pictures and videos{{/if}}</h2>
+    <ul class="media-grid" role="list">
+      {{#each items}}
+      <li class="media-tile">
+        <a href="/media/{{slug}}">
+          {{#if isVideo}}
+            {{#if posterSrc}}<img src="{{posterSrc}}" alt="" loading="lazy" decoding="async">{{else}}<span class="media-tile__blank" aria-hidden="true"></span>{{/if}}
+            <span class="media-tile__badge">{{icon "play"}}<span>Video{{#if durationSeconds}}, {{clock durationSeconds}}{{/if}}</span></span>
+          {{else}}
+            <img src="{{src}}" alt="" {{#if width}}width="{{width}}" height="{{height}}"{{/if}} loading="lazy" decoding="async">
+          {{/if}}
+          <span class="media-tile__title">{{title}}</span>
+        </a>
+      </li>
+      {{/each}}
+    </ul>
+  </section>
+  {{else}}
+  {{#unless featured}}
+  <p class="alert alert--note">{{icon "info"}}<span>Nothing here yet. Pictures and videos will appear here soon.</span></p>
+  {{/unless}}
+  {{/if}}
+</div>

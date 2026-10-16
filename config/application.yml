@@ -1,0 +1,178 @@
+# Settings for reece.page that are safe to commit. Secrets (passwords, keys) never go in here, they live in .env
+# The environments block at the bottom overrides anything above for that NODE_ENV, its deep merged so only list what changes
+
+site:
+  # Brand name is Reece, legal name is only used where the law asks for it (impressum, privacy, copyright)
+  name: Reece Barker
+  short_name: Reece
+  legal_name: Reece Norman Barker
+  domain: reece.page
+  tagline: Code for a living world.
+  description: >-
+    Reece Barker is an Applied Computer Science student at Saxion in Enschede, raised in Munich. He builds software
+    and hardware for green tech and co-founded a startup that uses AI to control the climate of a room.
+  lang: en
+  locale: en_GB
+  theme_color: "#33412a"
+  background_color: "#f9f4e8"
+  email: me@reece.page
+  # Only real profiles go here, an empty value hides the link everywhere
+  profiles:
+    linkedin: https://www.linkedin.com/in/reecenbarker
+    github: https://github.com/reece-barker
+  # Shown on the about page and in the structured data, keep it to things that stay true for a while
+  knows_about:
+    - Software development
+    - Embedded systems
+    - Industrial automation
+    - Sustainability
+    - Green technology
+  # studying = where he is now (schema.org affiliation), finished = alumniOf
+  education:
+    studying:
+      name: Saxion University of Applied Sciences
+      url: https://www.saxion.edu
+    finished:
+      - name: Munich International School
+        url: https://www.mis-munich.de
+
+navigation:
+  primary:
+    - { label: Home, href: / }
+    - { label: Projects, href: /projects }
+    - { label: Writing, href: /writing, feature: writing }
+    - { label: About, href: /about }
+    - { label: Media, href: /media, feature: media }
+    - { label: CV, href: /cv }
+    - { label: Contact, href: /contact }
+  # Extra links in the footer's Site list
+  more:
+    - { label: References, href: /references }
+    - { label: Status, href: /status, feature: status_page }
+  legal:
+    - { label: Impressum, href: /impressum }
+    - { label: Privacy, href: /privacy }
+    - { label: Cookies, href: /cookies }
+    - { label: Terms, href: /terms }
+    - { label: Accessibility, href: /accessibility }
+    - { label: Copyright, href: /copyright }
+
+# Old addresses from the first static version of the site, each one gets a permanent redirect to its new home.
+# Only paths listed here are redirected, nothing user supplied ever decides where a redirect goes
+redirects:
+  /work: /projects
+  /work/microclimate-control: /projects/microclimate-startup
+  /legal: /impressum
+  /legal/impressum: /impressum
+  /legal/privacy: /privacy
+  /legal/terms: /terms
+  /legal/cookies: /cookies
+  /legal/accessibility: /accessibility
+  /legal/copyright: /copyright
+  /colophon: /projects/reece-page
+  /style-guide: /
+
+# Feature flags, anything risky or not finished stays off until its switched on here on purpose
+features:
+  writing: true
+  media: true         # /media, the video introduction and pictures. Uploading needs ADMIN_PASSWORD_HASH in .env
+  contact_form: true
+  tools: false        # no public tools yet, /tools gives a 404 until this is true and content/tools has entries
+  analytics: false    # also needs analytics.provider below
+  accounts: false     # not built, reserved so nobody wires a login page by accident
+  payments: false     # not built, see docs/FUTURE.md for the stripe plan
+  status_page: true   # /status, live checks only, no made up uptime figures
+
+contact:
+  store_messages: true        # keeps messages in the database so nothing is lost if email delivery fails
+  send_notifications: true    # emails me@reece.page when a message comes in, needs SMTP_* in .env
+  retention_days: 365         # messages older than this are deleted by the purge job, the privacy policy says the same
+  min_seconds_to_submit: 3    # bots fill the form instantly, people dont
+  rate_limit:
+    window_minutes: 60
+    max_submissions: 5
+  topics:
+    - An internship or a job
+    - A project or a collaboration
+    - The startup
+    - Something else
+
+analytics:
+  # none, plausible or umami. Whatever is picked here only loads after the visitor said yes on the cookie banner
+  provider: none
+  plausible:
+    domain: reece.page
+    script_url: https://plausible.io/js/script.tagged-events.js
+    api_host: https://plausible.io
+  umami:
+    website_id: ""
+    script_url: ""
+
+consent:
+  cookie_name: rp_consent
+  max_age_days: 180
+  version: 1   # bump this when the list of optional services changes so everyone gets asked again
+
+legal:
+  owner:
+    name: Reece Norman Barker
+    street: Mergenthalerstr. 13
+    postcode: "81247"
+    city: München
+    country: Germany
+    email: me@reece.page
+    # The number itself lives in .env as LEGAL_PHONE so it isnt sitting in the git history if the repo ever goes public.
+    # Production refuses to start when show_phone is on and LEGAL_PHONE is missing
+    phone: ""
+    show_phone: true
+    register: ""
+    vat_id: ""
+    wirtschafts_id: ""
+  # The privacy policy prints all of these, production refuses to start while the required ones are empty
+  hosting:
+    name: Hetzner Online GmbH
+    address: Industriestr. 25, 91710 Gunzenhausen, Germany
+    server_location: Germany
+  mail_provider:
+    name: Proton AG
+    address: Route de la Galaise 32, 1228 Plan-les-Ouates, Switzerland
+  # Cloudflare in front of the site. If the DNS records are set to "DNS only" (grey cloud) nothing passes through
+  # Cloudflare and this can be switched off, with the proxy on (orange cloud) it has to stay on
+  cdn:
+    enabled: true
+    name: Cloudflare, Inc.
+    address: 101 Townsend St., San Francisco, CA 94107, USA
+  third_country_transfer:
+    en: >-
+      Emails are handled by Proton AG in Switzerland, a country for which the European Commission has decided that
+      personal data are adequately protected (Article 45 GDPR). Requests to this website pass through Cloudflare, Inc.
+      in the USA, which is certified under the EU-US Data Privacy Framework; an adequacy decision of the European
+      Commission exists for it (Article 45 GDPR). The website itself and its database are hosted in Germany.
+    de: >-
+      E-Mails verarbeitet die Proton AG in der Schweiz, für die die Europäische Kommission ein angemessenes
+      Datenschutzniveau festgestellt hat (Art. 45 DSGVO). Anfragen an diese Website laufen über die Cloudflare, Inc. in
+      den USA, die nach dem EU-US Data Privacy Framework zertifiziert ist; hierfür besteht ein Angemessenheitsbeschluss
+      der Europäischen Kommission (Art. 45 DSGVO). Die Website selbst und ihre Datenbank werden in Deutschland
+      betrieben.
+  supervisory_authority:
+    name: Bayerisches Landesamt für Datenschutzaufsicht (BayLDA)
+    address: Promenade 18, 91522 Ansbach, Germany
+    url: https://www.lda.bayern.de
+  server_log_days: 7
+  updated: 2026-10-12
+
+seo:
+  default_image: images/og/default.png
+  default_image_alt: The reece.page dove above the words Code for a living world, on a cream background.
+
+environments:
+  development:
+    log_level: debug
+  test:
+    log_level: silent
+    contact:
+      min_seconds_to_submit: 0
+      rate_limit:
+        max_submissions: 1000
+  production:
+    log_level: info

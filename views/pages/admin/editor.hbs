@@ -1,0 +1,20 @@
+<div class="container admin">
+  <header class="page-head">
+    <p><a class="link-action" href="{{backHref}}">{{icon "arrow-left"}} {{backLabel}}</a></p>
+    <h1>{{heading}}</h1>
+    <p class="lead">{{help}}</p>
+    {{#if publicHref}}<p><a class="link-action" href="{{publicHref}}">See it on the site {{icon "arrow"}}</a></p>{{/if}}
+  </header>
+  {{#unless editing}}<div class="alert alert--note">{{icon "info"}}<span>Editing is switched off on this server, you can look but not save. Edit on your computer and deploy.</span></div>{{/unless}}
+  <noscript><p class="alert alert--error">The editor needs JavaScript.</p></noscript>
+  <form class="admin-editor" data-admin-editor data-csrf="{{csrfToken}}" data-editing="{{#if editing}}true{{/if}}" novalidate>
+    <script type="application/json" data-editor-config nonce="{{cspNonce}}">{{{editorJson}}}</script>
+    <div data-editor-root></div>
+    <div class="admin-editor__bar">
+      <div class="cluster">
+        <button class="button" type="submit" data-save {{#unless editing}}disabled{{/unless}}>Save</button>
+        <span class="form-status" role="status" aria-live="polite" data-status></span>
+      </div>
+    </div>
+  </form>
+</div>

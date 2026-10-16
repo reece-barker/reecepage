@@ -1,0 +1,118 @@
+@use "../abstracts/mixins" as *;
+
+.container {
+  width: min(100% - 2 * var(--gutter), var(--width-page));
+  margin-inline: auto;
+}
+
+.container--text {
+  width: min(100% - 2 * var(--gutter), var(--width-text));
+}
+
+.section {
+  padding-block: var(--section-space);
+}
+
+// Pages built from a plain container (legal, contact, projects, project and article pages) end with the same room
+// above the footer as the full sections do, so text never sits on top of it
+main > .container,
+main > article {
+  padding-bottom: var(--section-space);
+}
+
+.section--tight {
+  padding-block: calc(var(--section-space) * 0.6);
+}
+
+.section--sunken {
+  background: var(--color-bg-sunken);
+}
+
+// The dark band, olive in the light theme. In the dark theme it turns into a raised panel instead, so it still stands apart
+.section--inverse {
+  background: var(--color-bg-inverse);
+  color: var(--color-text-inverse);
+
+  a {
+    text-decoration-color: currentColor;
+  }
+
+  :focus-visible {
+    outline-color: var(--color-text-inverse);
+  }
+}
+
+// A section heading with an optional link on the right (for example "All projects")
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+  margin-bottom: var(--space-6);
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.section-intro {
+  color: var(--color-text-muted);
+  max-width: 38em;
+  margin-top: var(--space-3);
+}
+
+// Page header used on every page except the home page
+.page-head {
+  padding-top: clamp(2rem, 1rem + 4vw, 4.5rem);
+  padding-bottom: clamp(1.5rem, 1rem + 2vw, 3rem);
+
+  h1 {
+    max-width: 18ch;
+  }
+
+  .lead {
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+  }
+}
+
+// Text column with a narrow side column (table of contents, facts) that moves above the text on small screens
+.with-aside {
+  display: grid;
+  gap: var(--space-7);
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+    gap: var(--space-8);
+    align-items: start;
+
+    > aside,
+    > .timeline-head {
+      position: sticky;
+      top: calc(var(--header-height) + var(--space-5));
+    }
+  }
+}
+
+.with-aside--left {
+  @include up(lg) {
+    grid-template-columns: 17rem minmax(0, 1fr);
+
+    > aside,
+    > .timeline-head {
+      order: -1;
+    }
+  }
+}
+
+.stack > * + * {
+  margin-top: var(--space-4);
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  align-items: center;
+}

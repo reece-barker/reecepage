@@ -1,0 +1,25 @@
+# Dependencies and generated files
+node_modules/
+public/assets/
+var/
+coverage/
+test-results/
+playwright-report/
+.transfer/
+
+# Secrets, never commit these
+.env
+.env.*
+!.env.example
+
+# Editors and systems
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+# Media dropped in for npm run media:import, only the readme and the intro video's description are kept
+media-inbox/*
+!media-inbox/README.md
+!media-inbox/intro-video.yml
+!media-inbox/reece-barker-long-form-v3.srt

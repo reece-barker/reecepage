@@ -1,0 +1,40 @@
+<div class="container">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1 class="matte-words">{{matteWords "Projects"}}</h1>
+    <p class="lead load-fade">Things I have built at Saxion, at work, as a freelancer and on my own. Each one grew from a branch of the tree: code or earth.</p>
+  </header>
+
+  <nav aria-label="Filter projects by branch">
+    <ul class="filters" role="list">
+      {{#each filters}}
+      <li><a class="filter{{#if id}} branch-{{id}}{{/if}}" href="{{href}}" {{#if active}}aria-current="page"{{/if}}>{{#if id}}<span class="pip" aria-hidden="true"></span>{{/if}}{{label}} <span class="filter__count">{{count}}<span class="visually-hidden"> {{plural count "project" "projects"}}</span></span></a></li>
+      {{/each}}
+    </ul>
+  </nav>
+
+  {{#if withPages.length}}
+  <h2 class="visually-hidden">Projects with a write up</h2>
+  <ul class="project-list" role="list">
+    {{#each withPages}}{{> project-row}}{{/each}}
+  </ul>
+  {{else}}
+  <p class="alert alert--note">{{icon "info"}}<span>No projects on this branch yet. <a href="/projects">Show all projects</a>.</span></p>
+  {{/if}}
+
+  {{#if smaller.length}}
+  <section class="section--tight section" aria-labelledby="smaller-title">
+    <h2 id="smaller-title">Smaller things</h2>
+    <p class="section-intro">Earlier work that does not need a page of its own.</p>
+    <ul class="small-list" role="list">
+      {{#each smaller}}
+      <li class="branch-{{branch}}" data-reveal>
+        <p class="meta-line"><span>{{kind}}</span><span>{{period}}</span></p>
+        <h3><span class="pip" aria-hidden="true"></span>{{title}}</h3>
+        <p>{{summary}}</p>
+      </li>
+      {{/each}}
+    </ul>
+  </section>
+  {{/if}}
+</div>

@@ -1,0 +1,219 @@
+@use "../abstracts/mixins" as *;
+
+// Pictures and videos from the media library, on /media, in articles and on the home page
+
+.media-figure {
+  margin: 0;
+
+  img,
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-2);
+    background: var(--color-bg-sunken);
+  }
+
+  video {
+    aspect-ratio: 16 / 9;
+    background: #1e261a;
+  }
+
+  figcaption {
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+}
+
+.media-credit {
+  display: block;
+  margin-top: var(--space-1);
+  font-style: italic;
+}
+
+// The transcript sits closed under a video, opening it shows the whole text for people who would rather read
+.media-transcript {
+  margin-top: var(--space-4);
+  border-top: var(--border-thin) solid var(--color-line);
+  padding-top: var(--space-3);
+
+  summary {
+    cursor: pointer;
+    font-weight: 750;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  p {
+    margin-top: var(--space-3);
+    max-width: var(--measure);
+    color: var(--color-text);
+  }
+}
+
+.media-feature {
+  margin-bottom: var(--space-8);
+
+  h2 {
+    font-size: var(--step-3);
+  }
+
+  .updated-note {
+    margin-bottom: var(--space-5);
+  }
+}
+
+.media-library h2 {
+  font-size: var(--step-2);
+  margin-bottom: var(--space-5);
+}
+
+.media-grid {
+  display: grid;
+  gap: var(--space-6) var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+}
+
+.media-tile a {
+  display: grid;
+  gap: var(--space-3);
+  text-decoration: none;
+
+  img,
+  .media-tile__blank {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-2);
+    background: var(--color-bg-sunken);
+  }
+
+  @include hover {
+    .media-tile__title {
+      text-decoration: underline;
+      text-decoration-color: var(--color-highlight);
+      text-decoration-thickness: 3px;
+    }
+  }
+}
+
+.media-tile {
+  position: relative;
+}
+
+.media-tile__badge {
+  position: absolute;
+  left: var(--space-3);
+  top: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-bg-inverse);
+  color: var(--color-text-inverse);
+  font-size: var(--step--1);
+  font-weight: 750;
+  border-radius: var(--radius-1);
+
+  svg {
+    width: 0.9em;
+    height: 0.9em;
+  }
+}
+
+.media-tile__title {
+  font-weight: 750;
+}
+
+.media-single {
+  margin-bottom: var(--space-6);
+}
+
+// Home page: the video introduction between the tree and the selected work
+.home-intro__grid {
+  display: grid;
+  gap: var(--space-6);
+  align-items: start;
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    gap: var(--space-8);
+  }
+}
+
+.home-intro__text > * + * {
+  margin-top: var(--space-4);
+}
+
+// Admin
+.admin-panel {
+  padding: var(--space-6);
+  border: var(--border-thin) solid var(--color-line);
+  border-radius: var(--radius-2);
+  background: var(--color-bg-raised);
+  margin-bottom: var(--space-8);
+
+  h2 {
+    font-size: var(--step-2);
+    margin-bottom: var(--space-5);
+  }
+}
+
+.admin-media-list {
+  display: grid;
+  gap: var(--space-7);
+  margin-top: var(--space-5);
+}
+
+.admin-media-item {
+  display: grid;
+  gap: var(--space-5);
+  padding-bottom: var(--space-7);
+  border-bottom: var(--border-thin) solid var(--color-line);
+
+  @include up(lg) {
+    grid-template-columns: 22rem minmax(0, 1fr);
+  }
+
+  img,
+  video {
+    width: 100%;
+    border-radius: var(--radius-2);
+  }
+}
+
+.admin-media-item__meta,
+.admin-media-item__code {
+  margin-top: var(--space-3);
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+}
+
+.admin-media-item__extras,
+.admin-media-item__delete {
+  @include up(lg) {
+    grid-column: 2;
+  }
+}
+
+.admin-media-item__extras {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.button--danger[data-armed="true"] {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: var(--color-bg);
+}
+
+.form-status:empty {
+  display: none;
+}
+
+.admin-media-item__extras .button,
+.admin-media-item__form .cluster {
+  justify-self: start;
+}

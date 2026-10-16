@@ -1,0 +1,140 @@
+<div class="container container--text">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1>Privacy policy</h1>
+    <p class="lead">What happens to your data when you visit reece.page or write to me. In English and German, the German version is the same text.</p>
+  </header>
+
+  <ul class="lang-switch" role="list">
+    <li><a class="link-action" href="#en">English</a></li>
+    <li><a class="link-action" href="#de" hreflang="de" lang="de">Deutsch</a></li>
+  </ul>
+
+  <div class="legal-text prose">
+    <section class="legal-section" id="en" lang="en-GB" aria-labelledby="privacy-en">
+      <h2 id="privacy-en">English</h2>
+      <p>This notice gives the information required by Articles 13 and 14 of the General Data Protection Regulation (EU) 2016/679 (GDPR): which personal data are processed when you visit this website or contact me, why, on which legal basis, for how long, and what rights you have.</p>
+
+      <h3>1. Who is responsible</h3>
+      <p>The controller under Article 4(7) GDPR is {{lv legal.owner.name "name"}}, {{lv legal.owner.street "street"}}, {{lv legal.owner.postcode "postcode"}} {{lv legal.owner.city "city"}}, {{lv legal.owner.country "country"}}, email <a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a>. There is no data protection officer, because the law does not require one. Questions about data protection go to the email address above.</p>
+
+      <h3>2. Visiting the website</h3>
+      <p>When you open a page, the server of my hosting provider processes your IP address, the date and time, the address requested, the amount of data sent, the HTTP status code, the page you came from (referrer) and the browser and operating system details your browser sends (user agent). This is needed to deliver the page and to keep the site secure. The legal basis is Article 6(1)(f) GDPR: my legitimate interest in running the website securely and without faults. These server logs are deleted after {{legal.server_log_days}} days, unless a specific case of abuse has to be investigated, then only the data concerned are kept until it is resolved.</p>
+      {{#if legal.cdn.enabled}}
+      <p>Requests to this website first pass through the network of {{legal.cdn.name}}, {{legal.cdn.address}}, which protects the site against attacks and overload and delivers it faster. For this, Cloudflare processes the same connection data (in particular your IP address) as a processor under Article 28 GDPR. The legal basis is Article 6(1)(f) GDPR: my legitimate interest in a secure and reliable website. See section 8 for transfers to the USA.</p>
+      {{/if}}
+      <p>The website software itself keeps a separate technical log of requests (time, address requested, status code and a random request number). It does not record your IP address or your user agent.</p>
+      {{#if errorReporting}}
+      <p>When a page fails, the website records the error so I can fix it: the type of error, its technical description, the address of the page (without anything after a question mark), the time, a random request number and, for errors in your browser, the name of the browser. Your IP address, cookies and anything you typed are not included. These reports are kept on my own server at my hosting provider with the open source software GlitchTip and deleted after 30 days. The legal basis is Article 6(1)(f) GDPR: my legitimate interest in a website that works.</p>
+      {{/if}}
+      <p>To stop abuse, the website counts requests per IP address for a short time: one minute for normal pages and {{contactConfig.rate_limit.window_minutes}} minutes for the contact form. These counters are only kept in the server's memory and are never written to disk or linked to anything else. The legal basis is Article 6(1)(f) GDPR.</p>
+
+      <h3 id="contact-form">3. The contact form</h3>
+      <p>When you send the contact form, I process your name, your email address, the topic you chose, your message and the time it was sent, so that I can answer you. To recognise floods of spam, the website also stores a keyed hash of your IP address (a one way code made with a secret key). The IP address itself is not stored.</p>
+      <p>The legal basis is Article 6(1)(b) GDPR where your message is about entering into a contract with me (for example an internship or a project), and otherwise Article 6(1)(f) GDPR, my legitimate interest in answering messages. Giving this information is voluntary, but without an email address I cannot reply.</p>
+      <p>Messages are stored in the website's database at my hosting provider{{#if mailConfigured}} and forwarded to my inbox at my email provider{{/if}}. They are deleted automatically {{contactConfig.retention_days}} days after they were sent. Copies in my inbox are deleted when the conversation is finished, and no later than {{contactConfig.retention_days}} days after the last message, unless a statutory retention duty applies in an individual case.</p>
+      <p>Spam is filtered with a hidden field and a timing check inside this website. No outside captcha service is used, so no data go to a third party for this.</p>
+
+      <h3>4. Email</h3>
+      <p>If you email me directly, I process your email address, your name if you give it and the content and time of your message, on the same legal bases and with the same deletion rules as in section 3. Emails without end to end encryption can be read by others on their way.</p>
+
+      <h3>5. Cookies and storage on your device</h3>
+      <p>Details are on the <a href="/cookies">cookies page</a>. In short, the website only stores what is strictly necessary for something you asked for, which needs no consent under § 25(2) no. 2 of the German Telecommunications Digital Services Data Protection Act (TDDDG):</p>
+      <ul>
+        <li>a security cookie (<code>rp.csrf</code>) when a page with a form is shown, so the form cannot be sent from another website. It is deleted when you close the browser.</li>
+        <li>your theme choice (light or dark) in your browser's local storage, only after you press the theme button.</li>
+        {{#if (not (eq analyticsProvider "none"))}}<li>your cookie choice (<code>rp_consent</code>), so you are not asked again on every page.</li>{{/if}}
+      </ul>
+
+      <h3>6. Analytics</h3>
+      {{#if (eq analyticsProvider "plausible")}}
+      <p>Only if you allow it on the cookie banner or the <a href="/cookies">cookies page</a>, the website loads Plausible Analytics from Plausible Insights OÜ, Estonia. Plausible counts page views and a few events (for example that the contact form was sent, never what was in it) without cookies and without storing your IP address; it stores a daily changing anonymous identifier made from your IP address and user agent. The legal basis is your consent under Article 6(1)(a) GDPR and § 25(1) TDDDG. You can withdraw consent at any time on the cookies page, which does not affect processing before the withdrawal.</p>
+      {{else if (eq analyticsProvider "umami")}}
+      <p>Only if you allow it on the cookie banner or the <a href="/cookies">cookies page</a>, the website loads Umami analytics, run by me. It counts page views and a few events (never the content of forms) without cookies. The legal basis is your consent under Article 6(1)(a) GDPR and § 25(1) TDDDG. You can withdraw consent at any time on the cookies page.</p>
+      {{else}}
+      <p>The website does not use any analytics or tracking at the moment. If that changes, it will only happen with your consent and this section will explain it first.</p>
+      {{/if}}
+
+      <h3>7. Fonts, scripts and other websites</h3>
+      <p>Fonts, scripts and images are loaded from this website's own server. No font service, content delivery network or social media plugin of a third party is used. If you follow a link to another website, its operator's privacy notice applies there.</p>
+
+      <h3>8. Recipients and transfers</h3>
+      <p>The data in sections 2 and 3 are processed on my behalf by my hosting provider, {{lv legal.hosting.name "hosting provider"}}{{#if legal.hosting.address}}, {{legal.hosting.address}}{{/if}}, as a processor under Article 28 GDPR, on servers in {{lv legal.hosting.server_location "server location"}}. {{#if mailConfigured}}Emails are processed by my email provider, {{lv legal.mail_provider.name "email provider"}}{{#if legal.mail_provider.address}}, {{legal.mail_provider.address}}{{/if}}, as a processor under Article 28 GDPR. {{/if}}{{#if legal.cdn.enabled}}{{legal.cdn.name}} works as a processor for the connection data described in section 2. {{/if}}Data processing agreements are in place with all of them.</p>
+      <p>Transfers outside the European Economic Area: {{lv legal.third_country_transfer.en "statement on third country transfers"}}</p>
+      <p>No data are passed on to anyone else unless the law requires it. I do not sell personal data and do not use it for advertising.</p>
+
+      <h3>9. Your rights</h3>
+      <p>Under the conditions set by law you have the right of access (Article 15 GDPR), rectification (Article 16), erasure (Article 17), restriction of processing (Article 18), data portability (Article 20) and to withdraw consent with effect for the future (Article 7(3)).</p>
+      <p><strong>Right to object:</strong> you can object at any time, on grounds relating to your particular situation, to processing based on Article 6(1)(f) GDPR (Article 21 GDPR). I will then stop, unless I can show compelling legitimate grounds that override your interests, or the processing is needed for legal claims.</p>
+      <p>An informal email to <a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a> is enough. I reply within one month, which the law allows to be extended by two months in complex cases.</p>
+      <p>You also have the right to complain to a supervisory authority (Article 77 GDPR). The authority responsible for me is {{lv legal.supervisory_authority.name "authority"}}, {{lv legal.supervisory_authority.address "address"}}. Visitors from the United Kingdom can also contact the Information Commissioner's Office.</p>
+
+      <h3>10. Other points</h3>
+      <p>There is no legal or contractual duty to provide personal data. No decisions based solely on automated processing, including profiling, are made (Article 22 GDPR). The website is only delivered over an encrypted connection (HTTPS) and I take appropriate technical and organisational measures under Article 32 GDPR.</p>
+      <p>Version of {{longDate legal.updated}}. I update this notice when the website, the processing or the law changes.</p>
+    </section>
+
+    <section class="legal-section" id="de" lang="de" aria-labelledby="privacy-de">
+      <h2 id="privacy-de">Deutsch</h2>
+      <p>Diese Erklärung enthält die Informationen nach Art. 13 und 14 der Datenschutz-Grundverordnung (EU) 2016/679 (DSGVO): welche personenbezogenen Daten beim Besuch dieser Website und bei der Kontaktaufnahme verarbeitet werden, zu welchem Zweck, auf welcher Rechtsgrundlage, wie lange, und welche Rechte Sie haben.</p>
+
+      <h3>1. Verantwortlicher</h3>
+      <p>Verantwortlicher im Sinne des Art. 4 Nr. 7 DSGVO ist {{lv legal.owner.name "Name"}}, {{lv legal.owner.street "Straße"}}, {{lv legal.owner.postcode "PLZ"}} {{lv legal.owner.city "Ort"}}, {{lv legal.owner.country "Land"}}, E-Mail <a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a>. Ein Datenschutzbeauftragter ist nicht benannt, weil dazu keine gesetzliche Pflicht besteht. Fragen zum Datenschutz richten Sie bitte an die genannte E-Mail-Adresse.</p>
+
+      <h3>2. Aufruf der Website</h3>
+      <p>Beim Aufruf einer Seite verarbeitet der Server meines Hostinganbieters Ihre IP-Adresse, Datum und Uhrzeit, die aufgerufene Adresse, die übertragene Datenmenge, den HTTP-Statuscode, die zuvor besuchte Seite (Referrer) sowie die von Ihrem Browser übermittelten Angaben zu Browser und Betriebssystem (User-Agent). Das ist für die Auslieferung der Seite und die Sicherheit der Website erforderlich. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: mein berechtigtes Interesse an einem sicheren und störungsfreien Betrieb. Diese Server-Logdaten werden nach {{legal.server_log_days}} Tagen gelöscht, es sei denn, ein konkreter Missbrauchsfall muss aufgeklärt werden; dann werden nur die betroffenen Daten bis zur Klärung aufbewahrt.</p>
+      {{#if legal.cdn.enabled}}
+      <p>Anfragen an diese Website laufen zuerst über das Netzwerk der {{legal.cdn.name}}, {{legal.cdn.address}}, das die Website vor Angriffen und Überlastung schützt und schneller ausliefert. Dafür verarbeitet Cloudflare dieselben Verbindungsdaten (insbesondere Ihre IP-Adresse) als Auftragsverarbeiter nach Art. 28 DSGVO. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: mein berechtigtes Interesse an einer sicheren und zuverlässigen Website. Zu Übermittlungen in die USA siehe Ziffer 8.</p>
+      {{/if}}
+      <p>Die Software der Website führt zusätzlich ein technisches Protokoll der Anfragen (Zeitpunkt, aufgerufene Adresse, Statuscode und eine zufällige Anfragenummer). Ihre IP-Adresse und Ihren User-Agent speichert sie darin nicht.</p>
+      {{#if errorReporting}}
+      <p>Wenn eine Seite einen Fehler verursacht, erfasst die Website diesen, damit ich ihn beheben kann: die Art des Fehlers, seine technische Beschreibung, die Adresse der Seite (ohne Angaben nach einem Fragezeichen), den Zeitpunkt, eine zufällige Anfragenummer und bei Fehlern in Ihrem Browser dessen Namen. Ihre IP-Adresse, Cookies und Ihre Eingaben werden nicht erfasst. Die Berichte liegen auf meinem eigenen Server bei meinem Hostinganbieter in der Open-Source-Software GlitchTip und werden nach 30 Tagen gelöscht. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO: mein berechtigtes Interesse an einer funktionierenden Website.</p>
+      {{/if}}
+      <p>Zum Schutz vor Missbrauch zählt die Website kurzzeitig die Anfragen je IP-Adresse: eine Minute für normale Seiten und {{contactConfig.rate_limit.window_minutes}} Minuten für das Kontaktformular. Diese Zähler liegen nur im Arbeitsspeicher des Servers, werden nicht auf Datenträger geschrieben und mit nichts anderem verknüpft. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.</p>
+
+      <h3 id="kontaktformular">3. Kontaktformular</h3>
+      <p>Wenn Sie das Kontaktformular absenden, verarbeite ich Ihren Namen, Ihre E-Mail-Adresse, das gewählte Thema, Ihre Nachricht und den Zeitpunkt, um Ihnen antworten zu können. Um massenhaften Spam zu erkennen, speichert die Website außerdem einen mit einem geheimen Schlüssel gebildeten Hashwert Ihrer IP-Adresse (eine nicht umkehrbare Kennung). Die IP-Adresse selbst wird nicht gespeichert.</p>
+      <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, soweit Ihre Nachricht auf den Abschluss eines Vertrags mit mir gerichtet ist (zum Beispiel ein Praktikum oder ein Projekt), und im Übrigen Art. 6 Abs. 1 lit. f DSGVO, mein berechtigtes Interesse an der Beantwortung von Nachrichten. Die Angaben sind freiwillig, ohne E-Mail-Adresse kann ich jedoch nicht antworten.</p>
+      <p>Nachrichten werden in der Datenbank der Website bei meinem Hostinganbieter gespeichert{{#if mailConfigured}} und an mein Postfach bei meinem E-Mail-Anbieter weitergeleitet{{/if}}. Sie werden {{contactConfig.retention_days}} Tage nach dem Absenden automatisch gelöscht. Kopien in meinem Postfach lösche ich, wenn die Unterhaltung abgeschlossen ist, spätestens {{contactConfig.retention_days}} Tage nach der letzten Nachricht, soweit im Einzelfall keine gesetzliche Aufbewahrungspflicht besteht.</p>
+      <p>Spam wird mit einem versteckten Feld und einer Zeitprüfung innerhalb dieser Website herausgefiltert. Ein externer Captcha-Dienst wird nicht eingesetzt, dafür gehen also keine Daten an Dritte.</p>
+
+      <h3>4. E-Mail</h3>
+      <p>Wenn Sie mir direkt eine E-Mail schreiben, verarbeite ich Ihre E-Mail-Adresse, gegebenenfalls Ihren Namen sowie Inhalt und Zeitpunkt der Nachricht auf denselben Rechtsgrundlagen und mit denselben Löschregeln wie in Ziffer 3. E-Mails ohne Ende-zu-Ende-Verschlüsselung können auf dem Übertragungsweg von Dritten eingesehen werden.</p>
+
+      <h3>5. Cookies und Speicherung auf Ihrem Gerät</h3>
+      <p>Einzelheiten stehen auf der <a href="/cookies">Seite zu Cookies</a>. Kurz gesagt speichert die Website nur, was für einen von Ihnen gewünschten Dienst unbedingt erforderlich ist; dafür ist nach § 25 Abs. 2 Nr. 2 des Telekommunikation-Digitale-Dienste-Datenschutz-Gesetzes (TDDDG) keine Einwilligung nötig:</p>
+      <ul>
+        <li>ein Sicherheits-Cookie (<code>rp.csrf</code>), wenn eine Seite mit Formular angezeigt wird, damit das Formular nicht von einer fremden Website aus abgeschickt werden kann. Es wird beim Schließen des Browsers gelöscht.</li>
+        <li>Ihre Auswahl des Farbschemas (hell oder dunkel) im lokalen Speicher Ihres Browsers, erst nachdem Sie den entsprechenden Schalter betätigt haben.</li>
+        {{#if (not (eq analyticsProvider "none"))}}<li>Ihre Cookie-Auswahl (<code>rp_consent</code>), damit Sie nicht auf jeder Seite erneut gefragt werden.</li>{{/if}}
+      </ul>
+
+      <h3>6. Reichweitenmessung</h3>
+      {{#if (eq analyticsProvider "plausible")}}
+      <p>Nur wenn Sie im Cookie-Hinweis oder auf der <a href="/cookies">Seite zu Cookies</a> zustimmen, lädt die Website Plausible Analytics der Plausible Insights OÜ, Estland. Plausible zählt Seitenaufrufe und einige Ereignisse (zum Beispiel, dass das Kontaktformular abgesendet wurde, nie dessen Inhalt) ohne Cookies und ohne Ihre IP-Adresse zu speichern; gespeichert wird eine täglich wechselnde anonyme Kennung aus IP-Adresse und User-Agent. Rechtsgrundlage ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO und § 25 Abs. 1 TDDDG. Sie können die Einwilligung jederzeit auf der Seite zu Cookies widerrufen; die Rechtmäßigkeit der bis dahin erfolgten Verarbeitung bleibt unberührt.</p>
+      {{else if (eq analyticsProvider "umami")}}
+      <p>Nur wenn Sie im Cookie-Hinweis oder auf der <a href="/cookies">Seite zu Cookies</a> zustimmen, lädt die Website die von mir betriebene Reichweitenmessung Umami. Sie zählt Seitenaufrufe und einige Ereignisse (nie Formularinhalte) ohne Cookies. Rechtsgrundlage ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO und § 25 Abs. 1 TDDDG. Sie können die Einwilligung jederzeit auf der Seite zu Cookies widerrufen.</p>
+      {{else}}
+      <p>Die Website setzt derzeit keine Reichweitenmessung und kein Tracking ein. Sollte sich das ändern, geschieht es nur mit Ihrer Einwilligung, und dieser Abschnitt wird vorher angepasst.</p>
+      {{/if}}
+
+      <h3>7. Schriften, Skripte und andere Websites</h3>
+      <p>Schriften, Skripte und Bilder werden vom Server dieser Website selbst geladen. Schriftarten-Dienste, Content-Delivery-Netzwerke oder Social-Media-Plugins Dritter werden nicht eingesetzt. Wenn Sie einem Link auf eine andere Website folgen, gelten dort die Datenschutzhinweise des jeweiligen Betreibers.</p>
+
+      <h3>8. Empfänger und Übermittlungen</h3>
+      <p>Die Daten aus den Ziffern 2 und 3 verarbeitet mein Hostinganbieter, {{lv legal.hosting.name "Hostinganbieter"}}{{#if legal.hosting.address}}, {{legal.hosting.address}}{{/if}}, als Auftragsverarbeiter nach Art. 28 DSGVO in meinem Auftrag auf Servern in {{lv legal.hosting.server_location "Serverstandort"}}. {{#if mailConfigured}}E-Mails verarbeitet mein E-Mail-Anbieter, {{lv legal.mail_provider.name "E-Mail-Anbieter"}}{{#if legal.mail_provider.address}}, {{legal.mail_provider.address}}{{/if}}, als Auftragsverarbeiter nach Art. 28 DSGVO. {{/if}}{{#if legal.cdn.enabled}}{{legal.cdn.name}} verarbeitet die in Ziffer 2 beschriebenen Verbindungsdaten als Auftragsverarbeiter. {{/if}}Mit allen bestehen Verträge über die Auftragsverarbeitung.</p>
+      <p>Übermittlung in Länder außerhalb des Europäischen Wirtschaftsraums: {{lv legal.third_country_transfer.de "Angabe zu Drittlandübermittlungen"}}</p>
+      <p>Eine Weitergabe an andere findet nur statt, wenn das Gesetz es verlangt. Ich verkaufe keine personenbezogenen Daten und nutze sie nicht für Werbung.</p>
+
+      <h3>9. Ihre Rechte</h3>
+      <p>Nach Maßgabe der gesetzlichen Voraussetzungen haben Sie das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und auf Widerruf einer Einwilligung mit Wirkung für die Zukunft (Art. 7 Abs. 3).</p>
+      <p><strong>Widerspruchsrecht:</strong> Sie können aus Gründen, die sich aus Ihrer besonderen Situation ergeben, jederzeit der Verarbeitung auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO widersprechen (Art. 21 DSGVO). Ich verarbeite die Daten dann nicht mehr, es sei denn, ich kann zwingende schutzwürdige Gründe nachweisen, die Ihre Interessen überwiegen, oder die Verarbeitung dient der Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen.</p>
+      <p>Eine formlose E-Mail an <a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a> genügt. Ich antworte innerhalb eines Monats; in schwierigen Fällen erlaubt das Gesetz eine Verlängerung um zwei Monate.</p>
+      <p>Außerdem haben Sie das Recht, sich bei einer Aufsichtsbehörde zu beschweren (Art. 77 DSGVO). Für mich zuständig ist {{lv legal.supervisory_authority.name "Behörde"}}, {{lv legal.supervisory_authority.address "Anschrift"}}.</p>
+
+      <h3>10. Weitere Hinweise</h3>
+      <p>Eine gesetzliche oder vertragliche Pflicht zur Bereitstellung personenbezogener Daten besteht nicht. Automatisierte Entscheidungen einschließlich Profiling im Sinne des Art. 22 DSGVO finden nicht statt. Die Website wird nur über eine verschlüsselte Verbindung (HTTPS) ausgeliefert, und ich treffe angemessene technische und organisatorische Maßnahmen nach Art. 32 DSGVO.</p>
+      <p>Stand: {{longDateDe legal.updated}}. Ich passe diese Erklärung an, wenn sich die Website, die Verarbeitung oder die Rechtslage ändern.</p>
+    </section>
+  </div>
+</div>

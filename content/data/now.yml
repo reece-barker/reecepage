@@ -1,0 +1,17 @@
+# What Reece is working on right now. Change the date whenever this list changes, the page shows it
+updated: 2026-10-12
+items:
+  - title: Industrial Automation minor
+    text: A team of thirteen designing a production line that builds a LEGO bulldozer every five minutes with eight ABB robots, plus a machine that sorts loose LEGO parts.
+    link: /projects/lego-bulldozer-production-line
+  - title: Our startup's second prototype
+    text: AI that runs a room's heating, cooling, air and lighting together, starting with homes.
+    link: /projects/microclimate-startup
+  - title: Saxion Honours Programme
+    text: My second year in the track for students who want more than the standard curriculum.
+  - title: On contract at Munich International School
+    text: Supporting IT and building apps and automations on Microsoft's Power Platform.
+    link: /projects/mis-purchase-orders
+next:
+  - European Project Semester at TH Augsburg from February 2027.
+  - Then an internship and a graduation project in industry.

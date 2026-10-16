@@ -1,0 +1,14 @@
+# References from people Reece worked with. Nothing here is public unless permission is ticked
+# Add them in the admin (/admin/data/references) or by hand, one block per person:
+# - name: Full Name
+#   role: Head of IT
+#   organisation: Munich International School
+#   relationship: My manager, 2024 to 2026
+#   quote: Their words, exactly as they gave them.
+#   date: 2026-10-12
+#   email: name@example.org
+#   phone: "+49 ..."
+#   permission: true        # they agreed to the quote being published with their name
+#   contact_public: false   # they agreed to their email and phone being shown on the website
+#   on_cv: true             # list them as a referee on the CV
+[]

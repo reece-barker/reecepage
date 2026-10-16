@@ -1,0 +1,14 @@
+{{!-- Only rendered when an optional service is switched on and no choice has been made yet --}}
+<section class="consent" aria-labelledby="consent-title" data-consent
+  data-analytics-provider="{{analyticsSetup.provider}}"
+  {{#if (eq analyticsSetup.provider "plausible")}}data-analytics-src="{{analyticsSetup.plausible.script_url}}" data-analytics-domain="{{analyticsSetup.plausible.domain}}" data-analytics-api="{{analyticsSetup.plausible.api_host}}/api/event"{{/if}}
+  {{#if (eq analyticsSetup.provider "umami")}}data-analytics-src="{{analyticsSetup.umami.script_url}}" data-analytics-website-id="{{analyticsSetup.umami.website_id}}"{{/if}}>
+  <h2 id="consent-title">Can I count your visit?</h2>
+  <p>With your permission I use {{#if (eq analyticsSetup.provider "umami")}}Umami{{else}}Plausible{{/if}} to count visits anonymously, without advertising cookies. The site works the same either way. <a href="/cookies">Details and settings</a></p>
+  <form method="post" action="/cookies" class="cluster" data-consent-form>
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    <input type="hidden" name="return_to" value="{{returnTo}}">
+    <button class="button button--small button--secondary" type="submit" name="choice" value="accept">Allow counting</button>
+    <button class="button button--small button--secondary" type="submit" name="choice" value="reject">No thanks</button>
+  </form>
+</section>

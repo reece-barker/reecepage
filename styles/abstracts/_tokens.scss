@@ -1,0 +1,174 @@
+@use "sass:map";
+
+// Design tokens. Everything visual comes from here as a CSS custom property, so the dark theme only has to swap
+// values and every component follows. Contrast ratios are noted next to the text colours (checked against the
+// background they sit on, WCAG AA is 4.5 for text and 3 for marks and borders that carry meaning).
+
+// Brand colours from the dove brand pack, used raw only for marks and fills, never as text on cream
+$brand: (
+  olive: #33412a,
+  olive-90: #41532f,
+  olive-80: #5a6652,
+  sage: #9fb98f,
+  sage-50: #c9d8bf,
+  sage-25: #e4ecdf,
+  blush: #efb9a4,
+  blush-50: #f6dcd1,
+  cream: #f9f4e8,
+  cream-2: #efe8d4,
+  cream-3: #e3dcc6,
+  night: #1e261a,
+  night-2: #263020,
+  night-3: #2f3b28
+);
+
+@function brand($name) {
+  @return map.get($brand, $name);
+}
+
+$breakpoints: (
+  sm: 40rem,
+  md: 56rem,
+  lg: 72rem,
+  xl: 90rem
+);
+
+@mixin light-theme {
+  color-scheme: light;
+  --color-bg: #{brand(cream)};
+  --color-bg-raised: #fffdf7;
+  --color-bg-sunken: #{brand(cream-2)};
+  --color-bg-inverse: #{brand(olive)};
+  --color-text: #{brand(olive)};            // 9.9 on bg
+  --color-text-muted: #{brand(olive-80)};   // 5.5 on bg, 5.0 on sunken
+  --color-text-inverse: #{brand(cream)};
+  --color-line: #d6cfb8;
+  --color-line-strong: #a9a58f;
+  --color-accent: #{brand(olive)};
+  --color-on-accent: #{brand(cream)};
+  --color-highlight: #{brand(blush)};
+  --color-highlight-soft: #{brand(blush-50)};
+  --color-leaf: #{brand(sage)};
+  --color-leaf-soft: #{brand(sage-25)};
+  --color-focus: #{brand(olive)};
+  --color-focus-halo: #{brand(blush)};
+  --color-danger: #9a3a2b;                  // 6.4 on bg
+  --color-success: #3f6b2f;
+  --color-code-bg: #f1ebd8;
+  // Branch marks: the squares next to projects. Text never uses these, the label beside them does that job
+  --branch-code: #4a7f93;                   // 4.0, marks only
+  --branch-earth: #5e8a4e;                  // 3.7, marks only
+  --branch-faith: #b8735c;                  // 3.4, marks only
+  --branch-code-tint: #e1ecef;
+  --branch-earth-tint: #e4ecdf;
+  --branch-faith-tint: #f6dcd1;
+  --shadow-raised: 0 1px 0 rgb(51 65 42 / 0.06), 0 8px 24px -12px rgb(51 65 42 / 0.25);
+  --pattern-leaves: url("../images/pattern/reece-dove-pattern-light-transparent.svg");
+}
+
+@mixin dark-theme {
+  color-scheme: dark;
+  --color-bg: #{brand(night)};
+  --color-bg-raised: #{brand(night-2)};
+  --color-bg-sunken: #{brand(night-3)};
+  --color-bg-inverse: #{brand(cream)};
+  --color-text: #{brand(cream)};            // 14.2 on bg
+  --color-text-muted: #b9c7ae;              // 8.8 on bg, 7.8 on raised
+  --color-text-inverse: #{brand(olive)};
+  --color-line: #3c4a33;
+  --color-line-strong: #6d7e5e;
+  --color-accent: #{brand(sage)};
+  --color-on-accent: #{brand(night)};
+  --color-highlight: #{brand(blush)};
+  --color-highlight-soft: #4a3a33;
+  --color-leaf: #{brand(sage)};
+  --color-leaf-soft: #2f3b28;
+  --color-focus: #{brand(blush)};
+  --color-focus-halo: #{brand(blush)};
+  --color-danger: #ffb4a2;
+  --color-success: #b4d9a3;
+  --color-code-bg: #171e14;
+  --branch-code: #7fb0c2;
+  --branch-earth: #9fc48e;
+  --branch-faith: #efb9a4;
+  --branch-code-tint: #22313a;
+  --branch-earth-tint: #26331f;
+  --branch-faith-tint: #3b2c26;
+  --shadow-raised: 0 1px 0 rgb(0 0 0 / 0.3), 0 12px 28px -12px rgb(0 0 0 / 0.6);
+  --pattern-leaves: url("../images/pattern/reece-dove-pattern-dark-transparent.svg");
+}
+
+:root {
+  @include light-theme;
+
+  // Type. Young Serif has a single weight, so headings never ask for bold (the browser would fake it)
+  --font-display: "Young Serif", "Young Serif Fallback", Georgia, serif;
+  --font-body: "Nunito Sans", "Nunito Sans Fallback", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --step--1: clamp(0.84rem, 0.82rem + 0.1vw, 0.9rem);
+  --step-0: clamp(1.05rem, 1rem + 0.22vw, 1.15rem);
+  --step-1: clamp(1.25rem, 1.15rem + 0.45vw, 1.45rem);
+  --step-2: clamp(1.5rem, 1.32rem + 0.85vw, 1.95rem);
+  --step-3: clamp(1.85rem, 1.55rem + 1.45vw, 2.6rem);
+  --step-4: clamp(2.3rem, 1.8rem + 2.4vw, 3.5rem);
+  --step-5: clamp(2.75rem, 1.9rem + 4.1vw, 5rem);
+  --leading-body: 1.62;
+  --leading-tight: 1.12;
+  --measure: 64ch;
+
+  // Space on a 4px base
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --section-space: clamp(3.5rem, 2rem + 6vw, 7rem);
+
+  // Shape. Small radii only, the site is built from squares (the leaves are pixels)
+  --radius-0: 0;
+  --radius-1: 2px;
+  --radius-2: 4px;
+  --border-thin: 1px;
+  --border-thick: 2px;
+
+  // Layout
+  --width-page: 78rem;
+  --width-text: 44rem;
+  --header-height: 4.5rem;
+
+  // Motion. One easing family for the whole site so nothing feels borrowed
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --duration-1: 140ms;
+  --duration-2: 260ms;
+  --duration-3: 480ms;
+  --duration-4: 820ms;
+
+  // The leaf, a square used as bullet, branch mark and focus corner
+  --leaf: 0.55em;
+}
+
+:root[data-theme="dark"] {
+  @include dark-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include dark-theme;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-1: 0ms;
+    --duration-2: 0ms;
+    --duration-3: 0ms;
+    --duration-4: 0ms;
+  }
+}

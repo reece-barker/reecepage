@@ -1,0 +1,49 @@
+<article class="branch-{{project.branch}}">
+  <div class="container">
+    <header class="page-head project-head">
+      {{> breadcrumbs}}
+      <p class="meta-line">
+        <span class="branch-tag"><span class="pip" aria-hidden="true"></span>{{branchLabel project.branch}}<span class="visually-hidden">,</span></span>
+        <span>{{project.kind}}<span class="visually-hidden">,</span></span>
+        <span>{{project.period}}</span>
+      </p>
+      <h1 class="match-cut-title">{{project.title}}</h1>
+      <p class="lead load-fade">{{project.summary}}</p>
+    </header>
+
+    <div class="with-aside project-body">
+      <div>
+        {{> todo-panel todo=project.todo}}
+        <div class="prose">
+          {{{project.html}}}
+        </div>
+        {{#if project.links.length}}
+        <ul class="project-links" role="list">
+          {{#each project.links}}<li><a class="link-action" href="{{url}}">{{label}} {{icon "arrow"}}</a></li>{{/each}}
+        </ul>
+        {{/if}}
+      </div>
+      <aside class="facts" aria-labelledby="facts-title">
+        <h2 id="facts-title">At a glance</h2>
+        <dl>
+          {{#if project.context}}<div><dt>Where</dt><dd>{{project.context}}</dd></div>{{/if}}
+          {{#if project.role}}<div><dt>Role</dt><dd>{{project.role}}</dd></div>{{/if}}
+          {{#if project.team}}<div><dt>Team</dt><dd>{{project.team}}</dd></div>{{/if}}
+          {{#if project.status}}<div><dt>Status</dt><dd>{{project.status}}</dd></div>{{/if}}
+          {{#each project.facts}}<div><dt>{{label}}</dt><dd>{{value}}</dd></div>{{/each}}
+          {{#if project.stack.length}}
+          <div>
+            <dt>Tools and methods</dt>
+            <dd><ul class="stack-list" role="list">{{#each project.stack}}<li>{{this}}</li>{{/each}}</ul></dd>
+          </div>
+          {{/if}}
+        </dl>
+      </aside>
+    </div>
+
+    <nav class="next-prev" aria-label="More projects">
+      {{#if previous}}<a href="{{previous.url}}" rel="prev"><small>Previous project</small><strong>{{previous.title}}</strong></a>{{/if}}
+      {{#if following}}<a class="next-prev__next" href="{{following.url}}" rel="next"><small>Next project</small><strong>{{following.title}}</strong></a>{{else}}<a class="next-prev__next" href="/projects"><small>Back to</small><strong>All projects</strong></a>{{/if}}
+    </nav>
+  </div>
+</article>

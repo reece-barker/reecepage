@@ -1,0 +1,315 @@
+@use "../abstracts/mixins" as *;
+
+.breadcrumbs {
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  // A small leaf as the separator instead of a slash or chevron
+  li + li::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    background: var(--color-line-strong);
+    transform: rotate(45deg);
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+
+  [aria-current="page"] {
+    color: var(--color-text);
+  }
+}
+
+// On this page
+.toc {
+  font-size: var(--step--1);
+
+  // On a phone the list would end up after the text it points into, which helps nobody
+  @media (max-width: 71.99rem) {
+    display: none;
+  }
+
+  h2 {
+    font-family: var(--font-body);
+    font-size: var(--step--1);
+    font-weight: 800;
+    letter-spacing: 0;
+    margin-bottom: var(--space-3);
+  }
+
+  ol {
+    list-style: none;
+    padding: 0;
+    border-left: var(--border-thin) solid var(--color-line);
+  }
+
+  a {
+    display: block;
+    padding: var(--space-1) var(--space-4);
+    margin-left: -1px;
+    border-left: 3px solid transparent;
+    text-decoration: none;
+    color: var(--color-text-muted);
+
+    &.is-current,
+    &:hover {
+      color: var(--color-text);
+      border-left-color: var(--color-highlight);
+    }
+  }
+}
+
+// The timeline on the about page is drawn as a branch: a line with a leaf at each entry.
+// Where scroll driven animation exists the line grows as you read down it
+.timeline {
+  position: relative;
+  list-style: none;
+  padding: 0 0 0 var(--space-6);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0.3rem;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 2px;
+    background: var(--color-line-strong);
+    transform-origin: top;
+  }
+
+  @include motion-ok {
+    @supports (animation-timeline: view()) {
+      &::before {
+        animation: grow-branch linear both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 60%;
+      }
+    }
+  }
+}
+
+@keyframes grow-branch {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.timeline__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--space-6);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--space-6) * -1);
+    top: 0.45rem;
+    width: 0.8rem;
+    height: 0.8rem;
+    background: var(--color-bg);
+    border: 2px solid var(--color-leaf);
+    transform: rotate(45deg);
+  }
+
+  &.is-work::before {
+    background: var(--color-leaf);
+  }
+
+  &.is-planned::before {
+    border-style: dashed;
+  }
+
+  h3 {
+    font-size: var(--step-1);
+  }
+}
+
+.timeline__when {
+  order: -1;
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.timeline__place {
+  color: var(--color-text-muted);
+}
+
+.timeline-legend {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+
+  span {
+    display: inline-flex;
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  i {
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 2px solid var(--color-leaf);
+    transform: rotate(45deg);
+  }
+
+  .is-work i {
+    background: var(--color-leaf);
+  }
+}
+
+.skills {
+  display: grid;
+  gap: var(--space-6);
+
+  @include up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-3);
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    padding-block: var(--space-3);
+    border-top: var(--border-thin) solid var(--color-line);
+  }
+
+  .skill-name {
+    font-weight: 700;
+  }
+
+  .skill-evidence {
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+}
+
+// The verse, set in the display face with a blush rule
+.verse {
+  max-width: 34rem;
+
+  blockquote p {
+    font-family: var(--font-display);
+    font-size: var(--step-3);
+    line-height: 1.25;
+  }
+
+  figcaption {
+    margin-top: var(--space-4);
+    font-size: var(--step--1);
+    opacity: 0.85;
+  }
+}
+
+.email-link {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  line-height: 1.15;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--color-highlight);
+  overflow-wrap: anywhere;
+}
+
+// Development only: what is still missing on this page, so placeholders never end up looking like facts
+.todo-panel {
+  border: 2px dashed var(--color-highlight);
+  border-radius: var(--radius-2);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-highlight-soft);
+  font-size: var(--step--1);
+  margin-bottom: var(--space-6);
+
+  strong {
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+
+  ul {
+    padding-left: 1.2em;
+  }
+}
+
+.now-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-5) var(--space-6);
+
+  @include up(md) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-1) var(--space-3);
+  }
+
+  .pip {
+    margin-top: 0.55em;
+    transform: rotate(45deg);
+  }
+
+  h3 {
+    font-size: var(--step-1);
+  }
+
+  p {
+    grid-column: 2;
+    color: var(--color-text-muted);
+  }
+}
+
+.updated-note {
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+}
+
+.profile-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  list-style: none;
+  padding: 0;
+}
+
+.copy-status {
+  font-size: var(--step--1);
+  color: var(--color-success);
+  font-weight: 700;
+  min-height: 1.5em;
+}

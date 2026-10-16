@@ -1,0 +1,27 @@
+<div class="container container--text">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1>Status</h1>
+    <p class="lead">Whether the parts of this website work right now. Checked live when this page was loaded, {{checkedAt}}.</p>
+  </header>
+
+  <div class="status-overall status-overall--{{overall.state}}" role="status">
+    <span class="status-dot" aria-hidden="true"></span>
+    <strong>{{overall.label}}</strong>
+  </div>
+
+  <ul class="status-list" role="list">
+    {{#each checks}}
+    <li class="status-row status-row--{{state}}">
+      <span class="status-dot" aria-hidden="true"></span>
+      <div>
+        <h2>{{name}}</h2>
+        <p>{{detail}}</p>
+      </div>
+      <span class="status-label">{{label}}</span>
+    </li>
+    {{/each}}
+  </ul>
+
+  <p class="updated-note">Running since {{startedAt}}, version {{release}}. This page only shows live checks, there is no made up uptime figure. If something looks wrong, <a href="/contact">let me know</a>.</p>
+</div>

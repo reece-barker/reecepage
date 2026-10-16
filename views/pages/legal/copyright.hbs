@@ -1,0 +1,31 @@
+<div class="container container--text">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1>Copyright and trademarks</h1>
+    <p class="lead">Who owns what on this website, and the licences of the fonts and libraries it uses.</p>
+  </header>
+  <div class="legal-text prose">
+    <section class="legal-section" aria-labelledby="copy-en">
+      <h2 id="copy-en">Copyright</h2>
+      <p>&copy; {{year}} {{lv legal.owner.name "name"}}. All rights reserved except as stated below. This covers the texts, design, source code, graphics, the dove logo, the symbol and the leaf pattern of this website.</p>
+      <p>Copying, adapting or distributing them beyond what copyright law allows needs my prior consent in text form. Statutory exceptions, in particular quotation with the source named, are not affected.</p>
+      <h3>Name, dove and visual identity</h3>
+      <p>The name, the dove symbol, the combined mark and the visual identity identify me and my projects. They are not registered trademarks. Using them needs my permission, which you can ask for at <a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a>.</p>
+      <p>Names of other companies, schools and organisations mentioned here belong to their owners. Mentioning them does not mean they endorse this website.</p>
+      <h3>Fonts</h3>
+      <p>Young Serif (copyright 2023 The Young Serif Project Authors) and Nunito Sans (copyright 2016 The Nunito Sans Project Authors) are used under the SIL Open Font License 1.1. The licence texts are published with the fonts: <a href="{{asset "fonts/OFL-YoungSerif.txt"}}">Young Serif licence</a>, <a href="{{asset "fonts/OFL-NunitoSans.txt"}}">Nunito Sans licence</a>.</p>
+      <h3>Software</h3>
+      <p>The tree on the home page is drawn with three.js (copyright 2010 to 2023 three.js authors, MIT licence, <a href="/assets/vendor/three-r160/three-LICENSE.txt">licence text</a>). The server uses open source packages listed in the project's package.json, each under its own licence.</p>
+      <h3>Quotations</h3>
+      <p>Scripture quotations are from the Revised Standard Version of the Bible, copyright © 1946, 1952 and 1971 the National Council of the Churches of Christ in the United States of America. Used by permission. All rights reserved worldwide.</p>
+      <h3 id="music">Music in the introduction video</h3>
+      <p>The background music in the video on the <a href="/media">media page</a> was composed for it. It is played with these sampled instruments:</p>
+      <ul>
+        <li>Piano: <a href="https://github.com/sfzinstruments/SalamanderGrandPiano">Salamander Grand Piano</a> by Alexander Holm, licensed under <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0</a>. The samples were repitched, mixed and arranged.</li>
+        <li>Strings, marimba, glockenspiel and drums: <a href="https://github.com/sgossner/VSCO-2-CE">Versilian Studios Chamber Orchestra 2, Community Edition</a> by Versilian Studios, released into the public domain (CC0). Credited with thanks, although CC0 does not require it.</li>
+      </ul>
+      <h3>Report an infringement</h3>
+      <p>If you believe something here infringes your rights, please write to <a href="mailto:{{legal.owner.email}}">{{legal.owner.email}}</a> with the page address, the rights concerned and your contact details. See also section 9 of the <a href="/terms">terms of use</a>.</p>
+    </section>
+  </div>
+</div>

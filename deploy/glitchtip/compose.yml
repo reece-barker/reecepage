@@ -1,0 +1,66 @@
+# GlitchTip, the error monitor for reece.page. Open source (MIT), speaks the Sentry protocol, runs on the same
+# Hetzner server so error reports never leave it. Reached at https://errors.reece.page through nginx.
+#
+#   cp .env.example .env    # fill it in
+#   docker compose up -d
+#   docker compose run --rm migrate ./manage.py createsuperuser
+#
+# Pinned to an exact version, update on purpose (change the tag, docker compose pull, up -d)
+x-glitchtip: &glitchtip
+  image: glitchtip/glitchtip:v6.0.10
+  restart: unless-stopped
+  env_file: .env
+  environment: &glitchtip-env
+    DATABASE_URL: postgres://glitchtip:${POSTGRES_PASSWORD}@postgres:5432/glitchtip
+    VALKEY_URL: redis://valkey:6379/0
+  depends_on:
+    postgres:
+      condition: service_healthy
+    valkey:
+      condition: service_started
+  volumes:
+    - uploads:/code/uploads
+
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_DB: glitchtip
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip"]
+      interval: 10s
+      retries: 10
+
+  valkey:
+    image: valkey/valkey:8
+    restart: unless-stopped
+
+  migrate:
+    <<: *glitchtip
+    restart: "no"
+    command: sh -c "./manage.py migrate && ./manage.py createcachetable && ./manage.py maintain_partitions"
+
+  web:
+    <<: *glitchtip
+    # Only reachable from the server itself, nginx does TLS in front of it
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    <<: *glitchtip
+    command: ./bin/run-celery.sh
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pg-data:
+  uploads:
