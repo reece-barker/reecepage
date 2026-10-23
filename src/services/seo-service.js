@@ -45,7 +45,7 @@ export class SeoService {
       "@id": this.absoluteUrl("/#website"),
       url: this.absoluteUrl("/"),
       name: this.site.domain,
-      description: this.site.tagline,
+      description: this.site.description.trim(),
       inLanguage: "en-GB",
       publisher: { "@id": this.absoluteUrl("/#person") }
     };
@@ -79,7 +79,7 @@ export class SeoService {
    */
   build(page) {
     const isHome = Boolean(page.isHome);
-    const fullTitle = isHome ? `${this.site.name}, ${this.site.tagline.replace(/\.$/, "").toLowerCase()}` : `${page.title} | ${this.site.name}`;
+    const fullTitle = isHome ? this.site.name : `${page.title} | ${this.site.name}`;
     const description = truncate(page.description || this.site.description, 160);
     const canonical = this.absoluteUrl(page.path);
     const imageUrl = this.absoluteUrl(this.assets.url(page.image || this.config.seo.default_image));

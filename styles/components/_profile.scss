@@ -1,5 +1,5 @@
-// The CV, references and status pages. The CV is built to fit one A4 page when printed or turned into a PDF,
-// on screen it sits on a sheet so you can see what the PDF will look like
+// The CV, references and status pages. The cv is built so it fits on one A4 page when its printed or turned into a
+// pdf, on screen it sits on a sheet so you can see what the pdf is going to look like before making it
 
 .cv-tools {
   display: flex;
@@ -21,7 +21,7 @@
   line-height: 1.4;
 
   a { color: inherit; }
-  // the print stylesheet adds the address after links, on the cv the text already is the address
+  // The print stylesheet adds the address after links but on the cv the text already is the address so its pointless
   a::after { content: none !important; }
   h2 {
     font-family: var(--font-display);
@@ -123,7 +123,7 @@
   .cv-body { grid-template-columns: 2fr 1fr; }
 }
 
-// References
+// References, only shows people who said yes
 
 .reference-list {
   list-style: none;
@@ -161,7 +161,7 @@
   color: var(--color-text-muted);
 }
 
-// Status
+// Status page, just live checks
 
 .status-overall {
   display: flex;

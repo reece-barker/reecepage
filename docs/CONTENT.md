@@ -12,7 +12,7 @@ Make `content/projects/<slug>.md`. The slug is the address: lowercase words join
 ---
 title: An example project                   # 80 characters max
 summary: One or two sentences for lists and search results.   # 220 max, aim for 160
-branch: code                                 # code, earth or faith
+branch: code                                 # code, earth or faith (faith shows as People)
 kind: Course project                         # Startup, Work, Personal, Freelance product...
 context: Where it happened                  # optional
 period: 2026                                 # shown as written, "2026 to February 2027" is fine

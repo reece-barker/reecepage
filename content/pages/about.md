@@ -83,14 +83,14 @@ confidently wrong. They need clear limits, and people who check the work.
 That is why I want to help build it well. I believe AI can do real good for the planet and for society, from cutting
 wasted energy to improving care, as long as the people building it choose that path on purpose.
 
-## People and faith
+## People
 
 Ask the people around me what I am like and you will hear the same few things: I am easy to be around, I am funny,
 and I am someone you can count on. I am close with my parents, and I keep a circle of friends I trust completely.
 
-Underneath all of it is my faith. You see it in how I work and how I treat people: being honest
-when it is inconvenient, being patient, doing good work even when nobody is checking, and helping people because it is
-the right thing to do.
+You see it in how I work and how I treat people: being honest when it is inconvenient, being patient, doing good
+work even when nobody is checking, and helping people because it is the right thing to do. My faith is a quiet part
+of where that comes from.
 
 ## What I want next
 

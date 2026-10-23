@@ -5,7 +5,7 @@ The site is built on the dove brand pack (v1.3). Every value lives as a CSS cust
 
 ## The idea
 
-One tree, three branches: code, earth and faith. Every project grows from a branch and carries its colour as a
+One tree, three branches: code, earth and people (the id is still `faith` in the code). Every project grows from a branch and carries its colour as a
 small square, the leaf. Leaves are square because it's a computer science tree, so squares show up everywhere:
 bullets, branch marks, the busy dots on buttons, the corners of focus rings. Radii stay at 2 or 4 pixels.
 

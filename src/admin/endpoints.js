@@ -32,7 +32,7 @@ export const ENDPOINT_GROUPS = [
       { method: "GET", path: "/cookies", what: "Cookie list and settings" },
       { method: "POST", path: "/cookies", what: "Saves the cookie choice (only matters once analytics is on)" },
       { method: "GET", path: "/accessibility", what: "Accessibility statement" },
-      { method: "GET", path: "/copyright", what: "Copyright, licences, Bible and music credits" }
+      { method: "GET", path: "/copyright", what: "Copyright, licences and music credits" }
     ]
   },
   {

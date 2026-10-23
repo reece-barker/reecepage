@@ -7,7 +7,7 @@ This is the working plan and requirements checklist. It is updated as the build 
 
 | Thing | Where | What happens to it |
 | --- | --- | --- |
-| Dove brand pack v1.3 (Olive, Sage, Blush, Cream, Young Serif, Nunito Sans, dove symbol, wordmark, leaf pattern, slogan "Code for a living world.") | brand pack `01-logo`, `03-typography`, `08-pattern` | Kept. It is the visual identity, the site builds on it instead of inventing a new look. |
+| Dove brand pack v1.3 (Olive, Sage, Blush, Cream, Young Serif, Nunito Sans, dove symbol, wordmark, leaf pattern; the slogan was dropped in October 2026) | brand pack `01-logo`, `03-typography`, `08-pattern` | Kept. It is the visual identity, the site builds on it instead of inventing a new look. |
 | 3D tree home page prototype (three.js r160, one tree, three branches: Code, Earth, Faith, pixel leaves, scroll walks round the tree, mouse moves the sun) | brand pack `12-homepage/index.html` | Kept as the home page centrepiece (he chose to keep it). Ported into a module, loads lazily, pauses when hidden, gets a static poster for no-JS. |
 | Static web kit (Python builder, pages, legal templates, CSS tokens, contact form that opened the mail program) | brand pack `09-web-kit` | Content and legal templates are ported to Handlebars. The Python builder is replaced by Express, Handlebars, Sass and Gulp as required. |
 | Biography and project facts | approved long-form video script (October 2026), memory, old site content in the web kit | Used as the only source of facts. Nothing is invented, missing details are listed per page as `todo` in front matter. |

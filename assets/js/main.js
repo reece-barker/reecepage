@@ -222,6 +222,27 @@
   }
 
   /* On this page: marks the section being read */
+  /* Videos start as a poster with one big play button instead of the browsers own controls which look a bit
+     cheap sat on top of a still. Once its playing the normal controls come back so seeking and captions work */
+  function setupVideos() {
+    $all("[data-video]").forEach(function (frame) {
+      var video = $("video", frame);
+      var button = $("[data-video-play]", frame);
+      if (!video || !button) return;
+      video.removeAttribute("controls");
+      button.hidden = false;
+      frame.classList.add("is-idle");
+      button.addEventListener("click", function () {
+        frame.classList.remove("is-idle");
+        button.hidden = true;
+        video.setAttribute("controls", "");
+        var playing = video.play();
+        if (playing && playing.catch) playing.catch(function () { /* Autoplay rules, the controls are there anyway */ });
+        video.focus();
+      });
+    });
+  }
+
   function setupToc() {
     var links = $all(".toc a[href^='#']");
     if (!links.length || !("IntersectionObserver" in window)) return;
@@ -278,6 +299,7 @@
     setupAnalyticsEvents();
     setupMatchCuts();
     setupToc();
+    setupVideos();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);

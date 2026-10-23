@@ -7,7 +7,6 @@ site:
   short_name: Reece
   legal_name: Reece Norman Barker
   domain: reece.page
-  tagline: Code for a living world.
   description: >-
     Reece Barker is an Applied Computer Science student at Saxion in Enschede, raised in Munich. He builds software
     and hardware for green tech and co-founded a startup that uses AI to control the climate of a room.
@@ -163,7 +162,7 @@ legal:
 
 seo:
   default_image: images/og/default.png
-  default_image_alt: The reece.page dove above the words Code for a living world, on a cream background.
+  default_image_alt: The reece.page dove and the name Reece Barker on a cream background, next to the tree.
 
 environments:
   development:

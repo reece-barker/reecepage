@@ -1,8 +1,9 @@
 // npm run media:import
 //
-// Imports everything in media-inbox/ into the media library using media:add, so theres one way of adding things.
-// Sidecar files with the same name give it a title, captions, poster and so on, see media-inbox/README.md.
-// Done files go to media-inbox/done/, a yml with source: pointing somewhere else gets renamed to .yml.done instead
+// Imports everything sitting in media-inbox/ into the media library, it just uses media:add under the hood so theres
+// only one way things get added. Sidecar files with the same name give it a title, captions, poster etc, theres more
+// in media-inbox/README.md. Done files get moved to media-inbox/done/ but a yml with source: pointing somewhere else
+// just gets renamed to .yml.done since theres nothing to move
 import { execFile } from "node:child_process";
 import { existsSync, readdirSync, readFileSync, renameSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
@@ -27,15 +28,15 @@ async function hasFfmpeg() {
 if (!existsSync(INBOX)) mkdirSync(INBOX);
 const files = readdirSync(INBOX);
 const jobs = [];
-// Files dropped in the inbox, with or without a yml next to them
+// Files dropped in the inbox, doesnt matter if they have a yml next to them or not
 for (const name of files.filter((f) => MEDIA.test(f))) {
   const base = path.parse(name).name;
-  // a picture with the same name as a video is that videos poster, not its own item
+  // A picture with the same name as a video is that videos poster not its own item
   if (POSTERS.includes(path.extname(name).toLowerCase()) && files.some((f) => f !== name && path.parse(f).name === base && /\.(mp4|m4v|mov|webm)$/i.test(f))) continue;
   const sidecar = files.find((f) => f === `${base}.yml` || f === `${base}.yaml`);
   jobs.push({ file: path.join(INBOX, name), meta: sidecar ? yaml.load(readFileSync(path.join(INBOX, sidecar), "utf8")) || {} : {}, sidecar, base, move: true });
 }
-// yml files on their own that point at a file somewhere else
+// Yml files on there own that point at a file somewhere else on the computer
 for (const name of files.filter((f) => /\.ya?ml$/.test(f))) {
   const meta = yaml.load(readFileSync(path.join(INBOX, name), "utf8")) || {};
   if (meta.source) jobs.push({ file: expand(String(meta.source)), meta, sidecar: name, base: path.parse(name).name, move: false });
@@ -69,7 +70,7 @@ for (const job of jobs) {
   if (meta.feature) args.push("--feature");
   else if (meta.publish) args.push("--publish");
   if (!/\.(mp4|m4v|mov|webm)$/i.test(job.file) && !meta.alt) {
-    // pictures need a description, without one it still goes in but stays unpublished until you write one in the admin
+    // Pictures need alt text, without it it still gets imported but stays unpublished untill i write one in the admin
     const i = args.indexOf("--publish");
     if (i > -1) args.splice(i, 1);
   }

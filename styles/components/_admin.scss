@@ -1,4 +1,4 @@
-// The private admin pages: link board, content lists and the form editor
+// The private admin pages, so the link board, the content lists and the form editor, nobody else ever see's these
 
 .admin .admin-section { margin-top: var(--space-8); }
 .admin .alert + .admin-section { margin-top: var(--space-7); }
@@ -52,7 +52,7 @@
   gap: var(--space-2);
 }
 
-// The editor
+// The editor, its the biggest bit
 
 .admin-editor { display: grid; gap: var(--space-5); }
 

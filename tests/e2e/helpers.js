@@ -6,7 +6,7 @@ const require = createRequire(import.meta.url);
 const AXE_SOURCE = readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 export const PAGES = ["/", "/about", "/projects", "/projects/microclimate-startup", "/writing", "/writing/how-this-site-is-built",
-  "/contact", "/media", "/impressum", "/privacy", "/terms", "/cookies", "/accessibility", "/copyright", "/does-not-exist"];
+  "/contact", "/media", "/cv", "/references", "/status", "/impressum", "/privacy", "/terms", "/cookies", "/accessibility", "/copyright", "/does-not-exist"];
 
 /**
  * Runs axe in the page. page.evaluate is not bound by the page's CSP, so axe can run on the real, strict site.

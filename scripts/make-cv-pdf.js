@@ -1,9 +1,10 @@
-// Makes the downloadable CV, content/cv/reece-barker-cv.pdf, from the /cv page so the PDF and the page never disagree.
+// Makes the downloadable CV (content/cv/reece-barker-cv.pdf) straight from the /cv page so the pdf and the page cant
+// ever end up saying diffrent things.
 //
 //   npm run cv:pdf
 //
-// Run it after changing cv.yml, the timeline, skills or the projects on the CV, or press the button in the admin.
-// It reads LEGAL_PHONE from .env so the phone number makes it onto the PDF when show_phone is on in cv.yml
+// Run it whenever cv.yml, the timeline, skills or the cv projects change or just press the button in the admin which
+// does the same thing. It reads LEGAL_PHONE from .env so my number only ends up on the pdf if show_phone is on in cv.yml
 import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";

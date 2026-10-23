@@ -11,8 +11,7 @@ The step by step for the server is in [DEPLOYMENT.md](DEPLOYMENT.md), this is th
 - [x] Third country text written (Switzerland adequacy decision, Cloudflare under the EU-US Data Privacy Framework)
 - [x] Phone on the impressum (`show_phone: true`, the number goes in `.env` as `LEGAL_PHONE`)
 - [x] GitHub profile linked
-- [x] Bible quotations from the RSV, with the copyright notice on /copyright. Check it is the RSV you use and not
-      the RSV Catholic Edition or NRSV; Genesis 2:15 reads the same in all three, only the notice would change
+- [x] No Bible quotations on the site any more (the Genesis verse and the RSV notice were taken out in October 2026)
 - [x] Lawyer review done
 
 ## Accounts and agreements

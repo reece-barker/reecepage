@@ -32,6 +32,113 @@
   font-style: italic;
 }
 
+// Under a video the credit is a small footnote at the very end, not a caption
+.media-credit--small {
+  margin-top: var(--space-3);
+  font-style: normal;
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  max-width: var(--measure);
+}
+
+// The player, framed like a screen with one play button on the poster untill it starts
+.video-frame {
+  position: relative;
+  border-radius: var(--radius-2);
+  overflow: hidden;
+  box-shadow: var(--shadow-raised);
+  background: #1e261a;
+
+  video {
+    border-radius: 0;
+  }
+
+  // A soft shade at the bottom so the button reads on any poster
+  &.is-idle::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(30 38 26 / 0.45), rgb(30 38 26 / 0) 55%);
+    pointer-events: none;
+  }
+}
+
+.video-frame__play {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+
+  &[hidden] {
+    display: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+
+    .video-frame__pill {
+      outline: 3px solid #f9f4e8;
+      outline-offset: 3px;
+    }
+  }
+
+  @include hover {
+    .video-frame__pill {
+      transform: scale(1.04);
+    }
+  }
+}
+
+// One cream pill, the round olive play mark and the length, it reads on light and dark posters
+.video-frame__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.4rem 1.25rem 0.4rem 0.4rem;
+  border-radius: 999px;
+  background: #f9f4e8;
+  color: #33412a;
+  box-shadow: 0 6px 24px -8px rgb(0 0 0 / 0.45);
+  transition: transform var(--duration-1) var(--ease-out);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.video-frame__icon {
+  display: grid;
+  place-items: center;
+  width: clamp(2.5rem, 6vw, 3.25rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #33412a;
+  color: #f9f4e8;
+
+  svg {
+    width: 40%;
+    height: 40%;
+    margin-left: 8%;
+    fill: currentColor;
+  }
+}
+
+.video-frame__label {
+  font-weight: 750;
+  font-size: var(--step-0);
+}
+
+.video-frame__time {
+  font-weight: 400;
+  margin-left: var(--space-1);
+  color: #5a6652;
+}
+
 // The transcript sits closed under a video, opening it shows the whole text for people who would rather read
 .media-transcript {
   margin-top: var(--space-4);
@@ -55,6 +162,11 @@
 
 .media-feature {
   margin-bottom: var(--space-8);
+
+  // Full width was way to big on a laptop, this keeps the whole player on screen with the heading
+  .media-figure--video {
+    max-width: 52rem;
+  }
 
   h2 {
     font-size: var(--step-3);
@@ -135,7 +247,7 @@
 .home-intro__grid {
   display: grid;
   gap: var(--space-6);
-  align-items: start;
+  align-items: center;
 
   @include up(lg) {
     grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);

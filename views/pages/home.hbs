@@ -1,7 +1,6 @@
 <section class="grove" aria-labelledby="hero-title" data-grove>
   <div class="grove__intro">
     <h1 class="hero-name matte-words" id="hero-title">{{matteWords site.name}}</h1>
-    <p class="hero-slogan load-fade">{{site.tagline}}</p>
     <p class="hero-lede load-fade load-fade--2">I grew up in Munich and study Applied Computer Science at Saxion in Enschede. I write software, build hardware and co-founded a startup whose AI runs the climate of a room, so it stays comfortable and wastes less energy.</p>
     <div class="hero-actions load-fade load-fade--3">
       <a class="button" href="/projects" data-track="Home: see projects">See my projects {{icon "arrow"}}</a>
@@ -24,7 +23,7 @@
         <h3><span class="pip" aria-hidden="true"></span>{{title}}</h3>
         <p>{{text}}</p>
         {{#if (eq id "faith")}}
-        <a class="link-action" href="/about#people-and-faith">What it means for my work</a>
+        <a class="link-action" href="/about#people">More about me {{icon "arrow"}}</a>
         {{else}}
         <a class="link-action" href="/projects?branch={{id}}">{{title}} projects {{icon "arrow"}}</a>
         {{/if}}
@@ -90,21 +89,6 @@
   </div>
 </section>
 {{/if}}
-
-<section class="section section--inverse" aria-labelledby="keep-title">
-  <div class="container home-faith">
-    <div>
-      <h2 id="keep-title">Looking after it</h2>
-      <p class="home-faith__note">Till it and keep it. I think good tech should do the same for the world it runs in.</p>
-    </div>
-    <figure class="verse">
-      <blockquote>
-        <p>The LORD God took the man and put him in the garden of Eden to till it and keep it.</p>
-      </blockquote>
-      <figcaption>Genesis 2:15, Revised Standard Version</figcaption>
-    </figure>
-  </div>
-</section>
 
 <section class="section" aria-labelledby="hi-title">
   <div class="container home-contact">

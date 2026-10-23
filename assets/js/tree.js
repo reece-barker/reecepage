@@ -1,4 +1,4 @@
-// The tree on the home page. One trunk, three boughs (code, earth, faith), recursive branches and square leaves,
+// The tree on the home page. One trunk, three boughs (code, earth, people, its id is still faith), recursive branches and square leaves,
 // because its a computer science tree. Scrolling walks the camera round it, and pointing at
 // a branch in the text lights that branch up.
 //

@@ -94,7 +94,7 @@ export const DATA_SCHEMAS = {
   branches: {
     file: "branches.yml",
     title: "The three branches",
-    help: "The code, earth and faith texts next to the tree on the home page.",
+    help: "The code, earth and people texts next to the tree on the home page.",
     comment: "The three branches of the tree on the home page. limb is the index the tree script uses to light the right branch",
     fixedLength: true,
     root: { type: "objects", itemLabel: "title", fields: [

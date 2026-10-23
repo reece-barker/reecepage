@@ -4,7 +4,7 @@ import { formatLongDate, formatLongDateGerman, formatMonthYear, isoDate, isoDate
 import { truncate } from "../utils/text.js";
 import { iconSvg } from "./icons.js";
 
-const BRANCH_LABELS = { code: "Code", earth: "Earth", faith: "Faith" };
+const BRANCH_LABELS = { code: "Code", earth: "Earth", faith: "People" };
 
 /**
  * @param {{ assets: import("../services/asset-manifest.js").AssetManifest }} deps

@@ -14,7 +14,7 @@ import { chromiumOptions } from "./lib/local-server.js";
 
 const OUT = path.join(ROOT_DIR, "assets/images/og");
 const BRANCH_COLOURS = { code: "#4a7f93", earth: "#5e8a4e", faith: "#b8735c" };
-const BRANCH_NAMES = { code: "Code", earth: "Earth", faith: "Faith" };
+const BRANCH_NAMES = { code: "Code", earth: "Earth", faith: "People" };
 
 const escape = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -57,7 +57,6 @@ function defaultCard(assets) {
     <div class="card">
       <div class="top"><img src="${assets.dove}" alt="">reece.page</div>
       <h1 style="font-size:104px">Reece<br>Barker</h1>
-      <p>Code for a living world.</p>
     </div>`);
 }
 
