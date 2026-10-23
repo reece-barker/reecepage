@@ -246,8 +246,11 @@ SMTP_USER=<bridge username>
 SMTP_PASSWORD=<bridge password>
 MAIL_FROM="reece.page <website@reece.page>"
 CONTACT_NOTIFY_TO=me@reece.page
-LEGAL_PHONE="+49 162 5865374"
-ADMIN_PASSWORD_HASH=<npm run admin:password>
+LEGAL_PHONE="<your phone number>"
+SIMPLELOGIN_CLIENT_ID=<from app.simplelogin.io/developer, see CONTENT.md>
+SIMPLELOGIN_CLIENT_SECRET=<same place>
+ADMIN_SIMPLELOGIN_ID=<shown on the sign in page the first time>
+GITHUB_SYNC_TOKEN=<fine grained token, Contents read and write on reecepage only>
 ERROR_DSN=<from GlitchTip, step 10>
 RELEASE=<git rev-parse --short HEAD, the deploy script can fill this>
 ```
@@ -359,7 +362,6 @@ shows up in GlitchTip within seconds.
 ## 11. Media and the introduction video
 
 ```bash
-npm run admin:password             # then put ADMIN_PASSWORD_HASH in .env and restart
 # From the Mac, the video and its captions:
 scp "reece-barker-long-form-v3.mp4" "reece-barker-long-form-v3.srt" deploy@<ipv4>:/tmp/
 # On the server:

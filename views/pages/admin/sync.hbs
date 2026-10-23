@@ -1,0 +1,26 @@
+<header class="admin-head"><h1>GitHub sync</h1></header>
+<p class="admin-intro">Everything published here is copied to <code>content/</code> in <a href="https://github.com/{{repo}}/tree/{{branch}}/content" rel="noopener">{{repo}}</a> on <code>{{branch}}</code>, one commit per batch of changes, so git always has the newest published version and its history. Drafts and anything scheduled for later stay here until they go live, the repository is public. The references list is never copied, it holds private contact details. The commits end in [skip ci] so they dont redeploy the site.</p>
+
+{{#if (eq notice "ran")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Sync finished, the result is below.</span></p>{{/if}}
+
+{{#if enabled}}
+<section class="admin-block" aria-labelledby="state-title">
+  <h2 id="state-title">Right now</h2>
+  <dl class="admin-facts">
+    <div><dt>State</dt><dd>{{#if (eq sync.state "ok")}}Up to date{{else if (eq sync.state "failed")}}Failed, retrying on its own{{else if (eq sync.state "running")}}Copying now{{else}}Waiting for the next change{{/if}}</dd></div>
+    {{#if sync.lastRun}}<div><dt>Last checked</dt><dd><time datetime="{{isoDateTime sync.lastRun}}" data-local-time>{{isoDateTime sync.lastRun}}</time></dd></div>{{/if}}
+    {{#if sync.lastCommit}}<div><dt>Last commit</dt><dd><a href="{{sync.lastCommit.url}}" rel="noopener">{{sync.lastCommit.message}}</a></dd></div>{{/if}}
+    {{#if sync.lastError}}<div><dt>Last problem</dt><dd>{{sync.lastError.message}}</dd></div>{{/if}}
+  </dl>
+  {{#if sync.blocked.length}}
+  <div class="alert alert--note">{{icon "info"}}<div><p>These files would be deleted on GitHub, because they're no longer published here. That's a lot at once, so it waits for you:</p><ul>{{#each sync.blocked}}<li><code>{{this}}</code></li>{{/each}}</ul></div></div>
+  {{/if}}
+  <form method="post" action="/admin/sync" class="cluster">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}">
+    {{#if sync.blocked.length}}<input type="hidden" name="confirm_deletes" value="yes">{{/if}}
+    <button class="button" type="submit">{{#if sync.blocked.length}}Delete them and sync{{else}}Sync now{{/if}}</button>
+  </form>
+</section>
+{{else}}
+<div class="alert alert--note">{{icon "info"}}<div><p>The sync is off on this server because <code>GITHUB_SYNC_TOKEN</code> isnt set. Thats right on your own computer, there you pull from GitHub and run <code>npm run content:import -- --force</code>. On the server, the steps are in docs/DEPLOYMENT.md.</p></div></div>
+{{/if}}

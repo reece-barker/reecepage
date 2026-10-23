@@ -1,4 +1,4 @@
-// Every address the site answers, with what it is for. Shown on the private /admin link board. A test checks that
+// Every address the site answers, with what it is for. Shown on the private /admin/system page. A test checks that
 // every route in src/routes/index.js is listed here, so this can't quietly go out of date.
 
 export const ENDPOINT_GROUPS = [
@@ -20,7 +20,8 @@ export const ENDPOINT_GROUPS = [
       { method: "GET", path: "/contact/thank-you", what: "Shown after sending, not indexed" },
       { method: "GET", path: "/status", what: "Public live status of the website, database, contact form and media", feature: "status_page" },
       { method: "GET", path: "/tools", what: "Tools directory, switched off until features.tools and content/tools", feature: "tools" },
-      { method: "GET", path: "/tools/:slug", what: "One tool", feature: "tools" }
+      { method: "GET", path: "/tools/:slug", what: "One tool", feature: "tools" },
+      { method: "GET", path: "/:slug", what: "A page made in the admin, at its own address" }
     ]
   },
   {
@@ -60,21 +61,46 @@ export const ENDPOINT_GROUPS = [
   {
     title: "Admin (password protected)",
     items: [
-      { method: "GET", path: "/admin", what: "This link board, live status and shortcuts" },
+      { method: "GET", path: "/admin/login", what: "Sign in: SimpleLogin (with its Proton button), a passkey, or the development sign in on your computer" },
+      { method: "POST", path: "/admin/login/simplelogin", what: "Starts Sign in with SimpleLogin" },
+      { method: "GET", path: "/admin/login/simplelogin/callback", what: "Where SimpleLogin sends you back to, checks the account is yours" },
+      { method: "POST", path: "/admin/login/passkey/options", what: "The challenge for signing in with a passkey" },
+      { method: "POST", path: "/admin/login/passkey", what: "Checks a passkey and signs in" },
+      { method: "POST", path: "/admin/login/dev", what: "One click sign in, only in development" },
+      { method: "POST", path: "/admin/logout", what: "Signs this browser out" },
+      { method: "GET", path: "/admin", what: "Dashboard: new post buttons, whats scheduled, drafts, recent changes, GitHub" },
+      { method: "GET", path: "/admin/account", what: "Passkeys and signed in browsers" },
+      { method: "POST", path: "/admin/account/passkeys/options", what: "The challenge for adding a passkey" },
+      { method: "POST", path: "/admin/account/passkeys", what: "Adds a passkey" },
+      { method: "POST", path: "/admin/account/passkeys/:key/rename", what: "Renames a passkey" },
+      { method: "POST", path: "/admin/account/passkeys/:key/remove", what: "Removes a passkey" },
+      { method: "POST", path: "/admin/account/sessions/others", what: "Signs every other browser out" },
       { method: "GET", path: "/admin/media", what: "Upload, describe, publish and delete pictures and videos" },
-      { method: "PUT", path: "/admin/media/upload", what: "The upload itself (sent by the media page)" },
+      { method: "GET", path: "/admin/media/library.json", what: "The media library for the picker in the editor" },
+      { method: "PUT", path: "/admin/media/upload", what: "The upload itself (sent by the media page and the editor)" },
       { method: "PUT", path: "/admin/media/:id/captions", what: "Adds captions to a video" },
       { method: "PUT", path: "/admin/media/:id/poster", what: "Sets a video's poster picture" },
+      { method: "PUT", path: "/admin/media/:id/variant", what: "A smaller copy of a picture for phones (made in the browser when uploading)" },
       { method: "POST", path: "/admin/media/:id", what: "Saves title, alt text, caption, published and featured" },
       { method: "POST", path: "/admin/media/:id/delete", what: "Deletes an item and its files" },
-      { method: "GET", path: "/admin/content/:collection", what: "Projects or articles, list and editor" },
-      { method: "GET", path: "/admin/content/:collection/new", what: "A new project or article" },
-      { method: "GET", path: "/admin/content/:collection/:slug", what: "Edit one project or article" },
-      { method: "POST", path: "/admin/content/:collection", what: "Saves a project or article to its Markdown file" },
-      { method: "POST", path: "/admin/content/:collection/:slug/delete", what: "Deletes a project or article" },
-      { method: "GET", path: "/admin/data/:name", what: "Edit the timeline, right now, references, CV, skills or branches" },
-      { method: "POST", path: "/admin/data/:name", what: "Saves one of those files" },
-      { method: "POST", path: "/admin/preview", what: "Renders Markdown for the editor preview" },
+      { method: "POST", path: "/admin/preview", what: "Keeps what the editor has for the live preview, nothing is saved" },
+      { method: "GET", path: "/admin/preview/:key", what: "The live preview, the real page with the unsaved text" },
+      { method: "GET", path: "/admin/lists/:name", what: "Edit the timeline, skills, CV, references, right now, branches, home page, menus or settings" },
+      { method: "POST", path: "/admin/lists/:name", what: "Saves one of those" },
+      { method: "GET", path: "/admin/lists/:name/revisions", what: "Earlier versions of one of those" },
+      { method: "POST", path: "/admin/lists/:name/revisions/:rev/restore", what: "Brings an earlier version back" },
+      { method: "GET", path: "/admin/sync", what: "The GitHub sync: whats been committed, problems, Sync now" },
+      { method: "POST", path: "/admin/sync", what: "Runs the GitHub sync now" },
+      { method: "GET", path: "/admin/system", what: "This page: live status, every address and links to the services behind the site" },
+      { method: "GET", path: "/admin/:type", what: "Posts, pages, projects, tools or the legal pages, with drafts, scheduled and the trash" },
+      { method: "GET", path: "/admin/:type/new", what: "A new post, page, project or tool" },
+      { method: "POST", path: "/admin/:type/save", what: "Saves from the editor: draft, publish (now or at a time), update or autosave" },
+      { method: "GET", path: "/admin/:type/:id", what: "The editor" },
+      { method: "GET", path: "/admin/:type/:id/revisions", what: "Every saved version" },
+      { method: "POST", path: "/admin/:type/:id/revisions/:rev/restore", what: "Brings an earlier version back" },
+      { method: "POST", path: "/admin/:type/:id/trash", what: "Moves to the trash (off the site)" },
+      { method: "POST", path: "/admin/:type/:id/restore", what: "Out of the trash as a draft" },
+      { method: "POST", path: "/admin/:type/:id/delete", what: "Deletes for good, only from the trash" },
       { method: "POST", path: "/admin/cv-pdf", what: "Makes a new CV PDF (on your computer only)" }
     ]
   }

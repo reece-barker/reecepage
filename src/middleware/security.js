@@ -22,6 +22,13 @@ export function analyticsOrigins(config) {
   return { script: [], connect: [] };
 }
 
+// A few small exceptions, all inside the signed in admin only: the block editor adds <style> elements (they get
+// the nonce) and positions its menus with style attributes (style attributes cant run anything, so those are
+// allowed there), the editor shows a picture before it is uploaded (blob: urls), and the live preview is the admin
+// framing its own preview page. The public site keeps the strict policy
+const isAdmin = (req) => req.path === "/admin" || req.path.startsWith("/admin/");
+const isPreview = (req) => req.path.startsWith("/admin/preview/");
+
 export function securityHeaders(config) {
   const extra = analyticsOrigins(config);
   return helmet({
@@ -30,8 +37,9 @@ export function securityHeaders(config) {
       directives: {
         "default-src": ["'self'"],
         "script-src": ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`, ...extra.script],
-        "style-src": ["'self'"],
-        "img-src": ["'self'", "data:"],
+        "style-src": ["'self'", (req, res) => (isAdmin(req) ? `'nonce-${res.locals.cspNonce}'` : "'self'")],
+        "style-src-attr": [(req) => (isAdmin(req) ? "'unsafe-inline'" : "'none'")],
+        "img-src": ["'self'", "data:", (req) => (isAdmin(req) ? "blob:" : "'self'")],
         "font-src": ["'self'"],
         "connect-src": ["'self'", ...extra.connect],
         "manifest-src": ["'self'"],
@@ -40,7 +48,7 @@ export function securityHeaders(config) {
         "object-src": ["'none'"],
         "base-uri": ["'none'"],
         "form-action": ["'self'"],
-        "frame-ancestors": ["'none'"],
+        "frame-ancestors": [(req) => (isPreview(req) ? "'self'" : "'none'")],
         ...(config.isProduction ? { "upgrade-insecure-requests": [] } : {})
       }
     },

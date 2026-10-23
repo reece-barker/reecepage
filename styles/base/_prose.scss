@@ -1,8 +1,11 @@
 @use "../abstracts/mixins" as *;
 
 // Long form text: about page, project write ups, articles and the legal pages
+// The measure is on each block instead of the whole text, so a wide picture can go past the edge of the text
 .prose {
-  max-width: var(--measure);
+  > * {
+    max-width: var(--measure);
+  }
 
   // Space between blocks, also inside the sections the legal pages are split into. Headings get more room above
   // than below, so each one clearly belongs to the text under it

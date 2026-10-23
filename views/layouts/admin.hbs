@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en-GB" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{meta.title}}</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="light dark">
+  <meta property="csp-nonce" content="{{cspNonce}}">
+  {{!--
+    Runs first: marks that scripts work, applies a saved theme, and gives every <style> element the editor adds
+    later this page's nonce. Editor.js and its tools add their styles with JavaScript, the content security policy
+    only lets them in with the nonce. Only ever on admin pages, the public site has no inline styles at all
+  --}}
+  <script nonce="{{cspNonce}}">(function(){var d=document.documentElement;d.classList.add("js");try{var t=localStorage.getItem("rp-theme");if(t==="dark"||t==="light")d.dataset.theme=t}catch(e){}var n=document.querySelector("meta[property=csp-nonce]").content;function f(x){if(x&&x.nodeName==="STYLE"&&!x.nonce){x.setAttribute("nonce",n);x.nonce=n}return x}["appendChild","insertBefore"].forEach(function(m){var o=Node.prototype[m];Node.prototype[m]=function(x){f(x);return o.apply(this,arguments)}});["prepend","append","before","after"].forEach(function(m){var o=Element.prototype[m];if(o)Element.prototype[m]=function(){for(var i=0;i<arguments.length;i++)f(arguments[i]);return o.apply(this,arguments)}})})();</script>
+  <link rel="preload" href="{{asset "fonts/NunitoSans-Variable-latin.woff2"}}" as="font" type="font/woff2" crossorigin>
+  {{#each vendorStyles}}<link rel="stylesheet" href="/assets/{{this}}">{{/each}}
+  <link rel="stylesheet" href="{{asset "css/admin.css"}}">
+  <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
+</head>
+<body class="admin {{bodyClass}}" data-csrf="{{csrfToken}}">
+  <a class="skip-link" href="#admin-main">Skip to the content</a>
+  {{#if nav}}
+  <div class="admin-app">
+    <header class="admin-bar">
+      <a class="admin-brand" href="/admin">
+        <img src="{{asset "images/brand/reece-dove-symbol-colour-on-dark.svg"}}" alt="" width="30" height="24">
+        <span>reece.page</span>
+      </a>
+      <button class="admin-bar__menu" type="button" aria-expanded="false" aria-controls="admin-nav" data-admin-menu>Menu</button>
+      <nav class="admin-nav" id="admin-nav" aria-label="Admin">
+        <a class="admin-nav__link{{#if (eq section "dashboard")}} is-current{{/if}}" href="/admin"{{#if (eq section "dashboard")}} aria-current="page"{{/if}}>Dashboard</a>
+        {{#each nav}}
+        <h2 class="admin-nav__group">{{group}}</h2>
+        <ul role="list">
+          {{#each items}}<li><a class="admin-nav__link{{#if current}} is-current{{/if}}" href="{{href}}"{{#if current}} aria-current="page"{{/if}}>{{label}}</a></li>{{/each}}
+        </ul>
+        {{/each}}
+        <div class="admin-nav__foot">
+          <a class="admin-nav__link" href="/" target="_blank" rel="noopener">View the site</a>
+          <a class="admin-nav__link{{#if (eq section "account")}} is-current{{/if}}" href="/admin/account">Account</a>
+          <form method="post" action="/admin/logout">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <button class="admin-nav__link admin-nav__button" type="submit">Sign out</button>
+          </form>
+          <button class="admin-nav__link admin-nav__button" type="button" data-theme-toggle>Switch theme</button>
+        </div>
+      </nav>
+    </header>
+    <main class="admin-main" id="admin-main" tabindex="-1">
+      {{{body}}}
+    </main>
+  </div>
+  {{else}}
+  <main class="admin-main admin-main--bare" id="admin-main" tabindex="-1">
+    {{{body}}}
+  </main>
+  {{/if}}
+  {{#each vendorScripts}}<script src="/assets/{{this}}" defer></script>{{/each}}
+  <script src="{{asset "js/admin.js"}}" defer></script>
+  {{#each scripts}}<script src="{{asset this}}" defer></script>{{/each}}
+</body>
+</html>

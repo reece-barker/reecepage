@@ -1,0 +1,805 @@
+@use "../abstracts/mixins" as *;
+@use "../abstracts/tokens";
+
+// The editor. Writing on the left, the live preview and the details on the right, a bar along the top with the
+// state and the buttons. Under 75rem its one column with tabs. On this page the admin menu folds into the top bar
+// so the writing gets the room.
+
+.admin-editor-page {
+  .admin-app {
+    display: block;
+  }
+
+  .admin-bar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .admin-brand {
+    margin: 0 auto 0 0;
+  }
+
+  .admin-bar__menu {
+    display: block;
+  }
+
+  .admin-nav {
+    display: none;
+
+    &.is-open {
+      display: block;
+      columns: 14rem;
+    }
+  }
+
+  .admin-main {
+    padding: 0;
+
+    > * {
+      max-width: none;
+    }
+  }
+}
+
+.studio {
+  --studio-bar: 3.6rem;
+}
+
+.studio__bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  min-height: var(--studio-bar);
+  padding: var(--space-2) var(--gutter);
+  background: var(--color-bg-raised);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.studio__back {
+  font-weight: 700;
+  text-decoration: none;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 0.45em;
+    height: 0.45em;
+    margin-right: 0.45em;
+    border-left: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg) translateY(-0.1em);
+  }
+}
+
+.studio__state {
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+
+.studio__status {
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+  margin-right: auto;
+
+  &.is-error {
+    color: var(--color-danger);
+    font-weight: 700;
+  }
+}
+
+.studio__mode,
+.studio__widths {
+  display: inline-flex;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-2);
+  overflow: hidden;
+
+  button {
+    font: inherit;
+    font-size: var(--step--1);
+    font-weight: 700;
+    padding: 0.3rem 0.75rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+
+    &[aria-pressed="true"] {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+
+    &:focus-visible {
+      outline-offset: -3px;
+      box-shadow: none;
+    }
+  }
+}
+
+.studio__actions {
+  display: flex;
+  gap: var(--space-2);
+
+  .button {
+    padding: 0.4rem 0.95rem;
+    font-size: 0.95rem;
+    min-height: 0;
+  }
+}
+
+.studio__alerts:not(:empty) {
+  padding: var(--space-3) var(--gutter) 0;
+
+  .alert {
+    margin: 0;
+  }
+
+  ul {
+    margin: var(--space-2) 0 0;
+    padding-left: 1.2em;
+  }
+}
+
+// Tabs for narrow screens (write, preview, details) and the two tabs at the top of the side panel on wide ones
+
+.studio__tabs,
+.studio__side-tabs {
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--gutter) 0;
+  border-bottom: 1px solid var(--color-line);
+
+  button {
+    font: inherit;
+    font-weight: 700;
+    padding: var(--space-2) var(--space-3);
+    border: 0;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+
+    &[aria-selected="true"] {
+      color: var(--color-text);
+      box-shadow: inset 0 -2px 0 var(--color-text);
+    }
+  }
+}
+
+.studio__side-tabs {
+  display: none;
+  padding-inline: var(--space-4);
+}
+
+.studio__body {
+  display: block;
+}
+
+@media (min-width: 75rem) {
+  .studio__tabs {
+    display: none;
+  }
+
+  .studio__side-tabs {
+    display: flex;
+  }
+
+  .studio__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(26rem, 0.85fr);
+    align-items: start;
+  }
+
+  .studio__write {
+    display: block !important;
+  }
+
+  .studio__side {
+    position: sticky;
+    top: var(--studio-bar);
+    height: calc(100vh - var(--studio-bar));
+    display: flex !important;
+    flex-direction: column;
+    border-left: 1px solid var(--color-line);
+    background: var(--color-bg-sunken);
+  }
+}
+
+@media (max-width: 74.98rem) {
+  .studio__side {
+    display: contents;
+  }
+}
+
+// Writing
+
+.studio__write {
+  padding: var(--space-6) var(--gutter) var(--space-9);
+}
+
+.studio__write[hidden],
+.studio__preview[hidden],
+.studio__details[hidden] {
+  display: none !important;
+}
+
+.studio__title {
+  @include display-type;
+  display: block;
+  width: 100%;
+  max-width: var(--measure);
+  margin: 0 auto 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--step-4);
+  resize: none;
+  overflow: hidden;
+
+  &::placeholder {
+    color: var(--color-line-strong);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.studio__canvas {
+  margin-top: var(--space-5);
+}
+
+// The Markdown view: a plain text area in the mono face, as tall as the text
+.studio__markdown {
+  display: block;
+  width: 100%;
+  max-width: var(--measure);
+  min-height: 60vh;
+  padding: var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  resize: vertical;
+  tab-size: 2;
+}
+
+.studio__markdown-help {
+  max-width: var(--measure);
+  margin-top: var(--space-3);
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+
+  summary {
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-1) var(--space-4);
+    margin-top: var(--space-3);
+  }
+
+  dt code {
+    white-space: nowrap;
+  }
+
+  dd {
+    margin: 0;
+  }
+}
+
+// The preview: the real page in a frame. Desktop width is drawn at 1280 and scaled down to fit
+
+.studio__preview {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.studio__preview-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--step--1);
+  color: var(--color-text-muted);
+}
+
+.studio__frame-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 70vh;
+  overflow: hidden;
+  margin: 0 var(--space-4) var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2);
+  background: var(--color-bg);
+
+  @media (min-width: 75rem) {
+    min-height: 0;
+  }
+}
+
+.studio__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  transform-origin: 0 0;
+}
+
+.studio__frame-wrap.is-phone {
+  max-width: 390px;
+  margin-inline: auto;
+}
+
+.studio__details {
+  overflow-y: auto;
+  padding: var(--space-4) var(--gutter) var(--space-8);
+
+  @media (min-width: 75rem) {
+    flex: 1;
+    padding-inline: var(--space-5);
+  }
+}
+
+.studio__group {
+  padding-bottom: var(--space-5);
+  margin-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-line);
+
+  > h2 {
+    font-family: var(--font-body);
+    font-size: var(--step-0);
+    font-weight: 800;
+    letter-spacing: 0;
+    margin-bottom: var(--space-3);
+  }
+
+  > * + * {
+    margin-top: var(--space-3);
+  }
+}
+
+.studio__details .editor-fields {
+  gap: var(--space-4);
+}
+
+.studio__links {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// Editor.js blocks, set in the site's type so writing looks like reading
+
+.studio .codex-editor {
+  font-size: var(--step-0);
+  line-height: var(--leading-body);
+}
+
+.studio .ce-block__content,
+.studio .ce-toolbar__content {
+  max-width: var(--measure);
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.studio .codex-editor--narrow .ce-toolbar__actions {
+  right: auto;
+  left: -4.2rem;
+}
+
+@media (min-width: 40rem) {
+  .studio__canvas {
+    padding-left: 4rem;
+  }
+
+  // The title lines up with the blocks, which sit 4rem in to leave room for the + and drag buttons
+  .studio__title {
+    margin-left: 4rem;
+  }
+}
+
+.studio .ce-paragraph {
+  line-height: var(--leading-body);
+}
+
+.studio .ce-block + .ce-block {
+  margin-top: 0.35em;
+}
+
+.studio .ce-header {
+  @include display-type;
+  padding: 0.6em 0 0.2em;
+}
+
+.studio h2.ce-header { font-size: var(--step-3); }
+.studio h3.ce-header { font-size: var(--step-2); }
+.studio h4.ce-header { font-family: var(--font-body); font-size: var(--step-0); font-weight: 800; letter-spacing: 0; }
+
+.studio .cdx-quote__text {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  min-height: 3em;
+  border-left: 3px solid var(--color-highlight);
+  border-radius: 0;
+  padding-left: var(--space-4);
+  box-shadow: none;
+}
+
+.studio .ce-code__textarea,
+.studio .cdx-input {
+  background: var(--color-bg-raised);
+  border-color: var(--color-line);
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.studio .ce-code__textarea {
+  font-family: var(--font-mono);
+  min-height: 8rem;
+}
+
+.studio .ce-delimiter::before {
+  color: var(--color-line-strong);
+}
+
+.studio .inline-code {
+  background: var(--color-code-bg);
+  color: inherit;
+  font-family: var(--font-mono);
+}
+
+// Editor.js menus in the dark theme read their colours from these
+:root[data-theme="dark"] .studio,
+.studio {
+  --color-background-item-hover: var(--color-bg-sunken);
+}
+
+.studio .ce-popover,
+.studio .ce-inline-toolbar,
+.studio .ce-conversion-toolbar,
+.studio .ce-settings {
+  --color-background: var(--color-bg-raised);
+  --color-text-primary: var(--color-text);
+  --color-border: var(--color-line);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  border-color: var(--color-line);
+}
+
+.studio .ce-toolbar__plus,
+.studio .ce-toolbar__settings-btn {
+  color: var(--color-text);
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-line);
+}
+
+.studio .ce-block--selected .ce-block__content {
+  background: var(--color-highlight-soft);
+}
+
+.studio .ce-inline-toolbar__dropdown,
+.studio .ce-inline-tool {
+  color: var(--color-text);
+}
+
+// Our own blocks: media, gallery, callout and button. Each shows what it will look like plus a strip of settings
+
+.rp-block {
+  position: relative;
+  margin: var(--space-3) 0;
+}
+
+.rp-block__strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  margin-top: var(--space-2);
+  font-size: var(--step--1);
+
+  label {
+    font-weight: 700;
+  }
+
+  select,
+  input[type="text"],
+  input[type="url"] {
+    font: inherit;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-1);
+    background: var(--color-bg-raised);
+    color: var(--color-text);
+  }
+}
+
+.rp-segment {
+  display: inline-flex;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-1);
+  overflow: hidden;
+
+  button {
+    font: inherit;
+    padding: 0.2rem 0.55rem;
+    border: 0;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+
+    &[aria-pressed="true"] {
+      background: var(--color-text);
+      color: var(--color-bg);
+    }
+  }
+}
+
+.rp-block__caption {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: 0.3rem 0;
+  border: 0;
+  border-bottom: 1px dashed var(--color-line);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--step--1);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: none;
+    border-bottom-color: var(--color-text);
+  }
+}
+
+// The picture in the editor sits at its real size in the text column. The handle on the right edge snaps it
+// between the sizes while you drag
+.rp-media__stage {
+  position: relative;
+  margin-inline: 0 auto;
+  transition: width var(--duration-1) var(--ease-out);
+
+  img,
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-2);
+    background: var(--color-bg-sunken);
+  }
+}
+
+.rp-media--small .rp-media__stage { width: 34%; }
+.rp-media--medium .rp-media__stage { width: 50%; }
+.rp-media--text .rp-media__stage { width: 100%; }
+.rp-media--wide .rp-media__stage,
+.rp-media--full .rp-media__stage { width: 100%; }
+.rp-media--align-center:is(.rp-media--small, .rp-media--medium) .rp-media__stage { margin-inline: auto; }
+.rp-media--align-right .rp-media__stage { margin-inline: auto 0; }
+
+.rp-media--wide .rp-media__stage::after,
+.rp-media--full .rp-media__stage::after {
+  content: attr(data-size-note);
+  position: absolute;
+  right: var(--space-2);
+  top: var(--space-2);
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--radius-1);
+  background: rgb(30 38 26 / 0.75);
+  color: #f9f4e8;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.rp-media__handle {
+  position: absolute;
+  top: 50%;
+  right: -0.6rem;
+  width: 1.2rem;
+  height: 3rem;
+  margin-top: -1.5rem;
+  padding: 0;
+  border: 2px solid var(--color-bg-raised);
+  border-radius: 0.6rem;
+  background: var(--color-text);
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.rp-media__empty {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  padding: var(--space-5);
+  border: 2px dashed var(--color-line-strong);
+  border-radius: var(--radius-2);
+  background: var(--color-bg-raised);
+
+  &.is-dragging {
+    border-color: var(--color-text);
+    background: var(--color-leaf-soft);
+  }
+}
+
+.rp-media__upload-fields {
+  display: grid;
+  gap: var(--space-3);
+  width: 100%;
+
+  .input {
+    width: 100%;
+  }
+}
+
+.rp-gallery__grid {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+
+  img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-2);
+  }
+}
+
+.rp-gallery__item {
+  position: relative;
+
+  button {
+    position: absolute;
+    top: var(--space-1);
+    right: var(--space-1);
+  }
+}
+
+.rp-callout__body {
+  min-height: 2.5em;
+  outline: none;
+}
+
+.rp-callout__title {
+  font-weight: 800;
+  outline: none;
+
+  &:empty::before {
+    content: attr(data-placeholder);
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+}
+
+.rp-button__fields {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  margin-top: var(--space-2);
+}
+
+// The media picker that opens over the editor
+
+.rp-picker {
+  width: min(56rem, 100% - 2rem);
+  max-height: min(42rem, 100vh - 2rem);
+  padding: 0;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2);
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  box-shadow: var(--shadow-raised);
+
+  &::backdrop {
+    background: rgb(30 38 26 / 0.5);
+  }
+}
+
+.rp-picker__head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-raised);
+  border-bottom: 1px solid var(--color-line);
+
+  h2 {
+    font-size: var(--step-1);
+  }
+
+  .input {
+    width: 14rem;
+  }
+}
+
+.rp-picker__grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  padding: var(--space-5);
+  margin: 0;
+  list-style: none;
+
+  button {
+    display: grid;
+    gap: var(--space-1);
+    width: 100%;
+    padding: var(--space-1);
+    border: 2px solid transparent;
+    border-radius: var(--radius-2);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: var(--step--1);
+    text-align: left;
+    cursor: pointer;
+
+    &:hover,
+    &[aria-pressed="true"] {
+      border-color: var(--color-text);
+    }
+  }
+
+  img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-1);
+    background: var(--color-bg-sunken);
+  }
+}
+
+.rp-picker__video {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-1);
+  background: #{tokens.brand(night)};
+  color: #{tokens.brand(cream)};
+  font-weight: 700;
+}
+
+.rp-picker__foot {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-bg-raised);
+  border-top: 1px solid var(--color-line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rp-media__stage {
+    transition: none;
+  }
+}

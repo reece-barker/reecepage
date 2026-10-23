@@ -6,25 +6,23 @@ import { mkdtempSync, rmSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import request from "supertest";
-import { buildTestApp, testConfig, hiddenValue, cookieHeader } from "../helpers/app.js";
-import { hashPassword } from "../../src/middleware/admin-auth.js";
+import { buildTestApp, adminConfig, hiddenValue, cookieHeader, signIn } from "../helpers/app.js";
 import { createErrorReporter } from "../../src/lib/error-reporter.js";
 
-const PASSWORD = "correct horse battery staple";
-const HASH = hashPassword(PASSWORD);
-const auth = `Basic ${Buffer.from(`reece:${PASSWORD}`).toString("base64")}`;
 // A real 2 x 1 PNG
 const PNG = Buffer.from("89504e470d0a1a0a0000000d49484452000000020000000108060000005e7e8e7f0000000d4944415478da63f8cfc0f01f0005fe02fe a7b6c2f60000000049454e44ae426082".replace(/ /g, ""), "hex");
 
 let dir;
 let ctx;
+let session;
 const reported = [];
 
 before(async () => {
   dir = mkdtempSync(path.join(tmpdir(), "rp-media-"));
-  const config = testConfig({ env: { ADMIN_PASSWORD_HASH: HASH, MEDIA_DIR: dir, ERROR_DSN: "https://key@errors.example/1" } });
+  const config = adminConfig({ env: { MEDIA_DIR: dir, ERROR_DSN: "https://key@errors.example/1" } });
   const errorReporter = createErrorReporter({ dsn: config.monitoring.dsn, environment: "test", release: "t", fetchImpl: async (url, options) => { reported.push(JSON.parse(options.body)); return { ok: true }; } });
   ctx = await buildTestApp({ config, errorReporter });
+  session = await signIn(ctx.app);
 });
 
 after(async () => {
@@ -33,30 +31,31 @@ after(async () => {
 });
 
 async function adminSession() {
-  const page = await request(ctx.app).get("/admin/media").set("Authorization", auth).expect(200);
-  return { cookie: cookieHeader(page), csrf: /data-csrf="([^"]+)"/.exec(page.text)[1], html: page.text };
+  const page = await request(ctx.app).get("/admin/media").set("Cookie", session.cookie).expect(200);
+  const cookie = [session.cookie, cookieHeader(page)].filter(Boolean).join("; ");
+  return { cookie, csrf: /data-csrf="([^"]+)"/.exec(page.text)[1], html: page.text };
 }
 
 function upload(session, body, fields) {
-  const req = request(ctx.app).put("/admin/media/upload").set("Authorization", auth).set("Cookie", session.cookie)
+  const req = request(ctx.app).put("/admin/media/upload").set("Cookie", session.cookie)
     .set("X-CSRF-Token", session.csrf).set("Content-Type", "application/octet-stream");
   for (const [name, value] of Object.entries(fields)) req.set(name, encodeURIComponent(value));
   return req.send(body);
 }
 
-test("admin is hidden without a password hash, and asks for a login with one", async () => {
+test("the media admin needs a session and is never cached or indexed", async () => {
   const plain = await buildTestApp({ withDatabase: false });
-  await request(plain.app).get("/admin/media").expect(404);
-  const res = await request(ctx.app).get("/admin/media").expect(401);
-  assert.match(res.headers["www-authenticate"], /^Basic realm=/);
-  await request(ctx.app).get("/admin/media").set("Authorization", `Basic ${Buffer.from("reece:wrong").toString("base64")}`).expect(401);
-  const ok = await request(ctx.app).get("/admin/media").set("Authorization", auth).expect(200);
+  await request(plain.app).get("/admin/media").expect(503);
+  await plain.close();
+  await request(ctx.app).get("/admin/media").set("Accept", "text/html").expect(303).expect("Location", "/admin/login?next=%2Fadmin%2Fmedia");
+  const ok = await request(ctx.app).get("/admin/media").set("Cookie", session.cookie).expect(200);
   assert.match(ok.headers["cache-control"], /no-store/);
   assert.match(ok.text, /noindex/);
 });
 
-test("uploads need the CSRF token", async () => {
-  await request(ctx.app).put("/admin/media/upload").set("Authorization", auth).set("Content-Type", "application/octet-stream").send(PNG).expect(403);
+test("uploads need a session and the CSRF token", async () => {
+  await request(ctx.app).put("/admin/media/upload").set("Content-Type", "application/octet-stream").send(PNG).expect(401);
+  await request(ctx.app).put("/admin/media/upload").set("Cookie", session.cookie).set("Content-Type", "application/octet-stream").send(PNG).expect(403);
 });
 
 test("a picture uploads unpublished, then shows on /media once published", async () => {
@@ -71,7 +70,7 @@ test("a picture uploads unpublished, then shows on /media once published", async
   await request(ctx.app).get(`/media/${slug}`).expect(404);
 
   const edit = await adminSession();
-  await request(ctx.app).post(`/admin/media/${id}`).set("Authorization", auth).set("Cookie", edit.cookie).type("form")
+  await request(ctx.app).post(`/admin/media/${id}`).set("Cookie", edit.cookie).type("form")
     .send({ _csrf: hiddenValue(edit.html, "_csrf"), title: "Test picture", alt: "Two pixels side by side", published: "on" }).expect(303);
 
   page = await request(ctx.app).get("/media").expect(200);
@@ -108,7 +107,7 @@ test("deleting removes the item and its file", async () => {
   const res = await upload(session, PNG, { "X-Media-Title": "Delete me", "X-Media-Alt": "x" }).expect(201);
   const file = readdirSync(dir).find((name) => name.startsWith(res.body.item.slug));
   assert.ok(file);
-  await request(ctx.app).post(`/admin/media/${res.body.item.id}/delete`).set("Authorization", auth).set("Cookie", session.cookie).type("form")
+  await request(ctx.app).post(`/admin/media/${res.body.item.id}/delete`).set("Cookie", session.cookie).type("form")
     .send({ _csrf: hiddenValue(session.html, "_csrf") }).expect(303);
   assert.ok(!readdirSync(dir).includes(file));
 });

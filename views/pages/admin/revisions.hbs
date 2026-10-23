@@ -1,0 +1,35 @@
+<header class="admin-head">
+  <div>
+    <p class="admin-head__back"><a href="/admin/{{type}}/{{entry.id}}">Back to the editor</a></p>
+    <h1>Revisions</h1>
+    <p class="admin-head__sub">{{entry.title}}</p>
+  </div>
+</header>
+
+{{#if notice}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>Not restored: {{notice}}</span></p>{{/if}}
+
+<div class="revisions">
+  <nav class="revisions__list" aria-label="Revisions">
+    <ol role="list">
+      {{#each revisions}}
+      <li><a href="?rev={{id}}"{{#if current}} aria-current="true" class="is-current"{{/if}}><time datetime="{{isoDateTime createdAt}}" data-local-time>{{isoDateTime createdAt}}</time><span>{{revisionReason reason}}{{#if @first}}, newest{{/if}}</span></a></li>
+      {{/each}}
+    </ol>
+  </nav>
+  {{#if selected}}
+  <section class="revisions__view" aria-labelledby="rev-title">
+    <div class="revisions__head">
+      <h2 id="rev-title">{{selected.title}}</h2>
+      <form method="post" action="/admin/{{type}}/{{entry.id}}/revisions/{{selected.id}}/restore" data-confirm-form>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button class="button" type="submit" data-confirm-label="Press again to restore this version">Restore this version</button>
+      </form>
+    </div>
+    <p class="hint">Restoring copies this version's title, address, details and text back into the editor's current version. {{#if (eq entry.state "published")}}Its published, so the change goes live straight away.{{else}}It stays a {{lower entry.stateLabel}}.{{/if}} The version you have now is kept as a revision too.</p>
+    <h3>Text</h3>
+    <pre class="revisions__text">{{selected.body}}</pre>
+    <h3>Details</h3>
+    <pre class="revisions__text revisions__text--small">{{selected.metaJson}}</pre>
+  </section>
+  {{/if}}
+</div>

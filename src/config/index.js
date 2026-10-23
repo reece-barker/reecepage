@@ -4,7 +4,6 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { load as parseYaml } from "js-yaml";
-import { hashPassword } from "../utils/password.js";
 
 export const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -127,16 +126,28 @@ export function loadConfig({ env = process.env, yamlFile = path.join(ROOT_DIR, "
 
   // Version shown with every error report, so a crash can be matched to a deploy. RELEASE can be set to the git commit
   const packageVersion = JSON.parse(readFileSync(path.join(ROOT_DIR, "package.json"), "utf8")).version;
-  // On your own computer the admin works straight away with a simple password, so there is nothing to set up to try
-  // it. Anywhere else (production, tests) it stays switched off until ADMIN_PASSWORD_HASH is set
-  const devAdminPassword = nodeEnv === "development" && !env.ADMIN_PASSWORD_HASH ? (env.ADMIN_DEV_PASSWORD || "reece-dev") : "";
+  // Signing in to /admin. Theres one person who can: the SimpleLogin account with the id in ADMIN_SIMPLELOGIN_ID
+  // (SimpleLogin shows a Log in with Proton button, so a Proton account works), plus any passkeys added in the
+  // admin afterwards. On your own computer theres also a one click development sign in, never anywhere else
   const admin = {
-    user: env.ADMIN_USER || "reece",
-    passwordHash: env.ADMIN_PASSWORD_HASH || (devAdminPassword ? hashPassword(devAdminPassword) : ""),
-    devPassword: devAdminPassword,
-    // Editing content from the browser writes into content/, which only makes sense where the code is checked out
-    // and committed from (your computer). On the server it stays off unless CONTENT_EDITING=true
-    contentEditing: readBoolean(env.CONTENT_EDITING, nodeEnv === "development")
+    simplelogin: {
+      clientId: env.SIMPLELOGIN_CLIENT_ID || "",
+      clientSecret: env.SIMPLELOGIN_CLIENT_SECRET || "",
+      allowedId: env.ADMIN_SIMPLELOGIN_ID || "",
+      issuer: "https://app.simplelogin.io",
+      get configured() { return Boolean(this.clientId && this.clientSecret); }
+    },
+    // On in development unless ADMIN_DEV_LOGIN=false, in the tests only when asked for, in production never
+    devLogin: (nodeEnv === "development" && readBoolean(env.ADMIN_DEV_LOGIN, true)) || (nodeEnv === "test" && readBoolean(env.ADMIN_DEV_LOGIN, false)),
+    sessionDays: readInteger(env.ADMIN_SESSION_DAYS, 14),
+    idleDays: readInteger(env.ADMIN_IDLE_DAYS, 3)
+  };
+  // Published content is committed to this repository from the admin. Without a token the sync is off, which is
+  // right for your computer: there you pull from GitHub instead
+  const github = {
+    token: env.GITHUB_SYNC_TOKEN || "",
+    repo: env.GITHUB_SYNC_REPO || "reece-barker/reecepage",
+    branch: env.GITHUB_SYNC_BRANCH || "main"
   };
   const media = {
     dir: path.resolve(ROOT_DIR, env.MEDIA_DIR || "var/media"),
@@ -184,6 +195,7 @@ export function loadConfig({ env = process.env, yamlFile = path.join(ROOT_DIR, "
     smtp,
     monitoring,
     admin,
+    github,
     media,
     paths: {
       views: path.join(ROOT_DIR, "views"),
@@ -236,9 +248,13 @@ export function validateConfig(config) {
     problems.push("The contact form is on but messages are neither stored nor emailed, so they would be lost");
   }
 
-  if (config.admin.passwordHash && !/^scrypt:\d+:\d+:\d+:[A-Za-z0-9+/=]+:[A-Za-z0-9+/=]+$/.test(config.admin.passwordHash)) {
-    problems.push("ADMIN_PASSWORD_HASH is not a hash made by npm run admin:password");
-  }
+  if (!/^[\w.-]+\/[\w.-]+$/.test(config.github.repo)) problems.push("GITHUB_SYNC_REPO must look like owner/repository");
+  if (!/^[\w./-]+$/.test(config.github.branch)) problems.push("GITHUB_SYNC_BRANCH is not a valid branch name");
+  const sl = config.admin.simplelogin;
+  if (Boolean(sl.clientId) !== Boolean(sl.clientSecret)) problems.push("SIMPLELOGIN_CLIENT_ID and SIMPLELOGIN_CLIENT_SECRET go together, one of them is missing");
+  if (sl.allowedId && !/^[\w.-]{1,64}$/.test(sl.allowedId)) problems.push("ADMIN_SIMPLELOGIN_ID should be the id the sign in page showed you, a number like 1234");
+  if (!Number.isInteger(config.admin.sessionDays) || config.admin.sessionDays < 1 || config.admin.sessionDays > 90) problems.push("ADMIN_SESSION_DAYS must be between 1 and 90");
+  if (!Number.isInteger(config.admin.idleDays) || config.admin.idleDays < 1 || config.admin.idleDays > config.admin.sessionDays) problems.push("ADMIN_IDLE_DAYS must be at least 1 and no more than ADMIN_SESSION_DAYS");
 
   if (config.smtp.allowSelfSigned && !["127.0.0.1", "localhost", "::1"].includes(config.smtp.host)) {
     problems.push("SMTP_ALLOW_SELF_SIGNED only works with a mail bridge on this machine (SMTP_HOST=127.0.0.1)");

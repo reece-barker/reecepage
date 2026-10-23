@@ -13,6 +13,8 @@ import { promisify } from "node:util";
 import { Op } from "sequelize";
 import { slugify } from "../utils/text.js";
 import { MEDIA_LIMITS } from "../models/media-item.js";
+import { galleryFigure } from "../helpers/media-html.js";
+import { readMediaPlaceholder } from "./content-blocks.js";
 
 const run = promisify(execFile);
 
@@ -123,8 +125,11 @@ export class MediaService {
   present(item) {
     if (!item) return null;
     const data = typeof item.get === "function" ? item.get({ plain: true }) : item;
+    let variants;
+    try { variants = data.variants ? JSON.parse(data.variants) : []; } catch { variants = []; }
     return {
       ...data,
+      variants: variants.filter((v) => v && v.file && v.width).map((v) => ({ width: v.width, src: this.url(v.file) })).sort((a, b) => a.width - b.width),
       src: this.url(data.file),
       posterSrc: this.url(data.poster),
       captionsSrc: this.url(data.captions),
@@ -338,10 +343,37 @@ export class MediaService {
     return this.present(row);
   }
 
+  /**
+   * A smaller copy of a picture for srcset. The width is read from the file itself, not trusted from the browser,
+   * and it has to be smaller than the original or theres no point. Uploading the same width again replaces it
+   */
+  async attachVariant({ temp, bytes }, id) {
+    const row = await this.MediaItem.findByPk(id);
+    const fail = async (message, status) => { await rm(temp, { force: true }); throw new MediaError(message, status); };
+    if (!row || row.kind !== "image") return fail("Smaller copies only go on pictures", 404);
+    const head = await this.readHead(temp, 64 * 1024);
+    const type = sniff(head);
+    if (!type || type.kind !== "image" || bytes > this.maxImageBytes) return fail("The copy has to be a JPEG, PNG, WebP or AVIF picture", 415);
+    const { width } = imageSize(head, type.mime);
+    if (!width || !row.width || width >= row.width) return fail("The copy has to be narrower than the original", 400);
+    let list;
+    try { list = row.variants ? JSON.parse(row.variants) : []; } catch { list = []; }
+    if (list.length >= 6 && !list.some((v) => v.width === width)) return fail("That picture already has enough smaller copies", 400);
+    const name = `${row.slug}-w${width}-${randomBytes(3).toString("hex")}.${type.ext}`;
+    await rename(temp, path.join(this.dir, name));
+    for (const old of list.filter((v) => v.width === width)) await rm(path.join(this.dir, old.file), { force: true });
+    list = [...list.filter((v) => v.width !== width), { width, file: name }].sort((a, b) => a.width - b.width);
+    row.set({ variants: JSON.stringify(list) });
+    await row.save();
+    return this.present(row);
+  }
+
   async remove(id) {
     const row = await this.MediaItem.findByPk(id);
     if (!row) return false;
-    for (const name of [row.file, row.poster, row.captions].filter(Boolean)) await rm(path.join(this.dir, name), { force: true });
+    let variants;
+    try { variants = row.variants ? JSON.parse(row.variants).map((v) => v.file) : []; } catch { variants = []; }
+    for (const name of [row.file, row.poster, row.captions, ...variants].filter(Boolean)) await rm(path.join(this.dir, name), { force: true });
     await row.destroy();
     this.logger?.info({ slug: row.slug }, "media deleted");
     return true;
@@ -364,10 +396,29 @@ export class MediaService {
  * Replaces [[media:slug]] in rendered article html with the picture or video. A paragraph that only holds the code
  * becomes a figure, so it can be written on its own line in Markdown. Unknown or unpublished slugs just disappear
  */
-export async function renderMediaShortcodes(html, media, renderFigure, { publishedOnly = true } = {}) {
-  const pattern = /(?:<p>)?\[\[media:([a-z0-9-]{1,80})\]\](?:<\/p>)?/g;
-  const slugs = [...new Set([...html.matchAll(pattern)].map((match) => match[1]))];
-  if (!slugs.length) return html;
-  const found = await media.bySlugs(slugs, { publishedOnly });
-  return html.replace(pattern, (whole, slug) => (found.has(slug) ? renderFigure(found.get(slug)) : ""));
+/**
+ * Swaps the media placeholders (from the block syntax in content-blocks.js) and any old style [[media:slug]] left
+ * in the middle of a paragraph for the real figures, with one query for every picture on the page. Anything that
+ * no longer exists in the library is quietly left out
+ */
+export async function renderMediaShortcodes(html, media, renderFigure, { publishedOnly = true, renderGallery = galleryFigure } = {}) {
+  const placeholder = /<!--rp-media:([A-Za-z0-9_-]+)-->/g;
+  const legacy = /(?:<p>)?\[\[media:([a-z0-9-]{1,80})\]\](?:<\/p>)?/g;
+  const blocks = new Map();
+  for (const match of html.matchAll(placeholder)) {
+    const data = readMediaPlaceholder(match[1]);
+    if (data) blocks.set(match[1], data);
+  }
+  const slugs = new Set([...html.matchAll(legacy)].map((match) => match[1]));
+  for (const data of blocks.values()) for (const slug of data.kind === "gallery" ? data.slugs : [data.slug]) slugs.add(slug);
+  if (!slugs.size) return html;
+  const found = await media.bySlugs([...slugs], { publishedOnly });
+  return html
+    .replace(placeholder, (whole, key) => {
+      const data = blocks.get(key);
+      if (!data) return "";
+      if (data.kind === "gallery") return renderGallery(data.slugs.map((slug) => found.get(slug)).filter(Boolean), data);
+      return found.has(data.slug) ? renderFigure(found.get(data.slug), { layout: { size: data.size, align: data.align, caption: data.caption, link: data.link } }) : "";
+    })
+    .replace(legacy, (whole, slug) => (found.has(slug) ? renderFigure(found.get(slug)) : ""));
 }

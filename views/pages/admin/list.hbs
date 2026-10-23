@@ -1,0 +1,63 @@
+<header class="admin-head">
+  <h1>{{schema.title}}</h1>
+  {{#unless schema.fixed}}<div class="admin-head__actions"><a class="button" href="/admin/{{type}}/new">New {{schema.singular}}</a></div>{{/unless}}
+</header>
+
+{{#if (eq notice "trashed")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Moved to the trash. It's off the site, and you can restore it from the Trash tab.</span></p>{{/if}}
+{{#if (eq notice "restored")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Restored as a draft. Open it and publish when you're ready.</span></p>{{/if}}
+{{#if (eq notice "deleted")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Deleted for good, with its revisions.</span></p>{{/if}}
+{{#if (eq notice "failed")}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>That didnt work, it may have been changed in another tab. Reload and try again.</span></p>{{/if}}
+{{#if (eq notice "restore-failed")}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>It couldnt be restored, something else uses the same address now. Rename that one first.</span></p>{{/if}}
+
+<div class="admin-toolbar">
+  {{#unless schema.fixed}}
+  <nav class="admin-tabs" aria-label="Filter by status">
+    {{#each tabs}}<a class="admin-tabs__tab{{#if current}} is-current{{/if}}" href="{{href}}"{{#if current}} aria-current="page"{{/if}}>{{label}} <span class="admin-tabs__count">{{count}}</span></a>{{/each}}
+  </nav>
+  <form class="admin-search" method="get" action="/admin/{{type}}" role="search">
+    {{#unless (eq filter "all")}}<input type="hidden" name="status" value="{{filter}}">{{/unless}}
+    <label class="visually-hidden" for="admin-search">Search {{schema.title}}</label>
+    <input class="input" id="admin-search" type="search" name="q" value="{{search}}" placeholder="Search by title">
+    <button class="button button--secondary button--small" type="submit">Search</button>
+  </form>
+  {{/unless}}
+</div>
+
+{{#if items.length}}
+<ul class="admin-entries" role="list">
+  {{#each items}}
+  <li class="admin-entry">
+    <span class="leaf leaf--{{state}}" aria-hidden="true"></span>
+    <div class="admin-entry__main">
+      <h2 class="admin-entry__title">{{#if (eq state "trash")}}{{title}}{{else}}<a href="/admin/{{type}}/{{id}}">{{title}}</a>{{/if}}</h2>
+      <p class="admin-entry__meta">
+        <span>{{stateLabel}}{{#if (eq state "scheduled")}} for <time datetime="{{publishAt}}" data-local-time>{{publishAt}}</time>{{/if}}</span>
+        <span>{{url}}</span>
+        {{#if branch}}<span>{{branch}}</span>{{/if}}
+        <span>changed <time datetime="{{updatedAt}}" data-local-time>{{updatedAt}}</time></span>
+      </p>
+      {{#if summary}}<p class="admin-entry__summary">{{summary}}</p>{{/if}}
+    </div>
+    <div class="admin-entry__actions">
+      {{#if (eq state "trash")}}
+      <form method="post" action="/admin/{{type}}/{{id}}/restore"><input type="hidden" name="_csrf" value="{{@root.csrfToken}}"><button class="button button--secondary button--small" type="submit">Restore</button></form>
+      <form method="post" action="/admin/{{type}}/{{id}}/delete" data-confirm-form><input type="hidden" name="_csrf" value="{{@root.csrfToken}}"><button class="button button--danger button--small" type="submit" data-confirm-label="Press again to delete for good">Delete for good</button></form>
+      {{else}}
+      {{#if (eq state "published")}}<a class="button button--secondary button--small" href="{{url}}" target="_blank" rel="noopener">View</a>{{/if}}
+      <a class="button button--secondary button--small" href="/admin/{{type}}/{{id}}/revisions">Revisions</a>
+      {{#unless @root.schema.fixed}}
+      <form method="post" action="/admin/{{type}}/{{id}}/trash" data-confirm-form><input type="hidden" name="_csrf" value="{{@root.csrfToken}}"><button class="button button--secondary button--small" type="submit" data-confirm-label="Press again to move to the trash">Trash</button></form>
+      {{/unless}}
+      {{/if}}
+    </div>
+  </li>
+  {{/each}}
+</ul>
+{{else}}
+<div class="admin-empty admin-empty--big">
+  {{#if search}}<p>Nothing matches "{{search}}".</p><p><a href="/admin/{{type}}">Show everything</a></p>
+  {{else if (eq filter "trash")}}<p>The trash is empty.</p>
+  {{else if (eq filter "all")}}<p>No {{schema.title}} yet.</p>{{#unless schema.fixed}}<p><a class="button" href="/admin/{{type}}/new">Write the first {{schema.singular}}</a></p>{{/unless}}
+  {{else}}<p>Nothing here right now.</p>{{/if}}
+</div>
+{{/if}}

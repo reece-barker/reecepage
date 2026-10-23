@@ -25,6 +25,7 @@ export function defineMediaItem(sequelize) {
       captions: { type: DataTypes.STRING(160), allowNull: true },
       transcript: { type: DataTypes.TEXT, allowNull: true },
       featured: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      variants: { type: DataTypes.TEXT, allowNull: true },
       published: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
     },
     { sequelize, modelName: "MediaItem", tableName: "media_items" }

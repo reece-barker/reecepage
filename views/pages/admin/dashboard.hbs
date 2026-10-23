@@ -1,0 +1,66 @@
+<header class="admin-head">
+  <h1>Dashboard</h1>
+  <div class="admin-head__actions">
+    {{#each cards}}<a class="button{{#unless @first}} button--secondary{{/unless}}" href="{{href}}/new">New {{singular}}</a>{{/each}}
+  </div>
+</header>
+
+{{#if (eq source "files")}}
+<p class="alert alert--error" role="alert">{{icon "alert"}}<span>The site is showing the files from content/ because the database couldnt be read. Changes saved here wont show until it can, see Status and links.</span></p>
+{{/if}}
+
+<div class="admin-dash">
+  <section class="admin-block" aria-labelledby="counts-title">
+    <h2 id="counts-title">On the site</h2>
+    <ul class="admin-counts" role="list">
+      {{#each cards}}
+      <li><a href="{{href}}"><span class="admin-counts__name">{{title}}</span><span>{{count}} published{{#if drafts}}, {{drafts}} {{plural drafts "draft" "drafts"}}{{/if}}</span></a></li>
+      {{/each}}
+    </ul>
+  </section>
+
+  <section class="admin-block" aria-labelledby="soon-title">
+    <h2 id="soon-title">Coming up</h2>
+    {{#if scheduled.length}}
+    <ul class="admin-rows" role="list">
+      {{#each scheduled}}
+      <li class="admin-row"><span class="leaf leaf--{{state}}" aria-hidden="true"></span><a href="/admin/{{type}}/{{id}}">{{title}}</a><span class="admin-row__meta">goes live <time datetime="{{publishAt}}" data-local-time>{{publishAt}}</time></span></li>
+      {{/each}}
+    </ul>
+    {{else}}
+    <p class="admin-empty">Nothing scheduled. Pick a time next to Publish in the editor to put something here.</p>
+    {{/if}}
+  </section>
+
+  <section class="admin-block" aria-labelledby="drafts-title">
+    <h2 id="drafts-title">Drafts</h2>
+    {{#if drafts.length}}
+    <ul class="admin-rows" role="list">
+      {{#each drafts}}
+      <li class="admin-row"><span class="leaf leaf--{{state}}" aria-hidden="true"></span><a href="/admin/{{type}}/{{id}}">{{title}}</a><span class="admin-row__meta">changed <time datetime="{{updatedAt}}" data-local-time>{{updatedAt}}</time></span></li>
+      {{/each}}
+    </ul>
+    {{else}}
+    <p class="admin-empty">No drafts. Everything you've started is on the site.</p>
+    {{/if}}
+  </section>
+
+  <section class="admin-block admin-block--wide" aria-labelledby="recent-title">
+    <h2 id="recent-title">Recently changed</h2>
+    <ul class="admin-rows" role="list">
+      {{#each recent}}
+      <li class="admin-row"><span class="leaf leaf--{{state}}" aria-hidden="true"><span class="visually-hidden">{{stateLabel}}</span></span><a href="/admin/{{type}}/{{id}}">{{title}}</a><span class="admin-row__meta">{{stateLabel}}, <time datetime="{{updatedAt}}" data-local-time>{{updatedAt}}</time></span></li>
+      {{/each}}
+    </ul>
+  </section>
+
+  <section class="admin-block admin-block--wide" aria-labelledby="sync-title">
+    <h2 id="sync-title">GitHub</h2>
+    {{#if syncEnabled}}
+    <p>{{#if (eq sync.state "ok")}}Up to date with GitHub.{{else if (eq sync.state "failed")}}The last copy to GitHub failed: {{sync.lastError.message}}{{else}}Waiting to copy the latest changes to GitHub.{{/if}} <a href="/admin/sync">GitHub sync</a></p>
+    {{else}}
+    <p>Published content isnt copied to GitHub from here (no GITHUB_SYNC_TOKEN), which is normal on your own computer. <a href="/admin/sync">More about the sync</a></p>
+    {{/if}}
+    {{#if (eq signedInWith "dev")}}<p class="hint">Signed in with the development sign in.</p>{{/if}}
+  </section>
+</div>

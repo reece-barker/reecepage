@@ -48,7 +48,10 @@ Uploaded files live in `MEDIA_DIR` (var/media), the database only knows about th
 | Every visitor rate limited at once | `TRUST_PROXY` is wrong, so all requests look like the proxy |
 | Form says "could not be sent" | Database and SMTP both failing, check `/health/ready` and `npm run mail:verify` |
 | Notifications stop, messages still stored | SMTP token revoked or expired, `npm run mail:verify` |
-| A page 500s after editing content | Shouldn't happen (content is checked at start), run `npm run content:check` |
+| A page 500s after editing content | Shouldn't happen (saves are checked), look at the log, restore a revision |
+| Admin saves don't show on GitHub | Sync page in the admin, it shows the last error. Token expired or wrong repo |
+| Sync says it's waiting | More than five files would be deleted, press Sync now if that's right |
+| Can't sign in | SimpleLogin down: use the passkey. Refused: `ADMIN_SIMPLELOGIN_ID` must match the id the sign in page shows |
 | New CSS not showing | Rebuild with `npm run build`, then restart so the manifest reloads |
 
 ## Updating dependencies

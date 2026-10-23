@@ -38,6 +38,8 @@ try {
     seen.set(item, null);
     const res = await fetch(origin + item, { redirect: "manual" });
     if (res.status >= 300 && res.status < 400) { warnings.push(`${item} redirects to ${res.headers.get("location")}, link to the target directly`); continue; }
+    // Without a database the status page says so honestly with a 503, thats the page working not broken
+    if (res.status === 503 && item === "/status" && !process.env.SITE_DB_STORAGE) { warnings.push("/status answers 503 because theres no database in this check"); continue; }
     if (res.status !== 200) { problems.push(`${item} answers ${res.status}`); continue; }
     const type = res.headers.get("content-type") || "";
     const body = await res.text();

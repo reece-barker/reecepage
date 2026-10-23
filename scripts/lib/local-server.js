@@ -12,7 +12,7 @@ export async function startLocalServer({ env = "development", overrides = {} } =
   // Only the bits of the environment that matter here, so a .env with production values cant leak into a screenshot
   // SITE_DB_STORAGE and MEDIA_DIR let a screenshot run use a SQLite file with media in it, otherwise no database
   const base = loadConfig({
-    env: { NODE_ENV: env, PORT: "3000", ...pickFeatureFlags(process.env), ...(process.env.MEDIA_DIR ? { MEDIA_DIR: process.env.MEDIA_DIR } : {}), ...(process.env.ADMIN_PASSWORD_HASH ? { ADMIN_PASSWORD_HASH: process.env.ADMIN_PASSWORD_HASH } : {}), ...(process.env.LEGAL_PHONE ? { LEGAL_PHONE: process.env.LEGAL_PHONE } : {}) },
+    env: { NODE_ENV: env, PORT: "3000", ...pickFeatureFlags(process.env), ...(process.env.MEDIA_DIR ? { MEDIA_DIR: process.env.MEDIA_DIR } : {}), ...(process.env.LEGAL_PHONE ? { LEGAL_PHONE: process.env.LEGAL_PHONE } : {}) },
     loadDotEnv: false
   });
   // Config is frozen, so a plain copy with the bits we need changed
@@ -21,14 +21,16 @@ export async function startLocalServer({ env = "development", overrides = {} } =
     : { ...base.database, dialect: "none" };
   const config = { ...base, ...overrides, logLevel: "warn", database };
   const logger = createLogger({ ...config, logLevel: "silent" });
-  const { app } = createApp({ config, logger });
+  const { app, prepare, stop } = createApp({ config, logger });
+  // Loads the content from the SQLite file when theres one, without a database it just keeps the files
+  await prepare();
   const server = await new Promise((resolve) => {
     const s = app.listen(0, "127.0.0.1", () => resolve(s));
   });
   const { port } = server.address();
   return {
     url: `http://127.0.0.1:${port}`,
-    close: () => new Promise((resolve) => server.close(resolve))
+    close: () => new Promise((resolve) => { stop(); server.close(resolve); })
   };
 }
 

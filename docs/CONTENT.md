@@ -1,8 +1,11 @@
 # Content
 
-Everything a visitor reads lives in `content/`. Restart the server after changes in production (development picks
-them up on refresh). Run `npm run content:check` after editing, it catches broken front matter, em dashes and
-links to pages that don't exist.
+Everything a visitor reads is kept in the database and edited in the admin at /admin (see below). The files in
+`content/` are a copy of it: the admin commits every save back to them on GitHub, they fill an empty database on
+the first start (`npm run content:import`, `-- --force` to overwrite), and the site falls back to them if the
+database is down. Editing a file by hand still works but only reaches the site after `npm run content:import --
+--force`, so use the admin. Run `npm run content:check` after editing files, it catches broken front matter, em
+dashes and links to pages that don't exist.
 
 ## A new project
 
@@ -63,18 +66,49 @@ reads.
 
 ## The admin, editing without touching files
 
-Run `npm run dev` and open http://localhost:3000/admin. On your computer the login is user `reece`, password
-`reece-dev` (set `ADMIN_DEV_PASSWORD` in .env to change it). On the server it uses `ADMIN_PASSWORD_HASH`, make one with
-`npm run admin:password`.
+https://reece.page/admin. Signing in is SimpleLogin (Proton) or a passkey, theres no sign up, only one account gets
+in. On your computer `npm run dev` gives a one click development sign in instead.
 
-- **Link board**: every address the site answers and what its for, live status, links to Hetzner, Cloudflare, GlitchTip
-- **Projects and Writing**: list, new, edit, delete. The editor has a preview and a menu to drop media codes in
-- **Timeline** (experience and education), **Right now**, **Skills**, **References**, **CV**, **Branches**: forms for
-  each data file, saving writes the yml in content/data so it still goes in git like before
-- **Media**: upload, describe, publish, feature
+Setting up the sign in on the server, once:
 
-Editing is on by default on your computer and off in production (`CONTENT_EDITING=true` switches it on there, but the
-better way is edit locally, commit, deploy).
+1. On https://app.simplelogin.io/developer make an app, redirect address
+   `https://reece.page/admin/login/simplelogin/callback`. Put its id and secret in the server .env as
+   `SIMPLELOGIN_CLIENT_ID` and `SIMPLELOGIN_CLIENT_SECRET`, restart.
+2. Sign in once. It refuses you but shows your SimpleLogin id. Put it in .env as `ADMIN_SIMPLELOGIN_ID`, restart.
+3. Sign in, go to Account and add a passkey, the backup if SimpleLogin is ever down.
+
+What's in it:
+
+- **Writing, Pages, Projects, Tools**: drafts, publishing, scheduling (a publish time in the future), the trash,
+  and revisions with restore. The editor is blocks (type `/` for the menu: headings, lists, quotes, code, tables,
+  callouts, buttons, pictures, galleries) with a switch to Markdown, and a live preview at phone, fit and desktop
+  widths. Ctrl or Cmd + S saves, it also autosaves every 30 seconds without changing what's live.
+- **Pictures**: drag the corner to resize (small, medium, text width, wide, edge to edge), float left or right, a
+  caption and a link. They're shrunk and stripped of location data before uploading, and the site serves the right
+  size for each screen.
+- **Pages**: new pages at their own address like /uses. Addresses the site already uses are refused.
+- **Legal**: the impressum, privacy and the rest are Handlebars templates, the facts come from the YAML and
+  .env. A template with a mistake is refused instead of breaking the page.
+- **Lists**: timeline, skills, CV, references, right now, branches, the home page texts, menus and site settings.
+- **Media**, **Sync** (the GitHub commits), **Account** (passkeys, sessions) and **System** (every address).
+
+Every save is committed to GitHub a moment later (`[skip ci]`, so it doesn't redeploy). Pull before you push code:
+`git pull --rebase`. Needs `GITHUB_SYNC_TOKEN`, a fine grained token with Contents read and write on the repo only.
+More than five deleted files in one go waits for Sync now in the admin, so a mistake can't wipe the folder.
+
+Block codes in the Markdown, if you write it by hand:
+
+```
+[[media:slug size=small|medium|text|wide|full align=left|center|right caption="..." link="..."]]
+[[gallery:slug-one,slug-two,slug-three columns=2|3|4 caption="..."]]
+[[button href="/contact" label="Get in touch" style=secondary]]
+:::note title="Optional title"        (also tip and warning)
+Text
+:::
+:::quote cite="Who said it"
+Text
+:::
+```
 
 ## The CV
 
@@ -95,7 +129,7 @@ already in media-inbox/intro-video.yml, it points at the original in ~/Movies/Re
 
 ## Pictures and videos (the media library)
 
-Upload on https://reece.page/admin/media (log in with `ADMIN_USER` and the password behind `ADMIN_PASSWORD_HASH`):
+Upload on https://reece.page/admin/media, or straight from a picture block in the editor:
 
 1. Pick the file, give it a title, and for pictures a description of what it shows (alt text, required).
 2. It arrives unpublished. Tick Published and save, and it shows on /media.

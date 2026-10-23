@@ -14,7 +14,8 @@ function xml(value) {
  * @param {import("../services/content-service.js").ContentService} deps.content
  * @param {import("../services/seo-service.js").SeoService} deps.seo
  */
-export function createDiscoveryController({ config, content, seo, media }) {
+export function createDiscoveryController({ config, content, seo, media, settings }) {
+  const site = () => (settings ? settings.site() : config.site);
   const url = (pathname) => seo.absoluteUrl(pathname);
 
   /** Every public, indexable page with the date it last changed */
@@ -46,7 +47,12 @@ export function createDiscoveryController({ config, content, seo, media }) {
     if (config.features.tools && content.listTools().length) {
       pages.push({ path: "/tools", priority: "0.5" }, ...content.listTools().map((t) => ({ path: t.url, priority: "0.5" })));
     }
-    for (const link of config.navigation.legal) pages.push({ path: link.href, lastmod: config.legal.updated, priority: "0.2" });
+    // Pages made in the admin
+    pages.push(...content.listPages().filter((p) => p.slug !== "about").map((p) => ({ path: p.url, lastmod: p.updatedAt, priority: "0.5" })));
+    for (const name of ["impressum", "privacy", "terms", "cookies", "accessibility", "copyright"]) {
+      const page = content.legal(name);
+      if (page) pages.push({ path: `/${name}`, lastmod: page.updatedAt || config.legal.updated, priority: "0.2" });
+    }
     return pages;
   }
 
@@ -76,11 +82,11 @@ export function createDiscoveryController({ config, content, seo, media }) {
     llms(req, res) {
       const projects = content.listProjects().filter((p) => p.hasPage);
       const lines = [
-        `# ${config.site.name}`,
+        `# ${site().name}`,
         "",
-        `> ${config.site.description.trim()}`,
+        `> ${site().description.trim()}`,
         "",
-        `${config.site.name} (legal name ${config.site.legal_name}) runs ${config.site.domain}.`,
+        `${site().name} (legal name ${site().legal_name}) runs ${site().domain}.`,
         "",
         "## Pages",
         "",
@@ -90,7 +96,7 @@ export function createDiscoveryController({ config, content, seo, media }) {
         `- [CV](${url("/cv")}): one page CV, also as a PDF at ${url("/cv/reece-barker-cv.pdf")}`,
         `- [References](${url("/references")}): quotes from people he worked with, published with permission`,
         ...(config.features.media ? [`- [Media](${url("/media")}): a video introduction (with captions and a transcript) and pictures`] : []),
-        `- [Contact](${url("/contact")}): contact form, or email ${config.site.email}`,
+        `- [Contact](${url("/contact")}): contact form, or email ${site().email}`,
         "",
         "## Projects",
         "",
@@ -106,15 +112,15 @@ export function createDiscoveryController({ config, content, seo, media }) {
 
     manifest(req, res) {
       res.type("application/manifest+json").set("Cache-Control", "public, max-age=86400").send(JSON.stringify({
-        name: `${config.site.name}, ${config.site.domain}`,
-        short_name: config.site.short_name,
-        description: config.site.description.trim(),
+        name: `${site().name}, ${site().domain}`,
+        short_name: site().short_name,
+        description: site().description.trim(),
         start_url: "/",
         scope: "/",
         display: "browser",
         lang: "en-GB",
-        theme_color: config.site.theme_color,
-        background_color: config.site.background_color,
+        theme_color: site().theme_color,
+        background_color: site().background_color,
         icons: [
           { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
           { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
@@ -127,7 +133,7 @@ export function createDiscoveryController({ config, content, seo, media }) {
       // RFC 9116. The expiry is a year ahead and rolls forward with each deploy, an expired file looks abandoned
       const expires = new Date(Date.now() + 365 * 86400000).toISOString();
       res.type("text/plain").send([
-        `Contact: mailto:${config.site.email}`,
+        `Contact: mailto:${site().email}`,
         `Expires: ${expires}`,
         "Preferred-Languages: en, de",
         `Canonical: ${url("/.well-known/security.txt")}`,
@@ -169,13 +175,13 @@ export function createDiscoveryController({ config, content, seo, media }) {
       res.type("application/atom+xml").set("Cache-Control", "public, max-age=3600").send([
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-GB">',
-        `  <title>${xml(config.site.name)}, writing</title>`,
-        `  <subtitle>Articles by ${xml(config.site.name)}</subtitle>`,
+        `  <title>${xml(site().name)}, writing</title>`,
+        `  <subtitle>Articles by ${xml(site().name)}</subtitle>`,
         `  <link href="${xml(url("/writing"))}"/>`,
         `  <link rel="self" href="${xml(url("/writing/feed.xml"))}"/>`,
         `  <id>${xml(url("/writing"))}</id>`,
         `  <updated>${updated}</updated>`,
-        `  <author><name>${xml(config.site.name)}</name><uri>${xml(url("/about"))}</uri></author>`,
+        `  <author><name>${xml(site().name)}</name><uri>${xml(url("/about"))}</uri></author>`,
         entries,
         "</feed>",
         ""

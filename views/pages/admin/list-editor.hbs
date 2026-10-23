@@ -1,0 +1,20 @@
+<header class="admin-head">
+  <h1>{{pageTitle}}</h1>
+  <div class="admin-head__actions">
+    {{#if publicHref}}<a class="button button--secondary" href="{{publicHref}}" target="_blank" rel="noopener">See it on the site</a>{{/if}}
+    <a class="button button--secondary" href="/admin/lists/{{name}}/revisions">Revisions</a>
+  </div>
+</header>
+<p class="admin-intro">{{help}}</p>
+{{#if privateList}}<p class="alert alert--note">{{icon "info"}}<span>This list stays in the database and is never copied to GitHub, because it holds people's private contact details.</span></p>{{/if}}
+<noscript><p class="alert alert--error">The editor needs JavaScript.</p></noscript>
+<form class="admin-editor" data-admin-editor novalidate>
+  <script type="application/json" data-editor-config nonce="{{cspNonce}}">{{{editorJson}}}</script>
+  <div data-editor-root></div>
+  <div class="admin-editor__bar">
+    <div class="cluster">
+      <button class="button" type="submit" data-save>Save</button>
+      <span class="form-status" role="status" aria-live="polite" data-status></span>
+    </div>
+  </div>
+</form>

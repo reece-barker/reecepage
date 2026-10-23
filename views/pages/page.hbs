@@ -1,0 +1,18 @@
+<div class="container">
+  <header class="page-head">
+    {{> breadcrumbs}}
+    <h1 class="match-cut-title">{{page.title}}</h1>
+    {{#if page.lead}}<p class="lead load-fade">{{page.lead}}</p>{{/if}}
+  </header>
+  {{#if page.headings.[2]}}
+  <div class="with-aside project-body">
+    <div class="prose">{{{html}}}</div>
+    <aside class="toc" aria-labelledby="toc-title">
+      <h2 id="toc-title">On this page</h2>
+      <ol>{{#each page.headings}}<li><a href="#{{id}}">{{text}}</a></li>{{/each}}</ol>
+    </aside>
+  </div>
+  {{else}}
+  <div class="prose page-body">{{{html}}}</div>
+  {{/if}}
+</div>

@@ -41,6 +41,9 @@ export function createHelpers({ assets }, Handlebars) {
     includes: (list, value) => Array.isArray(list) && list.includes(value),
     add: (a, b) => Number(a) + Number(b),
     gt: (a, b) => Number(a) > Number(b),
+    lower: (value) => String(value ?? "").toLowerCase(),
+    // Why a revision was saved, in words for the revisions list in the admin
+    revisionReason: (reason) => ({ save: "Saved", publish: "Published", autosave: "Autosaved", import: "Imported from the files", restore: "Restored", draft: "Switched to draft", trash: "Moved to the trash" }[reason] || reason),
     length: (list) => (Array.isArray(list) ? list.length : 0),
 
     longDate: (value) => formatLongDate(value),
@@ -70,7 +73,7 @@ export function createHelpers({ assets }, Handlebars) {
     // A profile address without the https:// and www, for the CV: "github.com/reece-barker"
     shortUrl: (value) => String(value || "").replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, ""),
 
-    // Telephone links need the number without spaces: "+49 162 5865374" -> "+491625865374"
+    // Telephone links need the number without spaces: "+49 170 1234567" -> "+491701234567"
     telHref: (value) => `tel:${String(value || "").replace(/[^\d+]/g, "")}`
   };
 }

@@ -1,20 +1,84 @@
-<div class="container admin">
-  <header class="page-head">
-    <p><a class="link-action" href="{{backHref}}">{{icon "arrow-left"}} {{backLabel}}</a></p>
-    <h1>{{heading}}</h1>
-    <p class="lead">{{help}}</p>
-    {{#if publicHref}}<p><a class="link-action" href="{{publicHref}}">See it on the site {{icon "arrow"}}</a></p>{{/if}}
-  </header>
-  {{#unless editing}}<div class="alert alert--note">{{icon "info"}}<span>Editing is switched off on this server, you can look but not save. Edit on your computer and deploy.</span></div>{{/unless}}
-  <noscript><p class="alert alert--error">The editor needs JavaScript.</p></noscript>
-  <form class="admin-editor" data-admin-editor data-csrf="{{csrfToken}}" data-editing="{{#if editing}}true{{/if}}" novalidate>
-    <script type="application/json" data-editor-config nonce="{{cspNonce}}">{{{editorJson}}}</script>
-    <div data-editor-root></div>
-    <div class="admin-editor__bar">
-      <div class="cluster">
-        <button class="button" type="submit" data-save {{#unless editing}}disabled{{/unless}}>Save</button>
-        <span class="form-status" role="status" aria-live="polite" data-status></span>
-      </div>
+<div class="studio" data-studio>
+  <h1 class="visually-hidden">{{pageTitle}}</h1>
+  <script type="application/json" data-editor-config nonce="{{cspNonce}}">{{{editorJson}}}</script>
+
+  <div class="studio__bar">
+    <a class="studio__back" href="/admin/{{type}}">{{schema.title}}</a>
+    <p class="studio__state" data-state>{{#if entry}}<span class="leaf leaf--{{entry.state}}" aria-hidden="true"></span>{{entry.stateLabel}}{{else}}<span class="leaf leaf--draft" aria-hidden="true"></span>New {{schema.singular}}, not saved yet{{/if}}</p>
+    <p class="studio__status" role="status" aria-live="polite" data-status></p>
+    <div class="studio__mode" role="group" aria-label="How to write" data-mode-group hidden>
+      <button type="button" class="studio__mode-button" aria-pressed="true" data-mode="blocks">Blocks</button>
+      <button type="button" class="studio__mode-button" aria-pressed="false" data-mode="markdown">Markdown</button>
     </div>
-  </form>
+    <div class="studio__actions">
+      <button class="button button--secondary" type="button" data-action="draft">Save draft</button>
+      <button class="button" type="button" data-action="publish">Publish</button>
+    </div>
+  </div>
+
+  <div class="studio__alerts" data-alerts></div>
+
+  <div class="studio__tabs" role="tablist" aria-label="Editor views">
+    <button type="button" role="tab" id="tab-write" aria-controls="pane-write" aria-selected="true" data-tab="write">Write</button>
+    <button type="button" role="tab" id="tab-preview" aria-controls="pane-preview" aria-selected="false" data-tab="preview">Preview</button>
+    <button type="button" role="tab" id="tab-details" aria-controls="pane-details" aria-selected="false" data-tab="details">Details</button>
+  </div>
+
+  <div class="studio__body">
+    <section class="studio__write" id="pane-write" role="tabpanel" aria-labelledby="tab-write" data-pane="write">
+      <label class="visually-hidden" for="studio-title">Title</label>
+      <textarea class="studio__title" id="studio-title" rows="1" placeholder="Title" data-title></textarea>
+      <div class="studio__canvas" data-canvas>
+        <noscript><p class="alert alert--error">The editor needs JavaScript.</p></noscript>
+      </div>
+    </section>
+
+    <aside class="studio__side" aria-label="Preview and details">
+      <div class="studio__side-tabs" role="tablist" aria-label="Side panel">
+        <button type="button" role="tab" aria-selected="true" data-side-tab="preview" id="side-tab-preview" aria-controls="pane-preview">Preview</button>
+        <button type="button" role="tab" aria-selected="false" data-side-tab="details" id="side-tab-details" aria-controls="pane-details">Details</button>
+      </div>
+      <section class="studio__preview" id="pane-preview" role="tabpanel" aria-labelledby="side-tab-preview" data-pane="preview">
+        <div class="studio__preview-bar">
+          <span data-preview-status>The preview updates as you type</span>
+          <div class="studio__widths" role="group" aria-label="Preview width">
+            <button type="button" aria-pressed="false" data-width="phone">Phone</button>
+            <button type="button" aria-pressed="true" data-width="fit">Fit</button>
+            <button type="button" aria-pressed="false" data-width="desktop">Desktop</button>
+          </div>
+        </div>
+        <div class="studio__frame-wrap" data-frame-wrap>
+          <iframe class="studio__frame" title="Preview of the page" data-preview-frame></iframe>
+        </div>
+      </section>
+      <section class="studio__details" id="pane-details" role="tabpanel" aria-labelledby="side-tab-details" data-pane="details" hidden>
+        <div class="studio__group" data-publish-group>
+          <h2>Publishing</h2>
+          <div class="field">
+            <label class="label" for="studio-publish-at">Publish at (optional)</label>
+            <p class="hint" id="studio-publish-at-hint">Leave empty to publish straight away when you press Publish. A time in the future schedules it.</p>
+            <input class="input" id="studio-publish-at" type="datetime-local" aria-describedby="studio-publish-at-hint" data-publish-at>
+          </div>
+        </div>
+        <div class="studio__group" data-address-group>
+          <h2>Address</h2>
+          <div class="field">
+            <label class="label" for="studio-slug">Address</label>
+            <p class="hint" id="studio-slug-hint" data-slug-hint>Made from the title if you leave it empty. Lowercase letters, numbers and hyphens.</p>
+            <input class="input" id="studio-slug" type="text" spellcheck="false" autocapitalize="off" aria-describedby="studio-slug-hint" data-slug>
+          </div>
+        </div>
+        <div data-fields></div>
+        {{#if entry}}
+        <div class="studio__group">
+          <h2>More</h2>
+          <ul class="studio__links" role="list">
+            <li><a href="/admin/{{type}}/{{entry.id}}/revisions">Revisions</a></li>
+            {{#if (eq entry.state "published")}}<li><a href="{{entry.url}}" target="_blank" rel="noopener">View on the site</a></li>{{/if}}
+          </ul>
+        </div>
+        {{/if}}
+      </section>
+    </aside>
+  </div>
 </div>

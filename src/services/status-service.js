@@ -64,7 +64,11 @@ export function createStatusService({ config, database, mail, reporter, media })
           { id: "email", name: "Email sending", state: mail.enabled ? (mail.lastFailedAt && (!mail.lastSentAt || mail.lastFailedAt > mail.lastSentAt) ? "degraded" : "ok") : "off",
             detail: mail.enabled ? `Last sent: ${mail.lastSentAt ? mail.lastSentAt.toISOString() : "nothing since the start"}. Last failure: ${mail.lastFailedAt ? mail.lastFailedAt.toISOString() : "none"}.` : "SMTP is not set up (SMTP_HOST and MAIL_FROM)." },
           { id: "errors", name: "Error monitor", state: reporter.enabled ? "ok" : "off", detail: reporter.enabled ? "Errors are sent to GlitchTip." : "ERROR_DSN is not set, errors only go to the log." },
-          { id: "admin", name: "Admin login", state: config.admin.devPassword ? "degraded" : config.admin.passwordHash ? "ok" : "off", detail: config.admin.devPassword ? "Using the development password, fine on your own computer only." : config.admin.passwordHash ? "Password set." : "No ADMIN_PASSWORD_HASH, the admin is closed." }
+          { id: "admin", name: "Admin sign in",
+            state: config.admin.simplelogin.configured && config.admin.simplelogin.allowedId ? "ok" : config.admin.devLogin ? "degraded" : "off",
+            detail: config.admin.simplelogin.configured && config.admin.simplelogin.allowedId
+              ? "Sign in with SimpleLogin is set up, plus any passkeys added under Account."
+              : config.admin.devLogin ? "Development sign in, fine on your own computer only." : "Sign in with SimpleLogin isnt fully set up (SIMPLELOGIN_CLIENT_ID, SIMPLELOGIN_CLIENT_SECRET and ADMIN_SIMPLELOGIN_ID)." }
         );
       }
       for (const check of checks) check.label = STATES[check.state];

@@ -18,7 +18,7 @@ try {
 }
 
 const logger = createLogger(config);
-const { app, services } = createApp({ config, logger });
+const { app, services, prepare, stop } = createApp({ config, logger });
 const { database } = services;
 
 if (database) {
@@ -37,6 +37,8 @@ if (database) {
     logger.error({ err: { message: error.message } }, "database not reachable at startup");
   }
 }
+// Content from the database. If that fails the site serves the files in content/ and keeps trying in the background
+await prepare();
 
 const stopPurge = database && config.contact.store_messages
   ? schedulePurge({ repository: new ContactMessageRepository(database.models), retentionDays: config.contact.retention_days, logger })
@@ -44,9 +46,9 @@ const stopPurge = database && config.contact.store_messages
 
 const server = app.listen(config.port, config.host, () => {
   logger.info({ url: config.baseUrl, port: config.port, env: config.env }, "reece.page is running");
-  if (config.admin.devPassword) {
+  if (config.admin.devLogin) {
     // Plain console line on purpose, it is for the person at the keyboard, not for the log files
-    console.log(`\n  Admin: ${config.baseUrl}/admin   user: ${config.admin.user}   password: ${config.admin.devPassword}   (development only)\n`);
+    console.log(`\n  Admin: ${config.baseUrl}/admin   (development sign in, one click)\n`);
   }
 });
 // Slightly longer than a typical proxy keep alive, so the proxy never reuses a socket we just closed
@@ -62,6 +64,7 @@ async function shutdown(signal, exitCode = 0) {
   shuttingDown = true;
   logger.info({ signal }, "shutting down");
   stopPurge();
+  stop();
   // Give open requests up to 10 seconds to finish, then go anyway
   const force = setTimeout(() => {
     logger.error("forced shutdown after timeout");

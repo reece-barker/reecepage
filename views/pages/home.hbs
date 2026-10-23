@@ -1,10 +1,10 @@
 <section class="grove" aria-labelledby="hero-title" data-grove>
   <div class="grove__intro">
     <h1 class="hero-name matte-words" id="hero-title">{{matteWords site.name}}</h1>
-    <p class="hero-lede load-fade load-fade--2">I grew up in Munich and study Applied Computer Science at Saxion in Enschede. I write software, build hardware and co-founded a startup whose AI runs the climate of a room, so it stays comfortable and wastes less energy.</p>
+    <p class="hero-lede load-fade load-fade--2">{{home.hero_lede}}</p>
     <div class="hero-actions load-fade load-fade--3">
-      <a class="button" href="/projects" data-track="Home: see projects">See my projects {{icon "arrow"}}</a>
-      <a class="link-action" href="/contact" data-track="Home: get in touch">Get in touch</a>
+      <a class="button" href="/projects" data-track="Home: see projects">{{home.hero_button}} {{icon "arrow"}}</a>
+      <a class="link-action" href="/contact" data-track="Home: get in touch">{{home.hero_link}}</a>
     </div>
   </div>
 
@@ -15,8 +15,8 @@
   </div>
 
   <div class="grove__branches">
-    <h2>One tree, three branches</h2>
-    <p class="section-intro">Everything I do grows from one of these. <span class="grove__hint" aria-hidden="true">Point at a branch and it lights up on the tree.</span></p>
+    <h2>{{home.branches_heading}}</h2>
+    <p class="section-intro">{{home.branches_intro}} <span class="grove__hint" aria-hidden="true">Point at a branch and it lights up on the tree.</span></p>
     <ul class="branch-list" role="list">
       {{#each branches}}
       <li class="branch-row branch-{{id}}" data-limb="{{limb}}">
@@ -37,9 +37,9 @@
 <section class="section home-intro" aria-labelledby="intro-title">
   <div class="container home-intro__grid">
     <div class="home-intro__text">
-      <h2 id="intro-title">Meet me</h2>
+      <h2 id="intro-title">{{home.intro_heading}}</h2>
       {{#if intro.durationSeconds}}<p class="updated-note">A video introduction, {{clock intro.durationSeconds}} long{{#if intro.captionsSrc}}, with captions{{/if}}</p>{{/if}}
-      <p>{{#if intro.caption}}{{intro.caption}}{{else}}Where I grew up, what I study, what I have built and what I want to work on next, in one video.{{/if}}</p>
+      <p>{{#if intro.caption}}{{intro.caption}}{{else}}{{home.intro_text}}{{/if}}</p>
       <p><a class="link-action" href="/media">More on the media page {{icon "arrow"}}</a></p>
     </div>
     <div class="home-intro__video">{{{introHtml}}}</div>
@@ -51,8 +51,8 @@
   <div class="container">
     <div class="section-head">
       <div>
-        <h2 id="work-title">Selected work</h2>
-        <p class="section-intro">A startup, a robot production line, a sensor that listens to traffic and a tool for a school's IT team.</p>
+        <h2 id="work-title">{{home.work_heading}}</h2>
+        <p class="section-intro">{{home.work_intro}}</p>
       </div>
       <a class="link-action" href="/projects">All projects {{icon "arrow"}}</a>
     </div>
@@ -92,11 +92,11 @@
 
 <section class="section" aria-labelledby="hi-title">
   <div class="container home-contact">
-    <h2 id="hi-title">Say hello</h2>
-    <p class="lead">Open to internships, green tech projects and good conversations about either.</p>
+    <h2 id="hi-title">{{home.contact_heading}}</h2>
+    <p class="lead">{{home.contact_lead}}</p>
     <a class="email-link" href="mailto:{{site.email}}" data-track="Email link">{{site.email}}</a>
     <div class="cluster">
-      <a class="button button--secondary" href="/contact" data-track="Home: send a message">Send a message {{icon "arrow"}}</a>
+      <a class="button button--secondary" href="/contact" data-track="Home: send a message">{{home.contact_button}} {{icon "arrow"}}</a>
       {{#if latest}}<a class="link-action" href="{{latest.url}}">Latest writing: {{latest.title}}</a>{{/if}}
     </div>
   </div>

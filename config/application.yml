@@ -74,7 +74,7 @@ redirects:
 # Feature flags, anything risky or not finished stays off until its switched on here on purpose
 features:
   writing: true
-  media: true         # /media, the video introduction and pictures. Uploading needs ADMIN_PASSWORD_HASH in .env
+  media: true         # /media, the video introduction and pictures. Uploading is in the admin
   contact_form: true
   tools: false        # no public tools yet, /tools gives a 404 until this is true and content/tools has entries
   analytics: false    # also needs analytics.provider below

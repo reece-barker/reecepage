@@ -1,22 +1,28 @@
-// Reads the Markdown content (projects, writing, tools) and the YAML data files from /content.
-// Everything is read once and kept in memory, the files only change when the site is deployed again.
-// In development the cache is skipped so edits show up on refresh without restarting.
-import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
-import path from "node:path";
-import matter from "gray-matter";
-import { load as parseYaml } from "js-yaml";
+// Everything the site shows that isnt a media file: projects, writing, tools, pages, the legal pages and the lists
+// (timeline, skills, cv and so on). It all lives in the database now and is edited in the admin, the files in
+// content/ are where it started and what GitHub gets a copy of whenever something is published.
+//
+// The whole lot is kept in memory, so pages never wait on a query. It's built from the files first thing on start
+// up (so theres always something to serve, even if MySQL is down), then swapped for the database version as soon
+// as that's read, and rebuilt after every save in the admin and whenever a scheduled post goes live.
 import { Marked, Renderer } from "marked";
 import { slugify, truncate, readingMinutes, stripTags } from "../utils/text.js";
 import { toDate } from "../utils/dates.js";
+import { readContentFolder } from "./content-records.js";
+import { renderBlockSyntax } from "./content-blocks.js";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const BRANCHES = ["code", "earth", "faith"];
-const COLLECTIONS = ["projects", "writing", "tools"];
+// faith is still the id of the third branch, it shows as People on the site
+export const BRANCHES = ["code", "earth", "faith"];
+// setTimeout cant wait longer than about 24 days, a post scheduled further out is checked again after that
+const MAX_TIMER = 2 ** 31 - 1;
 
 export class ContentError extends Error {
   constructor(file, problem) {
     super(`${file}: ${problem}`);
     this.name = "ContentError";
+    this.file = file;
+    this.problem = problem;
   }
 }
 
@@ -27,6 +33,8 @@ function escapeAttribute(value) {
 /**
  * One Marked instance per document, so the heading list (for "On this page") belongs to that document only.
  * Headings get ids, links to other sites get rel=noopener but still open in the same tab like people expect.
+ * The block syntax from the editor (callouts, quotes with a name, buttons) is turned into HTML here too, the
+ * media and gallery codes need the database so they're done when the page is shown
  */
 export function renderMarkdown(markdown) {
   const headings = [];
@@ -63,22 +71,16 @@ export function renderMarkdown(markdown) {
       }
     }
   });
-  const html = marked.parse(markdown);
+  renderBlockSyntax(marked);
+  const html = marked.parse(String(markdown || ""));
   return { html, headings };
-}
-
-function readDirectory(directory) {
-  if (!existsSync(directory)) return [];
-  return readdirSync(directory)
-    .filter((file) => file.endsWith(".md") && !file.startsWith("_") && file !== "README.md")
-    .map((file) => path.join(directory, file));
 }
 
 function requireString(data, key, file, { max } = {}) {
   // YAML turns `period: 2026` into a number, thats still a fine value for a text field
   const value = typeof data[key] === "number" ? String(data[key]) : data[key];
-  if (typeof value !== "string" || !value.trim()) throw new ContentError(file, `front matter needs "${key}"`);
-  if (max && value.length > max) throw new ContentError(file, `"${key}" is longer than ${max} characters`);
+  if (typeof value !== "string" || !value.trim()) throw new ContentError(file, `needs a ${key}`);
+  if (max && value.length > max) throw new ContentError(file, `the ${key} is longer than ${max} characters`);
   return value.trim();
 }
 
@@ -87,20 +89,18 @@ function asList(value) {
   return Array.isArray(value) ? value.filter((item) => item != null && item !== "") : [value];
 }
 
-function parseFile(file) {
-  const source = readFileSync(file, "utf8");
-  const { data, content } = matter(source);
-  const slug = path.basename(file, ".md");
-  if (!SLUG_PATTERN.test(slug)) throw new ContentError(file, "file names must be lowercase words joined by hyphens");
-  const { html, headings } = renderMarkdown(content);
-  return { data, html, headings, slug, file, raw: content };
+/** Order fields come from YAML as numbers or from the admin as text, empty means "no particular order" */
+function orderOf(value) {
+  if (value === null || value === undefined || value === "") return 100;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 100;
 }
 
 function buildProject({ data, html, headings, slug, file }) {
   const branch = String(data.branch || "").toLowerCase();
   if (!BRANCHES.includes(branch)) throw new ContentError(file, `branch must be one of ${BRANCHES.join(", ")}`);
   const sortDate = toDate(data.sort_date);
-  if (!sortDate) throw new ContentError(file, "sort_date must be a date like 2026-09");
+  if (!sortDate) throw new ContentError(file, "the sort date must be a date like 2026-09");
   return {
     type: "project",
     slug,
@@ -121,8 +121,7 @@ function buildProject({ data, html, headings, slug, file }) {
     links: asList(data.links),
     cover: data.cover || null,
     featured: Boolean(data.featured),
-    order: Number.isFinite(data.order) ? data.order : 100,
-    draft: Boolean(data.draft),
+    order: orderOf(data.order),
     // page: false means the project is listed but has no page of its own, for small things with one line to say
     hasPage: data.page !== false,
     todo: asList(data.todo),
@@ -131,9 +130,10 @@ function buildProject({ data, html, headings, slug, file }) {
   };
 }
 
-function buildArticle({ data, html, headings, slug, file, raw }) {
-  const date = toDate(data.date);
-  if (!date) throw new ContentError(file, "date must be a date like 2026-10-12");
+function buildArticle({ data, html, headings, slug, file, raw, publishAt }) {
+  // A scheduled post that has no date of its own gets the day it goes live
+  const date = toDate(data.date) || (publishAt ? new Date(publishAt) : null);
+  if (!date) throw new ContentError(file, "the published date must be a date like 2026-10-12");
   return {
     type: "article",
     slug,
@@ -144,7 +144,6 @@ function buildArticle({ data, html, headings, slug, file, raw }) {
     date,
     updated: toDate(data.updated),
     tags: asList(data.tags),
-    draft: Boolean(data.draft),
     todo: asList(data.todo),
     readingMinutes: readingMinutes(raw),
     html,
@@ -162,58 +161,136 @@ function buildTool({ data, html, headings, slug, file }) {
     description: truncate(data.description || data.summary, 160),
     status: data.status || "",
     launchUrl: data.launch_url || "",
-    draft: Boolean(data.draft),
-    order: Number.isFinite(data.order) ? data.order : 100,
+    order: orderOf(data.order),
     todo: asList(data.todo),
     html,
     headings
   };
 }
 
-const BUILDERS = { projects: buildProject, writing: buildArticle, tools: buildTool };
+function buildPage({ data, html, headings, slug, file }) {
+  return { ...data, title: requireString(data, "title", file, { max: 120 }), slug, url: `/${slug}`, html, headings };
+}
+
+const BUILDERS = { projects: buildProject, writing: buildArticle, tools: buildTool, pages: buildPage };
+
+/** Is this entry on the site right now: published, and if it has a publish time, that time has passed */
+export function isLive(entry, now = new Date()) {
+  if (entry.status !== "published") return false;
+  return !entry.publishAt || new Date(entry.publishAt) <= now;
+}
+
+/**
+ * Builds one entry the way the site shows it. Throws a ContentError with a plain message when something required
+ * is missing, the admin shows that message next to the save button
+ */
+export function buildEntry(entry) {
+  const label = `${entry.type}/${entry.slug}`;
+  if (!SLUG_PATTERN.test(String(entry.slug))) throw new ContentError(label, "the address must be lowercase words joined by hyphens");
+  if (entry.type === "legal") {
+    return { type: "legal", slug: entry.slug, url: `/${entry.slug}`, title: entry.title, description: entry.meta?.description || "", template: entry.body, updatedAt: entry.updatedAt };
+  }
+  const builder = BUILDERS[entry.type];
+  if (!builder) throw new ContentError(label, "unknown kind of content");
+  const data = { ...(entry.meta || {}), title: entry.title };
+  const { html, headings } = renderMarkdown(entry.body);
+  return { ...builder({ data, html, headings, slug: entry.slug, file: label, raw: entry.body, publishAt: entry.publishAt }), updatedAt: entry.updatedAt, publishAt: entry.publishAt || null };
+}
 
 export class ContentService {
   /**
-   * @param {{ contentDir: string, cache?: boolean, includeDrafts?: boolean }} options
+   * @param {object} options
+   * @param {string} options.contentDir the content/ folder, read at start up and as the fallback
+   * @param {object} [options.repository] the ContentRepository, without one only the files are used
+   * @param {object} [options.logger]
    */
-  constructor({ contentDir, cache = true, includeDrafts = false }) {
+  constructor({ contentDir, repository = null, logger = null }) {
     this.contentDir = contentDir;
-    this.cache = cache;
-    this.includeDrafts = includeDrafts;
+    this.repository = repository;
+    this.logger = logger;
     this.store = null;
+    this.source = "files";
+    this.timer = null;
+    this.listeners = new Set();
   }
 
-  /** Reads everything, throws a ContentError pointing at the file when something is wrong */
-  load() {
-    const collections = {};
-    for (const name of COLLECTIONS) {
-      const items = readDirectory(path.join(this.contentDir, name)).map((file) => BUILDERS[name](parseFile(file)));
-      collections[name] = items.filter((item) => this.includeDrafts || !item.draft);
-    }
-    collections.projects.sort((a, b) => b.sortDate - a.sortDate || a.order - b.order);
-    collections.writing.sort((a, b) => b.date - a.date);
-    collections.tools.sort((a, b) => a.order - b.order);
-
-    // Free form pages (about) only need a title, the rest of the front matter is passed through as is
-    const pages = {};
-    for (const file of readDirectory(path.join(this.contentDir, "pages"))) {
-      const { data: front, html, headings, slug } = parseFile(file);
-      pages[slug] = { ...front, title: requireString(front, "title", file), slug, html, headings };
-    }
-
-    const data = {};
-    const dataDir = path.join(this.contentDir, "data");
-    if (existsSync(dataDir)) {
-      for (const file of readdirSync(dataDir).filter((name) => name.endsWith(".yml"))) {
-        data[path.basename(file, ".yml")] = parseYaml(readFileSync(path.join(dataDir, file), "utf8"));
-      }
-    }
-    this.store = { ...collections, pages, data, loadedAt: new Date() };
+  /** Reads content/ and builds from it. Throws a ContentError naming the file if something in there is broken */
+  loadFiles() {
+    const { entries, documents } = readContentFolder(this.contentDir);
+    this.store = this.build(entries, documents);
+    this.source = "files";
     return this.store;
   }
 
+  /** Same as loadFiles, kept for the scripts that read content without a database */
+  load() { return this.loadFiles(); }
+
+  /**
+   * Reads everything from the database and swaps it in. When the database cant be read the site keeps what it has
+   * (the files, or the last good database read), logs it, and tries again in a minute
+   */
+  async refresh() {
+    if (!this.repository) {
+      if (!this.store) this.loadFiles();
+      return this.store;
+    }
+    try {
+      const { entries, documents } = await this.repository.readAll();
+      this.store = this.build(entries, documents);
+      this.source = "database";
+      this.scheduleNext(entries);
+      for (const listener of this.listeners) listener(this.store);
+    } catch (error) {
+      if (!this.store) this.loadFiles();
+      this.logger?.error({ err: { message: error.message } }, "content could not be read from the database, using what was loaded before");
+      this.scheduleRetry();
+    }
+    return this.store;
+  }
+
+  /** Called with the new store after every rebuild, the sitemap cache and the GitHub sync listen for this */
+  onChange(listener) { this.listeners.add(listener); return () => this.listeners.delete(listener); }
+
+  build(entries, documents) {
+    const now = new Date();
+    const store = { projects: [], writing: [], tools: [], pages: {}, legal: {}, data: { ...documents }, loadedAt: now, newest: 0 };
+    for (const entry of entries) {
+      if (!isLive(entry, now)) continue;
+      const built = buildEntry(entry);
+      store.newest = Math.max(store.newest, new Date(entry.updatedAt || 0).getTime(), new Date(entry.publishAt || 0).getTime());
+      if (entry.type === "legal") store.legal[entry.slug] = built;
+      else if (entry.type === "pages") store.pages[entry.slug] = built;
+      else store[entry.type].push(built);
+    }
+    store.projects.sort((a, b) => b.sortDate - a.sortDate || a.order - b.order);
+    store.writing.sort((a, b) => b.date - a.date);
+    store.tools.sort((a, b) => a.order - b.order);
+    return store;
+  }
+
+  /** Wakes up when the next scheduled entry is due, so it goes live on time without anyone saving anything */
+  scheduleNext(entries) {
+    clearTimeout(this.timer);
+    const now = Date.now();
+    const next = entries
+      .filter((entry) => entry.status === "published" && entry.publishAt && new Date(entry.publishAt).getTime() > now)
+      .map((entry) => new Date(entry.publishAt).getTime())
+      .sort((a, b) => a - b)[0];
+    if (!next) return;
+    this.timer = setTimeout(() => this.refresh(), Math.min(next - now + 1000, MAX_TIMER));
+    this.timer.unref?.();
+  }
+
+  scheduleRetry() {
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.refresh(), 60000);
+    this.timer.unref?.();
+  }
+
+  stop() { clearTimeout(this.timer); }
+
   get state() {
-    if (!this.store || !this.cache) this.load();
+    if (!this.store) this.loadFiles();
     return this.store;
   }
 
@@ -255,14 +332,15 @@ export class ContentService {
 
   data(name) { return this.state.data[name]; }
 
-  page(slug) { return this.state.pages[slug] || null; }
+  page(slug) { return SLUG_PATTERN.test(String(slug)) ? this.state.pages[slug] || null : null; }
 
-  /** Newest change of any content file, used for the sitemap lastmod of list pages */
+  /** Pages made in the admin that dont have a template of their own, shown at /their-slug */
+  listPages() { return Object.values(this.state.pages); }
+
+  legal(slug) { return this.state.legal[slug] || null; }
+
+  /** Newest change to any content, used for the sitemap lastmod of list pages */
   lastModified() {
-    let newest = 0;
-    for (const name of COLLECTIONS) {
-      for (const file of readDirectory(path.join(this.contentDir, name))) newest = Math.max(newest, statSync(file).mtimeMs);
-    }
-    return newest ? new Date(newest) : new Date();
+    return this.state.newest ? new Date(this.state.newest) : this.state.loadedAt;
   }
 }

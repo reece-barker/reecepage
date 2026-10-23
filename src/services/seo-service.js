@@ -5,13 +5,16 @@ import { isoDate } from "../utils/dates.js";
 
 export class SeoService {
   /**
-   * @param {{ config: object, assets: import("./asset-manifest.js").AssetManifest }} deps
+   * @param {{ config: object, assets: import("./asset-manifest.js").AssetManifest, settings?: import("./settings-service.js").SettingsService }} deps
    */
-  constructor({ config, assets }) {
+  constructor({ config, assets, settings = null }) {
     this.config = config;
     this.assets = assets;
-    this.site = config.site;
+    this.settings = settings;
   }
+
+  /** The site details with the admin's settings on top, read fresh so a change there shows straight away */
+  get site() { return this.settings ? this.settings.site() : this.config.site; }
 
   absoluteUrl(pathname = "/") {
     if (/^https?:\/\//.test(pathname)) return pathname;

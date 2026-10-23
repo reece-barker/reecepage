@@ -1,0 +1,15 @@
+// The admin's own stylesheet, loaded only by views/layouts/admin.hbs. It shares the site's tokens, type, buttons
+// and form fields, so the admin feels like the same place, and adds the shell, the lists and the editor.
+@use "abstracts/tokens";
+@use "base/fonts";
+@use "base/reset";
+@use "base/base";
+@use "base/prose";
+@use "components/buttons";
+@use "components/forms";
+@use "components/media";
+@use "components/profile";
+@use "components/content-blocks";
+@use "components/admin";
+@use "components/admin-shell";
+@use "components/admin-studio";

@@ -1,8 +1,6 @@
-<div class="container">
-  <header class="page-head">
-    <h1>Media admin</h1>
-    <p class="lead">Upload pictures and videos, describe them, then publish. Published items show on <a href="/media">/media</a>. To put one in an article, paste its code (like <code>[[media:my-photo-1a2b3c]]</code>) on its own line in the Markdown.</p>
-  </header>
+<div class="admin-media">
+  <header class="admin-head"><h1>Media</h1></header>
+  <p class="admin-intro">Every picture and video on the site. Ticking Published lists one on the <a href="/media">media page</a>, pictures in a post show in the post either way. The easiest way to add a picture to a post is the picture block in the editor, it uploads from there.</p>
 
   {{#if notice}}<div class="alert alert--success" role="status">{{icon "check"}}<span>{{notice}}</span></div>{{/if}}
   {{#if error}}<div class="alert alert--error" role="alert">{{icon "alert"}}<span>{{error}}</span></div>{{/if}}

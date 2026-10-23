@@ -1,7 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { parseDsn, stackFrames, scrub, createErrorReporter } from "../../src/lib/error-reporter.js";
-import { hashPassword, verifyPassword, isValidHash } from "../../src/middleware/admin-auth.js";
 
 test("DSNs are read like Sentry does", () => {
   assert.deepEqual(parseDsn("https://abc123@errors.reece.page/2"), { key: "abc123", storeUrl: "https://errors.reece.page/api/2/store/" });
@@ -47,10 +46,3 @@ test("a dead monitor never throws", async () => {
   assert.equal(await reporter.captureException(new Error("x")), false);
 });
 
-test("admin passwords are hashed with scrypt and checked in constant time", () => {
-  const hash = hashPassword("a long enough admin password");
-  assert.ok(isValidHash(hash));
-  assert.equal(verifyPassword("a long enough admin password", hash), true);
-  assert.equal(verifyPassword("a long enough admin passworD", hash), false);
-  assert.equal(verifyPassword("anything", "plain text"), false);
-});

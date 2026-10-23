@@ -39,16 +39,32 @@ split is what lets the tests create a fresh app per test with an in memory datab
 
 ## Content
 
-Projects, articles and pages are Markdown with front matter, lists like the timeline and skills are YAML. The
-content service reads everything at start up and throws a `ContentError` naming the file if something is wrong, so
-a broken file stops a deploy instead of breaking a page. In development the cache is off and edits show on refresh.
+Projects, articles and pages are Markdown with front matter, lists like the timeline and skills are YAML, legal
+pages are Handlebars templates. The database is the source: tables `entries` (with a status of draft, published or
+trash and an optional `publish_at`), `entry_revisions`, `documents` (the lists and settings as JSON) and
+`document_revisions`. The content service builds an in memory store from those rows, refreshes it after every
+admin save and at the next scheduled publish time, and if the database is down it falls back to the files in
+`content/` and tries again every minute. The admin checks everything before saving (`ContentAdmin`), so a broken
+entry is refused instead of breaking a page.
+
+`content/` is a mirror: `GitHubSync` works out which files should exist from the database, compares them with the
+branch by git blob hash and makes one commit through the GitHub API for whatever changed. On an empty database the
+files are imported at start up.
+
+The editor is Editor.js (vendored in assets/vendor, no build step) with its own blocks for pictures, galleries,
+callouts, buttons and raw HTML. Markdown is what gets stored, `assets/js/admin-markdown.js` turns blocks into
+Markdown and back and is unit tested against the real content. Block codes like `[[media:...]]` and `:::note` are
+marked extensions in `src/services/content-blocks.js`, pictures are resolved per request so a changed caption or a
+new size shows straight away.
 
 Projects with `page: false` are listed but have no page of their own. Anything still unknown about a project goes
 in its `todo` list, which shows on the page in development only and in `npm run content:check`.
 
 ## Database
 
-Only contact messages are stored. One table, `contact_messages`, with the submission id unique so pressing send
+Content (above), media, admin sign ins and contact messages. Admin sessions are a random cookie with only its
+sha256 in `admin_sessions`, passkeys are in `admin_passkeys`, and `sign_in_attempts` holds the SimpleLogin state
+for ten minutes. Contact messages are in `contact_messages`, with the submission id unique so pressing send
 twice saves one message. Visitors' IP addresses are never stored, only a keyed hash used to spot floods. A daily
 job inside the app deletes messages older than `contact.retention_days` (365), as the privacy policy says.
 
@@ -71,7 +87,11 @@ for both. SQLite databases migrate themselves on start, MySQL only ever migrates
   `object-src 'none'`, `base-uri 'none'`, form actions only to this site. Analytics hosts are only added when
   analytics is switched on.
 - HSTS in production only. Permissions Policy turns off camera, microphone, location, payment and USB.
-- CSRF double submit cookies (`__Host-` prefixed in production) on the two forms.
+- CSRF double submit cookies (`__Host-` prefixed in production) on the forms and every admin request.
+- The admin is the only place with a few exceptions: style attributes (Editor.js sets them), `blob:` pictures for
+  the upload preview, and its preview pages can be framed by the admin itself. Everything else stays as strict.
+- Signing in is SimpleLogin (OAuth code flow with state, only the account in `ADMIN_SIMPLELOGIN_ID`) or a passkey.
+  Sessions end after 14 days, or 3 without use, and can be signed out everywhere from Account.
 - Rate limits for the whole site and stricter ones for the form. `TRUST_PROXY` must match the number of proxies
   in front of the app or every visitor looks like the same address.
 - Logs redact cookies, authorization headers and form fields with personal data.

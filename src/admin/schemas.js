@@ -5,6 +5,7 @@
 // strings (a list of short texts) and objects (a list of items with their own fields).
 
 const BRANCHES = ["code", "earth", "faith"];
+export const BRANCH_LABELS = { code: "Code", earth: "Earth", faith: "People" };
 
 export const DATA_SCHEMAS = {
   timeline: {
@@ -106,15 +107,113 @@ export const DATA_SCHEMAS = {
   }
 };
 
-export const DOCUMENT_SCHEMAS = {
+// The other documents: settings, menus and the home page texts. Anything left empty falls back to the default
+// that is built into the site (config/application.yml or the template), so an empty form never breaks a page
+const LINK_FIELDS = [
+  { name: "label", label: "Label", type: "text", required: true, max: 40 },
+  { name: "href", label: "Address", type: "url", required: true, help: "A page on this site like /projects, or a full https:// address" }
+];
+
+Object.assign(DATA_SCHEMAS, {
+  settings: {
+    title: "Site settings",
+    help: "Your name, description, email and profiles as they appear in the header, footer, search results and share cards. Leave a field empty to use the built in default.",
+    root: { type: "object", fields: [
+      { name: "name", label: "Site name", type: "text", max: 60, help: "Shown in the header, the browser tab and search results" },
+      { name: "short_name", label: "Short name", type: "text", max: 30, help: "Used where space is tight, like a phone home screen" },
+      { name: "description", label: "Description", type: "textarea", max: 300, help: "The one or two sentences search engines and share cards show for the home page" },
+      { name: "email", label: "Public email", type: "email" },
+      { name: "profiles", label: "Profiles", type: "object", fields: [
+        { name: "linkedin", label: "LinkedIn", type: "url" },
+        { name: "github", label: "GitHub", type: "url" }
+      ] },
+      { name: "knows_about", label: "Topics you know about (for search engines)", type: "strings" },
+      { name: "legal_updated", label: "Legal pages last updated", type: "date", help: "The Stand date at the bottom of the legal pages. Change it whenever you change one of them" },
+      { name: "pages", label: "Descriptions of the built in pages", type: "object", fields: [
+        { name: "about", label: "About", type: "textarea", max: 300 },
+        { name: "projects", label: "Projects", type: "textarea", max: 300 },
+        { name: "writing", label: "Writing", type: "textarea", max: 300 },
+        { name: "media", label: "Media", type: "textarea", max: 300 },
+        { name: "cv", label: "CV", type: "textarea", max: 300 },
+        { name: "references", label: "References", type: "textarea", max: 300 },
+        { name: "contact", label: "Contact", type: "textarea", max: 300 }
+      ] }
+    ] }
+  },
+  menus: {
+    title: "Menus",
+    help: "The links in the header and footer. Links to sections that are switched off (like writing) are hidden automatically.",
+    root: { type: "object", fields: [
+      { name: "primary", label: "Header menu", type: "objects", itemLabel: "label", fields: LINK_FIELDS },
+      { name: "more", label: "Extra footer links", type: "objects", itemLabel: "label", fields: LINK_FIELDS },
+      { name: "legal", label: "Legal links in the footer", type: "objects", itemLabel: "label", fields: LINK_FIELDS }
+    ] }
+  },
+  home: {
+    title: "Home page",
+    help: "The texts on the home page. The tree branches, the selected projects (tick On the home page on a project) and Right now have their own editors.",
+    root: { type: "object", fields: [
+      { name: "hero_lede", label: "Intro under your name", type: "textarea", max: 400 },
+      { name: "hero_button", label: "Main button", type: "text", max: 40 },
+      { name: "hero_link", label: "Second link", type: "text", max: 40 },
+      { name: "branches_heading", label: "Tree heading", type: "text", max: 80 },
+      { name: "branches_intro", label: "Tree intro", type: "textarea", max: 300 },
+      { name: "intro_heading", label: "Video heading", type: "text", max: 80 },
+      { name: "intro_text", label: "Video text (when the video has no caption)", type: "textarea", max: 300 },
+      { name: "work_heading", label: "Selected work heading", type: "text", max: 80 },
+      { name: "work_intro", label: "Selected work intro", type: "textarea", max: 300 },
+      { name: "contact_heading", label: "Contact heading", type: "text", max: 80 },
+      { name: "contact_lead", label: "Contact text", type: "textarea", max: 300 },
+      { name: "contact_button", label: "Contact button", type: "text", max: 40 }
+    ] }
+  }
+});
+
+// Documents that never go to GitHub. references holds people's private email addresses and phone numbers until
+// they agree to them being public, the repository is public, so it stays in the database only
+export const PRIVATE_DOCUMENTS = ["references"];
+
+// Posts, pages, projects, tools and the legal pages. title and the body are edited in the main area of the editor,
+// these fields go in the sidebar next to it. editor is "blocks" (the block editor with Markdown) or "template"
+// (the Handlebars source, for the legal pages)
+const SEO_DESCRIPTION = { name: "description", label: "Search description", type: "textarea", max: 160, help: "What search engines show under the title. Leave empty to use the summary", group: "seo" };
+
+export const ENTRY_SCHEMAS = {
+  writing: {
+    title: "Posts",
+    singular: "post",
+    publicPath: (slug) => `/writing/${slug}`,
+    titleMax: 100,
+    editor: "blocks",
+    fields: [
+      { name: "summary", label: "Summary", type: "textarea", required: true, max: 220, help: "One or two sentences, shown in lists and the feed" },
+      { name: "date", label: "Published date", type: "date", help: "Leave empty and it becomes the day it goes live" },
+      { name: "updated", label: "Updated date", type: "date" },
+      { name: "tags", label: "Tags", type: "strings" },
+      SEO_DESCRIPTION,
+      { name: "todo", label: "Still missing (only you see this)", type: "strings", group: "notes" }
+    ]
+  },
+  pages: {
+    title: "Pages",
+    singular: "page",
+    publicPath: (slug) => `/${slug}`,
+    titleMax: 120,
+    editor: "blocks",
+    fields: [
+      { name: "lead", label: "Intro line", type: "textarea", max: 300, help: "The larger line under the title" },
+      SEO_DESCRIPTION
+    ]
+  },
   projects: {
     title: "Projects",
     singular: "project",
-    help: "Each project is a Markdown file in content/projects. Headings with ## build the On this page list. Put pictures and videos in with their [[media:...]] code from the media library.",
+    publicPath: (slug) => `/projects/${slug}`,
+    titleMax: 80,
+    editor: "blocks",
     fields: [
-      { name: "title", label: "Title", type: "text", required: true, max: 80 },
-      { name: "summary", label: "Summary (one or two sentences, about 160 characters)", type: "textarea", required: true, max: 220 },
-      { name: "branch", label: "Branch", type: "select", options: BRANCHES, required: true },
+      { name: "summary", label: "Summary", type: "textarea", required: true, max: 220, help: "One or two sentences, about 160 characters" },
+      { name: "branch", label: "Branch", type: "select", options: BRANCHES, labels: { code: "Code", earth: "Earth", faith: "People" }, required: true },
       { name: "kind", label: "Kind", type: "text", required: true, help: "Startup, Course project, Work, Freelance, Personal" },
       { name: "context", label: "Context", type: "text" },
       { name: "period", label: "Period as shown", type: "text", required: true, help: "2026, or 2026 to February 2027" },
@@ -134,25 +233,45 @@ export const DOCUMENT_SCHEMAS = {
       { name: "featured", label: "On the home page", type: "checkbox" },
       { name: "order", label: "Order on the home page (1 first)", type: "text", number: true },
       { name: "page", label: "Has its own page", type: "checkbox", default: true },
-      { name: "draft", label: "Draft (hidden everywhere)", type: "checkbox" },
-      { name: "todo", label: "Still missing (only shown while developing)", type: "strings" }
+      SEO_DESCRIPTION,
+      { name: "todo", label: "Still missing (only you see this)", type: "strings", group: "notes" }
     ]
   },
-  writing: {
-    title: "Writing",
-    singular: "article",
-    help: "Each article is a Markdown file in content/writing. Headings with ## build the On this page list. Pictures and videos go in with their [[media:...]] code on a line of their own.",
+  tools: {
+    title: "Tools",
+    singular: "tool",
+    feature: "tools",
+    publicPath: (slug) => `/tools/${slug}`,
+    titleMax: 80,
+    editor: "blocks",
     fields: [
-      { name: "title", label: "Title", type: "text", required: true, max: 100 },
-      { name: "summary", label: "Summary (one or two sentences)", type: "textarea", required: true, max: 220 },
-      { name: "date", label: "Published", type: "date", required: true },
-      { name: "updated", label: "Updated", type: "date" },
-      { name: "tags", label: "Tags", type: "strings" },
-      { name: "draft", label: "Draft (hidden everywhere)", type: "checkbox" },
-      { name: "todo", label: "Still missing (only shown while developing)", type: "strings" }
+      { name: "summary", label: "Summary", type: "textarea", required: true, max: 220 },
+      { name: "status", label: "Status", type: "text" },
+      { name: "launch_url", label: "Launch address", type: "url" },
+      { name: "order", label: "Order (1 first)", type: "text", number: true },
+      SEO_DESCRIPTION,
+      { name: "todo", label: "Still missing (only you see this)", type: "strings", group: "notes" }
+    ]
+  },
+  legal: {
+    title: "Legal pages",
+    singular: "legal page",
+    publicPath: (slug) => `/${slug}`,
+    titleMax: 120,
+    editor: "template",
+    fixed: true,
+    fields: [
+      { name: "description", label: "Search description", type: "textarea", required: true, max: 200 }
     ]
   }
 };
+
+// Addresses a page made in the admin cant have, because something else already lives there
+export const RESERVED_SLUGS = [
+  "admin", "about", "projects", "writing", "tools", "media", "cv", "references", "status", "contact", "impressum", "privacy",
+  "terms", "accessibility", "copyright", "cookies", "robots-txt", "sitemap-xml", "llms-txt", "health", "errors", "assets",
+  "icons", "well-known", "feed", "search", "login", "logout", "api"
+];
 
 const MAX_TEXT = 20000;
 
@@ -160,19 +279,19 @@ const MAX_TEXT = 20000;
  * Checks and cleans a value against a field list. Unknown keys are dropped, empty optional values left out, so the
  * files stay tidy. Returns { value, errors } with errors as "path: message" strings
  */
-export function cleanValue(field, raw, path = field.label || field.name) {
+export function cleanValue(field, raw, path = field.label || field.name, { lenient = false } = {}) {
   const errors = [];
   const t = field.type;
   if (t === "objects") {
     const list = Array.isArray(raw) ? raw : [];
     const value = list.map((item, i) => {
-      const out = cleanObject(field.fields, item, `${path} ${i + 1}`);
+      const out = cleanObject(field.fields, item, `${path} ${i + 1}`, { lenient });
       errors.push(...out.errors);
       return out.value;
     });
     return { value, errors };
   }
-  if (t === "object") return cleanObject(field.fields, raw, path);
+  if (t === "object") return cleanObject(field.fields, raw, path, { lenient });
   if (t === "strings") {
     const value = (Array.isArray(raw) ? raw : []).map((s) => String(s ?? "").trim()).filter(Boolean).map((s) => s.slice(0, 500));
     return { value, errors };
@@ -180,7 +299,7 @@ export function cleanValue(field, raw, path = field.label || field.name) {
   if (t === "checkbox") return { value: raw === true || raw === "on" || raw === "true", errors };
   let value = typeof raw === "string" || typeof raw === "number" ? String(raw).trim() : "";
   if (value.length > (field.max || MAX_TEXT)) errors.push(`${path}: is longer than ${field.max || MAX_TEXT} characters`);
-  if (field.required && !value) errors.push(`${path}: is required`);
+  if (field.required && !value && !lenient) errors.push(`${path}: is required`);
   if (value && t === "select" && !field.options.includes(value)) errors.push(`${path}: must be one of ${field.options.join(", ")}`);
   if (value && t === "date" && !/^\d{4}-\d{2}-\d{2}$/.test(value)) errors.push(`${path}: must be a date like 2026-10-12`);
   if (value && t === "url" && !/^(https?:\/\/|\/)[^\s]*$/.test(value)) errors.push(`${path}: must start with https:// or /`);
@@ -192,15 +311,16 @@ export function cleanValue(field, raw, path = field.label || field.name) {
   return { value, errors };
 }
 
-export function cleanObject(fields, raw, path = "") {
+/** lenient skips the "is required" checks, for drafts that are still being written */
+export function cleanObject(fields, raw, path = "", { lenient = false } = {}) {
   const source = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
   const value = {};
   const errors = [];
   for (const field of fields) {
-    const out = cleanValue(field, source[field.name], path ? `${path}, ${field.label}` : field.label);
+    const out = cleanValue(field, source[field.name], path ? `${path}, ${field.label}` : field.label, { lenient });
     errors.push(...out.errors);
     const v = out.value;
-    const empty = v === "" || v === false || (Array.isArray(v) && v.length === 0);
+    const empty = v === "" || v === false || (Array.isArray(v) && v.length === 0) || (v && typeof v === "object" && !Array.isArray(v) && Object.keys(v).length === 0);
     // Checkboxes that default to on (like "Has its own page") must be written when they are off
     if (field.type === "checkbox" && field.default === true) { if (v === false) value[field.name] = false; continue; }
     if (!empty) value[field.name] = v;

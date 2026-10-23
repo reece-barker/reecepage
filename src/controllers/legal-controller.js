@@ -2,60 +2,65 @@
 
 const SAFE_RETURN = /^\/[a-z0-9\-/]*$/;
 
-const PAGES = {
-  impressum: { title: "Impressum", description: "Impressum and legal notice for reece.page under section 5 DDG: who runs this website and how to reach him, in German and English." },
-  privacy: { title: "Privacy policy", description: "How reece.page handles personal data: server logs, the contact form, cookies and your rights under the GDPR, in English and German." },
-  terms: { title: "Terms of use", description: "The terms for using reece.page, its content and its contact form." },
-  accessibility: { title: "Accessibility", description: "How accessible reece.page is, what is known not to work yet and how to report a problem." },
-  copyright: { title: "Copyright and trademarks", description: "Who owns the text, images, code and dove brand on reece.page, and the licences of the fonts and libraries it uses." }
-};
+// The page texts are Handlebars templates stored with the rest of the content (content/legal/*.hbs to start with,
+// then the database), so they can be edited in the admin. They are compiled once per version and rendered with the
+// same helpers and partials as every other page. A template that throws is logged and shows the error page, but
+// the admin checks every template before it saves it so that shouldnt happen.
+const LEGAL_PAGES = ["impressum", "privacy", "terms", "accessibility", "copyright", "cookies"];
 
 /**
  * @param {object} deps
  * @param {object} deps.config
  * @param {import("../services/seo-service.js").SeoService} deps.seo
  * @param {import("../services/consent-service.js").ConsentService} deps.consent
+ * @param {import("../services/content-service.js").ContentService} deps.content
+ * @param {import("../services/legal-templates.js").LegalTemplates} deps.templates
  */
-export function createLegalController({ config, seo, consent }) {
-  const legal = config.legal;
+export function createLegalController({ config, seo, consent, content, templates }) {
+  /** The legal facts from the config, with the "last updated" date from the admin's settings when one is set there */
+  function legalFacts() {
+    const updated = content.data("settings")?.legal_updated;
+    return updated ? { ...config.legal, updated } : config.legal;
+  }
+
+  /** What every legal template can use, on top of the usual locals (site, csrfToken and so on) */
+  function templateData(name, req) {
+    return {
+      legal: legalFacts(),
+      contactConfig: config.contact,
+      mailConfigured: config.contact.send_notifications,
+      analyticsProvider: config.features.analytics ? config.analytics.provider : "none",
+      consentCookieName: config.consent.cookie_name,
+      consentDays: config.consent.max_age_days,
+      saved: name === "cookies" && req.query.saved === "1"
+    };
+  }
+
+  async function renderLegal(req, res, page, { preview = false } = {}) {
+    const name = page.slug;
+    const meta = seo.build({ title: page.title, description: page.description, path: `/${name}`, noindex: preview, breadcrumbs: [{ label: name === "cookies" ? "Cookies" : page.title, href: `/${name}` }] });
+    const html = await templates.render(page.template, { ...res.locals, ...templateData(name, req), meta });
+    res.render("pages/legal", { meta, bodyClass: `page-legal${name === "cookies" ? " page-cookies" : ""}`, legalHtml: html });
+  }
 
   function legalPage(name) {
-    const page = PAGES[name];
-    return (req, res) => {
-      res.render(`pages/legal/${name}`, {
-        meta: seo.build({ title: page.title, description: page.description, path: `/${name}`, breadcrumbs: [{ label: page.title, href: `/${name}` }] }),
-        bodyClass: "page-legal",
-        legal,
-        contactConfig: config.contact,
-        mailConfigured: config.contact.send_notifications,
-        analyticsProvider: config.features.analytics ? config.analytics.provider : "none"
-      });
+    return async (req, res, next) => {
+      const page = content.legal(name);
+      if (!page) return next();
+      try { await renderLegal(req, res, page); } catch (error) { next(error); }
     };
   }
 
   return {
+    names: LEGAL_PAGES,
+    templateData,
+    renderPreview: (req, res, page) => renderLegal(req, res, page, { preview: true }),
     impressum: legalPage("impressum"),
     privacy: legalPage("privacy"),
     terms: legalPage("terms"),
     accessibility: legalPage("accessibility"),
     copyright: legalPage("copyright"),
-
-    cookies(req, res) {
-      res.render("pages/legal/cookies", {
-        meta: seo.build({
-          title: "Cookies and settings",
-          description: "Which cookies reece.page sets, why, and the settings for optional services such as analytics.",
-          path: "/cookies",
-          breadcrumbs: [{ label: "Cookies", href: "/cookies" }]
-        }),
-        bodyClass: "page-legal page-cookies",
-        legal,
-        consentCookieName: config.consent.cookie_name,
-        consentDays: config.consent.max_age_days,
-        analyticsProvider: config.features.analytics ? config.analytics.provider : "none",
-        saved: req.query.saved === "1"
-      });
-    },
+    cookies: legalPage("cookies"),
 
     saveCookies(req, res) {
       const choice = String(req.body?.choice || "");

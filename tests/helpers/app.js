@@ -64,7 +64,7 @@ export function testDatabaseSettings(config) {
  * @param {boolean} [options.withDatabase] default true
  * @param {FakeTransport | null} [options.transport] null means no mail at all
  */
-export async function buildTestApp({ config = testConfig(), withDatabase = true, transport = new FakeTransport(), errorReporter } = {}) {
+export async function buildTestApp({ config = testConfig(), withDatabase = true, transport = new FakeTransport(), errorReporter, fetch: fetchImpl } = {}) {
   const logger = createLogger({ ...config, logLevel: "silent" });
   let database = null;
   if (withDatabase) {
@@ -74,14 +74,15 @@ export async function buildTestApp({ config = testConfig(), withDatabase = true,
     if (database.dialect === "mysql") await migrator.down({ to: 0 });
     await migrator.up();
   }
-  const { app, services } = createApp({ config, logger, database, mailTransport: transport || undefined, errorReporter });
+  const { app, services, prepare, stop } = createApp({ config, logger, database, mailTransport: transport || undefined, errorReporter, fetch: fetchImpl });
+  await prepare();
   return {
     app,
     services,
     config,
     transport,
     database,
-    async close() { await database?.close(); }
+    async close() { stop(); await database?.close(); }
   };
 }
 
@@ -94,4 +95,25 @@ export function hiddenValue(html, name) {
 /** The cookies a response set, as a single Cookie header for the next request */
 export function cookieHeader(response) {
   return (response.headers["set-cookie"] || []).map((cookie) => cookie.split(";")[0]).join("; ");
+}
+
+/**
+ * Signs in with the development sign in (the config needs admin.devLogin, see adminConfig) and returns the Cookie
+ * header to send with admin requests and the CSRF token for posting
+ */
+export async function signIn(app) {
+  const { default: request } = await import("supertest");
+  const page = await request(app).get("/admin/login").expect(200);
+  const first = cookieHeader(page);
+  const csrf = hiddenValue(page.text, "_csrf");
+  const res = await request(app).post("/admin/login/dev").set("Cookie", first).type("form").send({ _csrf: csrf, next: "/admin" }).expect(303);
+  const cookie = [first, cookieHeader(res)].filter(Boolean).join("; ");
+  return { cookie, csrf };
+}
+
+/** Test config with the development sign in switched on, which is normally only there in development */
+export function adminConfig(options = {}) {
+  const config = testConfig(options);
+  config.admin.devLogin = true;
+  return config;
 }

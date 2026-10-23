@@ -42,6 +42,7 @@ export default defineConfig({
       BASE_URL: `http://127.0.0.1:${PORT}`,
       DB_DIALECT: "sqlite",
       DB_STORAGE: ":memory:",
+      ADMIN_DEV_LOGIN: "true",
       LOG_LEVEL: "silent"
     }
   }

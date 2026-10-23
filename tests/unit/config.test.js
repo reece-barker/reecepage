@@ -89,8 +89,11 @@ test("deepMerge merges objects and replaces arrays", () => {
   assert.equal(deepMerge({ a: 1 }, undefined).a, 1);
 });
 
-test("a bad admin hash and a self signed certificate on a remote host are refused", () => {
-  assert.throws(() => load({ ADMIN_PASSWORD_HASH: "hunter2" }), /ADMIN_PASSWORD_HASH/);
+test("half set up sign in and a self signed certificate on a remote host are refused", () => {
+  assert.throws(() => load({ SIMPLELOGIN_CLIENT_ID: "abc" }), /SIMPLELOGIN_CLIENT_SECRET/);
+  assert.throws(() => load({ ADMIN_SIMPLELOGIN_ID: "not a valid id!" }), /ADMIN_SIMPLELOGIN_ID/);
+  assert.throws(() => load({ GITHUB_SYNC_REPO: "just-a-name" }), /GITHUB_SYNC_REPO/);
+  assert.equal(load({ SIMPLELOGIN_CLIENT_ID: "abc", SIMPLELOGIN_CLIENT_SECRET: "def" }).admin.simplelogin.configured, true);
   assert.throws(() => load({ SMTP_HOST: "smtp.example.test", SMTP_ALLOW_SELF_SIGNED: "true" }), /SMTP_ALLOW_SELF_SIGNED/);
   assert.equal(load({ SMTP_HOST: "127.0.0.1", SMTP_ALLOW_SELF_SIGNED: "true" }).smtp.allowSelfSigned, true);
 });

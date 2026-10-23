@@ -1,0 +1,42 @@
+<header class="admin-head">
+  <h1>Status and links</h1>
+  <div class="admin-head__actions"><a class="button button--secondary" href="/status" target="_blank" rel="noopener">Public status page</a></div>
+</header>
+
+<section class="admin-block" aria-labelledby="status-title">
+  <h2 id="status-title">Status right now</h2>
+  {{#if (eq contentSource "files")}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>Content is coming from the files in content/, the database couldnt be read. Check the database line below.</span></p>{{/if}}
+  <ul class="status-list status-list--compact" role="list">
+    {{#each status.checks}}
+    <li class="status-row status-row--{{state}}"><span class="status-dot" aria-hidden="true"></span><div><h3>{{name}}</h3><p>{{detail}}</p></div><span class="status-label">{{label}}</span></li>
+    {{/each}}
+  </ul>
+</section>
+
+<section class="admin-block" aria-labelledby="ext-title">
+  <h2 id="ext-title">Elsewhere</h2>
+  <ul class="admin-external" role="list">
+    {{#each external}}<li><a href="{{url}}" rel="noopener" target="_blank">{{label}}</a></li>{{/each}}
+  </ul>
+</section>
+
+<section class="admin-block" aria-labelledby="links-title">
+  <h2 id="links-title">Every address on the site</h2>
+  {{#each groups}}
+  <h3>{{title}}</h3>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="{{title}}">
+    <table class="admin-table admin-table--endpoints">
+      <thead><tr><th scope="col">Method</th><th scope="col">Address</th><th scope="col">What it is for</th></tr></thead>
+      <tbody>
+        {{#each items}}
+        <tr{{#if off}} class="is-off"{{/if}}>
+          <td><code>{{method}}</code></td>
+          <td>{{#if link}}<a href="{{path}}"><code>{{path}}</code></a>{{else}}<code>{{path}}</code>{{/if}}</td>
+          <td>{{what}}{{#if off}} <strong>(switched off)</strong>{{/if}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{/each}}
+</section>

@@ -45,7 +45,8 @@ articles, timeline, skills, references, CV, media, status and a board of every e
 | `npm run secret` | Prints a random value for `APP_SECRET` |
 | `npm run images:tree` / `images:og` | Regenerates the tree posters and the share images |
 | `npm run media:add -- file --title "..."` | Adds a picture or video to the media library from the command line |
-| `npm run admin:password` | Makes the password hash for the /admin/media upload page |
+| `npm run content:import` | Copies content/ into an empty database (`-- --force` overwrites what's there) |
+| `npm run vendor:editor` | Copies Editor.js, marked and the passkey script from node_modules into assets/vendor |
 
 Also: `npm run cv:pdf` (makes the CV PDF), `npm run media:import` (imports media-inbox/).
 

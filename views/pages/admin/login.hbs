@@ -1,0 +1,44 @@
+<div class="signin">
+  <div class="signin__panel">
+    <img class="signin__mark theme-light-only" src="{{asset "images/brand/reece-dove-symbol-colour.svg"}}" alt="" width="56" height="45">
+    <img class="signin__mark theme-dark-only" src="{{asset "images/brand/reece-dove-symbol-colour-on-dark.svg"}}" alt="" width="56" height="45">
+    <h1>Sign in to reece.page</h1>
+
+    {{#if error}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>{{error}}</span></p>{{/if}}
+    {{#if noDatabase}}
+    <p class="alert alert--error" role="alert">{{icon "alert"}}<span>The admin needs the database and this server doesnt have one configured (DB_DIALECT and the DB_* values in .env).</span></p>
+    {{else}}
+    {{#if nothingSetUp}}
+    <div class="alert alert--note">{{icon "info"}}<div><p>Sign in isnt set up on this server yet. Add <code>SIMPLELOGIN_CLIENT_ID</code> and <code>SIMPLELOGIN_CLIENT_SECRET</code> to <code>.env</code> and restart the site, the steps are in docs/DEPLOYMENT.md.</p></div></div>
+    {{/if}}
+
+    <div class="signin__options">
+      {{#if simplelogin}}
+      <form method="post" action="/admin/login/simplelogin">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="next" value="{{next}}">
+        <button class="button signin__primary" type="submit">Sign in with SimpleLogin</button>
+        <p class="hint">SimpleLogin has a Log in with Proton button, so your Proton account works too.</p>
+      </form>
+      {{/if}}
+
+      {{#if passkeys}}
+      <div class="signin__passkey" data-passkey-signin data-next="{{next}}" hidden>
+        <button class="button button--secondary" type="button" data-passkey-button>Use a passkey</button>
+        <p class="form-status" role="status" aria-live="polite" data-passkey-status></p>
+      </div>
+      {{/if}}
+
+      {{#if dev}}
+      <form method="post" action="/admin/login/dev" class="signin__dev">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <input type="hidden" name="next" value="{{next}}">
+        <button class="button button--secondary" type="submit">Development sign in</button>
+        <p class="hint">Only here on your own computer, never on the server.</p>
+      </form>
+      {{/if}}
+    </div>
+    {{/if}}
+    <p class="signin__back"><a class="link-action" href="/">Back to the site</a></p>
+  </div>
+</div>

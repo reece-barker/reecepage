@@ -1,0 +1,214 @@
+@use "../abstracts/mixins" as *;
+
+// The blocks from the editor as they show on the site: pictures and videos at five sizes, galleries, callouts,
+// quotes with who said them and buttons. On a phone everything is simply full width and stacked, the sizes and
+// left/right only kick in once theres room for them. Widths here match SIZES in src/helpers/media-html.js.
+//
+//   small   a third of the text, can sit left or right with the text flowing round it
+//   medium  half of the text, same
+//   text    as wide as the text
+//   wide    as wide as the whole column, past the edge of the text
+//   full    edge to edge of the screen
+
+// main is a size container, so a full width picture can work out how far it is from the screen edge without
+// guessing the scrollbar
+main {
+  container-type: inline-size;
+  container-name: page;
+}
+
+.content-figure {
+  margin-inline: 0;
+
+  img,
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  figcaption {
+    max-width: var(--measure);
+  }
+}
+
+// Pictures that are links get the focus ring round the picture, not a thin line under it
+.content-figure a {
+  display: block;
+  border-radius: var(--radius-2);
+
+  &:focus-visible {
+    @include focus-ring(2px);
+  }
+}
+
+@include up(sm) {
+  .content-figure--small {
+    max-width: min(15rem, 40%) !important;
+  }
+
+  .content-figure--medium {
+    max-width: min(22rem, 60%) !important;
+  }
+
+  .content-figure--small:not(.content-figure--left, .content-figure--right),
+  .content-figure--medium:not(.content-figure--left, .content-figure--right) {
+    margin-inline: auto;
+  }
+
+  // Text flows round left and right pictures. The heading after one always starts below it, so a section never
+  // starts half way down the side of a picture from the one before
+  .content-figure--left {
+    float: left;
+    margin: var(--space-2) var(--space-5) var(--space-4) 0 !important;
+  }
+
+  .content-figure--right {
+    float: right;
+    margin: var(--space-2) 0 var(--space-4) var(--space-5) !important;
+  }
+
+  .prose :is(h2, h3, h4, .content-figure--text, .content-figure--wide, .content-figure--full, .content-gallery, .callout, .content-quote, pre, .table-scroll) {
+    clear: both;
+  }
+}
+
+.prose > .content-figure--wide,
+.prose > .content-gallery {
+  max-width: none;
+}
+
+// Edge to edge: as wide as main (the page container), pulled left by however far the text column is from the
+// edge. Above the sticky "On this page" box while it scrolls past, so that box never sits on top of a picture
+.prose > .content-figure--full {
+  position: relative;
+  z-index: 1;
+  max-width: none;
+  width: 100cqi;
+  margin-left: calc((100cqi - min(100cqi - 2 * var(--gutter), var(--width-page))) / -2);
+
+  img,
+  video,
+  .video-frame {
+    border-radius: 0;
+  }
+
+  // The caption lines up with the text above and below it instead of hugging the screen edge
+  figcaption {
+    padding-inline: calc((100cqi - min(100cqi - 2 * var(--gutter), var(--width-page))) / 2);
+  }
+}
+
+// Galleries: an even grid, pictures cropped to the same shape so the rows line up. Two across on a phone
+.content-gallery__grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0 !important;
+  list-style: none;
+
+  li {
+    margin: 0 !important;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-2);
+  }
+}
+
+.content-gallery--cols-2 .content-gallery__grid img {
+  aspect-ratio: 3 / 2;
+}
+
+@include up(md) {
+  .content-gallery--cols-3 .content-gallery__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .content-gallery--cols-4 .content-gallery__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+// Callouts: a tinted box with a leaf square for the kind, the same square the branches use
+.callout {
+  position: relative;
+  padding: var(--space-4) var(--space-5) var(--space-4) calc(var(--space-5) + 1rem);
+  border-radius: var(--radius-2);
+  background: var(--color-leaf-soft);
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: var(--space-4);
+    top: calc(var(--space-4) + 0.55em);
+    width: 0.55rem;
+    height: 0.55rem;
+    background: var(--color-leaf);
+  }
+
+  > * + * {
+    margin-top: var(--space-3);
+  }
+}
+
+.callout--tip {
+  background: var(--branch-code-tint);
+
+  &::before {
+    background: var(--branch-code);
+  }
+}
+
+.callout--warning {
+  background: var(--color-highlight-soft);
+
+  &::before {
+    background: var(--color-highlight);
+  }
+}
+
+.callout__title {
+  font-weight: 800;
+}
+
+// A quote with who said it, the name under it in the body font
+.content-quote {
+  margin-inline: 0;
+
+  blockquote > * + * {
+    margin-top: var(--space-3);
+  }
+
+  figcaption {
+    margin-top: var(--space-3);
+    padding-left: calc(var(--space-5) + 3px);
+    font-size: var(--step--1);
+    color: var(--color-text-muted);
+  }
+}
+
+.content-button {
+  margin-top: var(--space-5) !important;
+}
+
+// Task lists from Markdown (- [ ] and - [x]) get their box instead of the leaf bullet
+.prose ul li:has(> input[type="checkbox"]) {
+  &::before {
+    display: none;
+  }
+
+  input {
+    margin: 0 0.5em 0 -1.4em;
+    accent-color: var(--color-accent);
+  }
+}

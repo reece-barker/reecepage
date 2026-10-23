@@ -1,37 +1,35 @@
 // Puts what every template needs on res.locals: site details, navigation, the current path, consent state and the
 // analytics settings. Page specific things come from the controllers.
 
-function visibleLinks(links, features) {
-  return (links || []).filter((link) => !link.feature || features[link.feature]);
-}
+// The site name, menus and profiles come from the settings in the admin (laid over config/application.yml), so a
+// change there shows on the next page view without a restart
 
 /**
  * @param {object} deps
  * @param {object} deps.config
  * @param {import("../services/consent-service.js").ConsentService} deps.consent
  * @param {ReturnType<import("./csrf.js").createCsrf>} deps.csrf
+ * @param {import("../services/settings-service.js").SettingsService} deps.settings
  */
-export function templateLocals({ config, consent, csrf }) {
-  const primaryNav = visibleLinks(config.navigation.primary, config.features);
-  const legalNav = visibleLinks(config.navigation.legal, config.features);
-  const moreNav = visibleLinks(config.navigation.more, config.features);
-  const profiles = Object.entries(config.site.profiles || {})
-    .filter(([, url]) => url)
-    .map(([name, url]) => ({ name: name === "github" ? "GitHub" : name === "linkedin" ? "LinkedIn" : name, url }));
-
+export function templateLocals({ config, consent, csrf, settings }) {
   return (req, res, next) => {
+    const site = settings.site();
+    const menus = settings.menus();
+    const profiles = Object.entries(site.profiles || {})
+      .filter(([, url]) => url)
+      .map(([name, url]) => ({ name: name === "github" ? "GitHub" : name === "linkedin" ? "LinkedIn" : name, url }));
     const choice = consent.read(req);
     const askForConsent = consent.hasOptionalServices && !choice.decided;
 
     Object.assign(res.locals, {
-      site: config.site,
+      site,
       baseUrl: config.baseUrl,
       env: config.env,
       isProduction: config.isProduction,
       features: config.features,
-      primaryNav,
-      legalNav,
-      moreNav,
+      primaryNav: menus.primary,
+      legalNav: menus.legal,
+      moreNav: menus.more,
       profiles,
       currentPath: req.path,
       consent: { ...choice, ask: askForConsent, hasOptional: consent.hasOptionalServices },

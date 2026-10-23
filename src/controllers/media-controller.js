@@ -1,5 +1,6 @@
 // /media (the public library), /media/:slug (one item), /media/files/:name (the files themselves) and the
 // password protected /admin/media where Reece uploads, describes, publishes and deletes things.
+import { buildAdminNav } from "./admin-controller.js";
 import { readFile, rm } from "node:fs/promises";
 import { notFound } from "../middleware/errors.js";
 import { MediaError } from "../services/media-service.js";
@@ -34,8 +35,10 @@ export function createMediaController({ media, seo, config }) {
   async function adminPage(res, { notice = null, error = null, status = 200 } = {}) {
     const items = await media.list({ publishedOnly: false });
     res.status(status).render("pages/admin-media", {
-      meta: seo.build({ title: "Media admin", description: "Upload and manage pictures and videos for reece.page.", path: "/admin/media", noindex: true }),
-      bodyClass: "page-admin",
+      layout: "admin",
+      nav: buildAdminNav(config, "media"),
+      section: "media",
+      meta: seo.build({ title: "Media | Admin", description: "Upload and manage pictures and videos for reece.page.", path: "/admin/media", noindex: true }),
       items,
       notice,
       error,
@@ -122,7 +125,7 @@ export function createMediaController({ media, seo, config }) {
             caption: header(req, "x-media-caption", 2100),
             credit: header(req, "x-media-credit", 1100)
           });
-          res.status(201).json({ ok: true, item: { id: item.id, slug: item.slug, shortcode: item.shortcode } });
+          res.status(201).json({ ok: true, item: { id: item.id, slug: item.slug, shortcode: item.shortcode, kind: item.kind, title: item.title, alt: item.alt, caption: item.caption || "", src: item.src, poster: item.posterSrc, width: item.width, height: item.height } });
         } catch (error) {
           if (!(error instanceof MediaError)) req.log?.error({ err: error }, "media upload failed");
           sendJsonError(res, error);
@@ -141,6 +144,14 @@ export function createMediaController({ media, seo, config }) {
           }
           const item = await media.attachCaptions(Number(req.params.id), buffer);
           res.json({ ok: true, item: { id: item.id } });
+        } catch (error) { sendJsonError(res, error); }
+      },
+
+      async variant(req, res) {
+        try {
+          const received = await media.receive(req, { declaredBytes: Number(req.get("content-length")) || 0 });
+          const item = await media.attachVariant(received, Number(req.params.id));
+          res.json({ ok: true, item: { id: item.id, variants: item.variants.map((v) => v.width) } });
         } catch (error) { sendJsonError(res, error); }
       },
 

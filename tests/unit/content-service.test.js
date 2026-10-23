@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { ContentService, ContentError } from "../../src/services/content-service.js";
+import { ContentService, ContentError, isLive } from "../../src/services/content-service.js";
 import { ROOT_DIR } from "../../src/config/index.js";
 
 let dir;
@@ -39,9 +39,20 @@ test("projects are read, sorted newest first and drafts are left out", () => {
   assert.equal(content.listProjects().find((p) => p.slug === "older").period, "2025");
 });
 
-test("drafts show up when asked for", () => {
-  const content = new ContentService({ contentDir: dir, includeDrafts: true });
-  assert.ok(content.listProjects().some((p) => p.slug === "hidden"));
+test("only published entries whose publish time has passed are live", () => {
+  const now = new Date("2026-10-20T12:00:00Z");
+  assert.equal(isLive({ status: "published", publishAt: null }, now), true);
+  assert.equal(isLive({ status: "published", publishAt: new Date("2026-10-20T11:59:00Z") }, now), true);
+  assert.equal(isLive({ status: "published", publishAt: new Date("2026-10-21T08:00:00Z") }, now), false);
+  assert.equal(isLive({ status: "draft", publishAt: null }, now), false);
+  assert.equal(isLive({ status: "trash", publishAt: null }, now), false);
+});
+
+test("a scheduled post without a date of its own gets the day it goes live", () => {
+  const content = new ContentService({ contentDir: dir });
+  const past = new Date(Date.now() - 60000);
+  const store = content.build([{ type: "writing", slug: "later", title: "Later", status: "published", publishAt: past, meta: { summary: "Soon" }, body: "Hi", updatedAt: past }], {});
+  assert.equal(store.writing[0].date.getTime(), past.getTime());
 });
 
 test("projects with page: false are listed but have no page", () => {
@@ -74,11 +85,11 @@ test("broken front matter names the file", () => {
   mkdirSync(path.join(bad, "projects"));
   writeFileSync(path.join(bad, "projects/broken.md"), "---\ntitle: Broken\nbranch: space\n---\n");
   try {
-    assert.throws(() => new ContentService({ contentDir: bad }).load(), (error) => error instanceof ContentError && error.message.includes("broken.md"));
+    assert.throws(() => new ContentService({ contentDir: bad }).load(), (error) => error instanceof ContentError && error.message.includes("projects/broken"));
     writeFileSync(path.join(bad, "projects/broken.md"), project("title: Broken\nsummary: x\nbranch: code\nkind: x\nperiod: 2026\nsort_date: whenever"));
-    assert.throws(() => new ContentService({ contentDir: bad }).load(), /sort_date/);
+    assert.throws(() => new ContentService({ contentDir: bad }).load(), /sort date/);
     writeFileSync(path.join(bad, "projects/Bad Name.md"), "x");
-    assert.throws(() => new ContentService({ contentDir: bad }).load(), /file names/);
+    assert.throws(() => new ContentService({ contentDir: bad }).load(), /lowercase words/);
   } finally {
     rmSync(bad, { recursive: true, force: true });
   }

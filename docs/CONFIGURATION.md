@@ -26,7 +26,12 @@ Nothing else reads `process.env`. `src/config/index.js` builds one frozen object
 | `CONTACT_NOTIFY_TO` | site.email | Where notifications go |
 | `SMTP_ALLOW_SELF_SIGNED` | false | true for Proton Mail Bridge on 127.0.0.1 (refused for any other host) |
 | `LEGAL_PHONE` | empty | The phone number on the impressum (`legal.owner.show_phone` is on, so production needs it) |
-| `ADMIN_USER`, `ADMIN_PASSWORD_HASH` | reece, empty | Login for /admin/media. Without a hash /admin answers 404. `npm run admin:password` |
+| `SIMPLELOGIN_CLIENT_ID`, `SIMPLELOGIN_CLIENT_SECRET` | empty | The SimpleLogin app for signing in to /admin, see CONTENT.md |
+| `ADMIN_SIMPLELOGIN_ID` | empty | The one SimpleLogin account allowed in. The sign in page shows the id the first time |
+| `ADMIN_SESSION_DAYS`, `ADMIN_IDLE_DAYS` | 14, 3 | How long a sign in lasts at most, and without using the admin |
+| `ADMIN_DEV_LOGIN` | true in development | The one click sign in on your own computer. Never on in production |
+| `GITHUB_SYNC_TOKEN` | empty | Fine grained token, Contents read and write on the repo. Empty means saves arent committed |
+| `GITHUB_SYNC_REPO`, `GITHUB_SYNC_BRANCH` | reece-barker/reecepage, main | Where the admin commits the content files |
 | `MEDIA_DIR` | var/media | Where uploaded pictures and videos live, back it up |
 | `MEDIA_MAX_IMAGE_MB`, `MEDIA_MAX_VIDEO_MB` | 20, 1024 | Upload limits |
 | `ERROR_DSN` | empty | GlitchTip project DSN, empty switches error reporting off |
@@ -60,7 +65,8 @@ Nothing else reads `process.env`. `src/config/index.js` builds one frozen object
 - `legal.third_country_transfer.en` or `.de` empty
 - `legal.mail_provider.name` empty while notifications are on
 - `legal.owner.show_phone` on without `LEGAL_PHONE`
-- `ADMIN_PASSWORD_HASH` set but not a hash from `npm run admin:password`
+- only one of `SIMPLELOGIN_CLIENT_ID` and `SIMPLELOGIN_CLIENT_SECRET` set, or an `ADMIN_SIMPLELOGIN_ID` that isnt an id
+- `GITHUB_SYNC_REPO` not like owner/repository, or `ADMIN_SESSION_DAYS`/`ADMIN_IDLE_DAYS` out of range
 - `SMTP_ALLOW_SELF_SIGNED` on with an SMTP host that isn't this machine
 
 This is deliberate: the privacy policy and impressum print these values, publishing them half empty is worse than

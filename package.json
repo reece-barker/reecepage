@@ -7,6 +7,7 @@
     "node": ">=22.12"
   },
   "dependencies": {
+    "@simplewebauthn/server": "^14.0.3",
     "compression": "^1.8.2",
     "cookie-parser": "^1.4.7",
     "csrf-csrf": "^4.0.3",
@@ -25,8 +26,17 @@
     "umzug": "^3.8.3"
   },
   "devDependencies": {
+    "@editorjs/code": "^2.9.4",
+    "@editorjs/delimiter": "^1.4.2",
+    "@editorjs/editorjs": "^2.31.7",
+    "@editorjs/header": "^2.8.9",
+    "@editorjs/inline-code": "^1.5.2",
+    "@editorjs/list": "^2.0.9",
+    "@editorjs/quote": "^2.7.6",
+    "@editorjs/table": "^2.4.6",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.0",
+    "@simplewebauthn/browser": "^14.0.0",
     "axe-core": "^4.14.0",
     "eslint": "^10.12.0",
     "globals": "^17.13.0",
@@ -49,6 +59,8 @@
     "test:e2e": "playwright test",
     "check": "npm run lint && npm test && npm run content:check",
     "content:check": "node --disable-warning=ExperimentalWarning scripts/content-check.js",
+    "content:import": "node --disable-warning=ExperimentalWarning scripts/content-import.js",
+    "vendor:editor": "node --disable-warning=ExperimentalWarning scripts/vendor-editor.js",
     "site:check": "node --disable-warning=ExperimentalWarning scripts/site-check.js",
     "db:migrate": "node --disable-warning=ExperimentalWarning scripts/db.js migrate",
     "db:rollback": "node --disable-warning=ExperimentalWarning scripts/db.js rollback",
@@ -64,7 +76,6 @@
     "perf:check": "node --disable-warning=ExperimentalWarning scripts/perf-check.js",
     "screenshots": "node --disable-warning=ExperimentalWarning scripts/screenshots.js",
     "media:add": "node --disable-warning=ExperimentalWarning scripts/media-add.js",
-    "admin:password": "node scripts/admin-password.js",
     "cv:pdf": "node --disable-warning=ExperimentalWarning scripts/make-cv-pdf.js",
     "media:import": "node --disable-warning=ExperimentalWarning scripts/media-import.js"
   }
