@@ -136,7 +136,7 @@ already in media-inbox/intro-video.yml, it points at the original in ~/Movies/Re
 
 ## Pictures and videos (the media library)
 
-Upload on https://reece.page/admin/media, or straight from a picture block in the editor:
+Upload on https://reece.page/admin/library, or straight from a picture block in the editor:
 
 1. Pick the file, give it a title, and for pictures a description of what it shows (alt text, required).
 2. It arrives unpublished. Tick Published and save, and it shows on /media.

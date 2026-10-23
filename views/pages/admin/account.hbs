@@ -1,66 +1,86 @@
-<header class="admin-head"><h1>Account</h1></header>
+<header class="admin-head">
+  <div class="admin-head__text">
+    <h1>Account</h1>
+    <p class="admin-head__lede">How you sign in, your passkeys, and the browsers that are signed in right now.</p>
+  </div>
+</header>
 
 {{#if (eq notice "removed")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Passkey removed.</span></p>{{/if}}
 {{#if (eq notice "renamed")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Passkey renamed.</span></p>{{/if}}
+{{#if (eq notice "rename-failed")}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>That passkey couldnt be renamed, reload and try again.</span></p>{{/if}}
+{{#if (eq notice "remove-failed")}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>That passkey couldnt be removed, reload and try again.</span></p>{{/if}}
 {{#if (eq notice "others-signed-out")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Every other browser is signed out.</span></p>{{/if}}
 
-<section class="admin-block" aria-labelledby="sl-title">
-  <h2 id="sl-title">Sign in with SimpleLogin</h2>
-  {{#if simplelogin}}
-  <p>Set up{{#if allowedId}} and locked to the SimpleLogin account with the id <code>{{allowedId}}</code>{{else}}, but ADMIN_SIMPLELOGIN_ID isnt set so nobody can sign in with it yet{{/if}}.</p>
-  {{else}}
-  <p>Not set up on this server. You need SIMPLELOGIN_CLIENT_ID, SIMPLELOGIN_CLIENT_SECRET and ADMIN_SIMPLELOGIN_ID in .env.</p>
-  {{/if}}
-</section>
+<div class="admin-split">
+  <div class="stack">
+    <section class="panel" aria-labelledby="pk-title">
+      <div class="panel__head"><h2 id="pk-title">Passkeys <span class="panel__count">{{passkeys.length}}</span></h2><p>The way in when SimpleLogin is down</p></div>
+      {{#if passkeys.length}}
+      <ul class="admin-rows" role="list">
+        {{#each passkeys}}
+        <li class="admin-row admin-row--passkey">
+          <form method="post" action="/admin/account/passkeys/{{id}}/rename" class="admin-inline-form">
+            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+            <label class="visually-hidden" for="pk-{{@index}}">Name of this passkey</label>
+            <input class="input" id="pk-{{@index}}" name="name" value="{{name}}" maxlength="80">
+            <button class="qbutton" type="submit">Rename</button>
+          </form>
+          <span class="admin-row__meta">Added <time datetime="{{isoDateTime createdAt}}" data-local-time>{{isoDateTime createdAt}}</time>{{#if lastUsedAt}}, last used <time datetime="{{isoDateTime lastUsedAt}}" data-local-time>{{isoDateTime lastUsedAt}}</time>{{/if}}{{#if backedUp}}, synced across your devices{{/if}}</span>
+          <form class="admin-row__end" method="post" action="/admin/account/passkeys/{{id}}/remove" data-confirm-form>
+            <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+            <button class="qbutton qbutton--danger" type="submit" data-confirm-label="Press again to remove">{{icon "trash"}}Remove</button>
+          </form>
+        </li>
+        {{/each}}
+      </ul>
+      {{else}}
+      <p class="panel__body admin-empty">No passkeys yet. Add one now so you can still get in when SimpleLogin is down.</p>
+      {{/if}}
+      <div class="panel__foot" data-add-passkey hidden>
+        <label class="visually-hidden" for="passkey-name">Name for the new passkey</label>
+        <input class="input admin-inline-input" id="passkey-name" type="text" maxlength="80" value="MacBook" data-passkey-name>
+        <button class="button button--small" type="button" data-passkey-add>{{icon "plus"}}Add a passkey</button>
+        <span class="form-status" role="status" aria-live="polite" data-passkey-status></span>
+      </div>
+      <p class="panel__foot hint" data-passkey-unsupported hidden>This browser cant make passkeys.</p>
+    </section>
 
-<section class="admin-block" aria-labelledby="pk-title">
-  <h2 id="pk-title">Passkeys</h2>
-  <p>The backup way in when SimpleLogin is down. A passkey lives in your Mac's or phone's keychain and works with Touch ID or Face ID, there's no password to leak.</p>
-  {{#if passkeys.length}}
-  <ul class="admin-rows" role="list">
-    {{#each passkeys}}
-    <li class="admin-row admin-row--passkey">
-      <form method="post" action="/admin/account/passkeys/{{id}}/rename" class="admin-inline-form">
-        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-        <label class="visually-hidden" for="pk-{{@index}}">Name</label>
-        <input class="input" id="pk-{{@index}}" name="name" value="{{name}}" maxlength="80">
-        <button class="button button--secondary button--small" type="submit">Rename</button>
+    <section class="panel" aria-labelledby="sessions-title">
+      <div class="panel__head"><h2 id="sessions-title">Signed in browsers <span class="panel__count">{{sessions.length}}</span></h2></div>
+      <ul class="admin-rows" role="list">
+        {{#each sessions}}
+        <li class="admin-row">
+          <div class="admin-row__main">
+            <strong>{{browser}}</strong>{{#if current}} <span class="pill pill--published">This browser</span>{{/if}}
+            <div class="admin-row__meta">Signed in with {{method}} <time datetime="{{isoDateTime createdAt}}" data-local-time>{{isoDateTime createdAt}}</time>, last seen <time datetime="{{isoDateTime lastSeenAt}}" data-local-time>{{isoDateTime lastSeenAt}}</time></div>
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+      {{#if (gt sessions.length 1)}}
+      <form class="panel__foot" method="post" action="/admin/account/sessions/others" data-confirm-form>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        <button class="button button--secondary button--small" type="submit" data-confirm-label="Press again to sign the others out">{{icon "sign-out"}}Sign out every other browser</button>
       </form>
-      <span class="admin-row__meta">added <time datetime="{{isoDateTime createdAt}}" data-local-time>{{isoDateTime createdAt}}</time>{{#if lastUsedAt}}, last used <time datetime="{{isoDateTime lastUsedAt}}" data-local-time>{{isoDateTime lastUsedAt}}</time>{{/if}}{{#if backedUp}}, synced across your devices{{/if}}</span>
-      <form method="post" action="/admin/account/passkeys/{{id}}/remove" data-confirm-form>
-        <input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
-        <button class="button button--danger button--small" type="submit" data-confirm-label="Press again to remove">Remove</button>
-      </form>
-    </li>
-    {{/each}}
-  </ul>
-  {{else}}
-  <p class="admin-empty">No passkeys yet. Add one now so you can still get in when SimpleLogin is down.</p>
-  {{/if}}
-  <div class="admin-add-passkey" data-add-passkey hidden>
-    <div class="field">
-      <label class="label" for="passkey-name">Name for the new passkey</label>
-      <input class="input" id="passkey-name" type="text" maxlength="80" value="MacBook" data-passkey-name>
-    </div>
-    <div class="cluster">
-      <button class="button" type="button" data-passkey-add>Add a passkey</button>
-      <span class="form-status" role="status" aria-live="polite" data-passkey-status></span>
-    </div>
+      {{/if}}
+    </section>
   </div>
-  <p class="hint" data-passkey-unsupported hidden>This browser cant make passkeys.</p>
-</section>
 
-<section class="admin-block" aria-labelledby="sessions-title">
-  <h2 id="sessions-title">Signed in browsers</h2>
-  <ul class="admin-rows" role="list">
-    {{#each sessions}}
-    <li class="admin-row"><span>{{#if current}}This browser{{else}}{{#if userAgent}}{{userAgent}}{{else}}A browser{{/if}}{{/if}}</span><span class="admin-row__meta">signed in with {{method}} <time datetime="{{isoDateTime createdAt}}" data-local-time>{{isoDateTime createdAt}}</time>, last seen <time datetime="{{isoDateTime lastSeenAt}}" data-local-time>{{isoDateTime lastSeenAt}}</time></span></li>
-    {{/each}}
-  </ul>
-  {{#if (gt sessions.length 1)}}
-  <form method="post" action="/admin/account/sessions/others" data-confirm-form>
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    <button class="button button--secondary" type="submit" data-confirm-label="Press again to sign the others out">Sign out every other browser</button>
-  </form>
-  {{/if}}
-</section>
+  <section class="panel" aria-labelledby="sl-title">
+    <div class="panel__head"><h2 id="sl-title">SimpleLogin</h2></div>
+    <div class="panel__body">
+      {{#if simplelogin}}
+      {{#if allowedId}}
+      <p><span class="pill pill--published">Set up</span></p>
+      <p>Only the SimpleLogin account with the id <code>{{allowedId}}</code> can sign in.</p>
+      {{else}}
+      <p><span class="pill pill--scheduled">Almost</span></p>
+      <p>The app is set up but <code>ADMIN_SIMPLELOGIN_ID</code> isnt, so nobody can sign in with it yet. Sign in once, the page shows the id to add.</p>
+      {{/if}}
+      {{else}}
+      <p><span class="pill">Not set up</span></p>
+      <p>Add <code>SIMPLELOGIN_CLIENT_ID</code>, <code>SIMPLELOGIN_CLIENT_SECRET</code> and <code>ADMIN_SIMPLELOGIN_ID</code> as GitHub secrets, the deploy puts them on the server.</p>
+      {{/if}}
+    </div>
+  </section>
+</div>

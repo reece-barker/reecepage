@@ -1,31 +1,29 @@
 <header class="admin-head">
-  <div>
-    <p class="admin-head__back"><a href="/admin/lists/{{name}}">Back to {{title}}</a></p>
+  <div class="admin-head__text">
+    <a class="admin-head__back" href="/admin/lists/{{name}}">{{icon "arrow-left"}}Back to {{title}}</a>
     <h1>Revisions</h1>
-    <p class="admin-head__sub">{{title}}</p>
+    <p class="admin-head__lede">Every saved version of {{title}}, newest first.</p>
   </div>
 </header>
 <div class="revisions">
-  <nav class="revisions__list" aria-label="Revisions">
+  <nav class="panel revisions__list" aria-label="Revisions">
     <ol role="list">
       {{#each revisions}}
       <li><a href="?rev={{id}}"{{#if current}} aria-current="true" class="is-current"{{/if}}><time datetime="{{isoDateTime createdAt}}" data-local-time>{{isoDateTime createdAt}}</time><span>{{revisionReason reason}}{{#if @first}}, newest{{/if}}</span></a></li>
+      {{else}}
+      <li class="panel__body admin-empty">No revisions yet, they start with the first save.</li>
       {{/each}}
     </ol>
   </nav>
   {{#if selected}}
-  <section class="revisions__view" aria-label="This version">
-    <div class="revisions__head">
-      <h2>This version</h2>
-      <form method="post" action="/admin/lists/{{name}}/revisions/{{selected.id}}/restore" data-confirm-form>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <button class="button" type="submit" data-confirm-label="Press again to restore this version">Restore this version</button>
-      </form>
-    </div>
-    <p class="hint">Restoring saves this version as the current one, it shows on the site straight away.</p>
-    <pre class="revisions__text">{{selected.json}}</pre>
+  <section class="panel" aria-labelledby="rev-title">
+    <div class="panel__head"><h2 id="rev-title">This version</h2></div>
+    <div class="panel__body"><pre class="revisions__text">{{selected.json}}</pre></div>
+    <form class="panel__foot" method="post" action="/admin/lists/{{name}}/revisions/{{selected.id}}/restore" data-confirm-form>
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <button class="button button--small" type="submit" data-confirm-label="Press again to restore this version">Restore this version</button>
+      <span class="hint">It shows on the site straight away.</span>
+    </form>
   </section>
-  {{else}}
-  <p class="admin-empty">No revisions yet, they start with the first save.</p>
   {{/if}}
 </div>

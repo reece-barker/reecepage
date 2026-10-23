@@ -1,6 +1,20 @@
 // The sign in page, the SimpleLogin round trip, passkeys and signing out. The account page (passkeys and the list
 // of signed in browsers) is in here too because it is all the same service
 import { AuthError, safeReturnTo } from "../services/admin-auth-service.js";
+import { buildAdminNav } from "./admin-controller.js";
+
+const METHOD_LABELS = { simplelogin: "SimpleLogin", passkey: "a passkey", dev: "the development sign in" };
+
+/** "Chrome on macOS" out of a user agent string, good enough to tell your own browsers apart */
+export function describeBrowser(userAgent) {
+  const ua = String(userAgent || "");
+  if (!ua) return "A browser";
+  const browser = /Edg\//.test(ua) ? "Edge" : /Firefox\//.test(ua) ? "Firefox" : /HeadlessChrome/.test(ua) ? "Headless Chrome"
+    : /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : "A browser";
+  const system = /iPhone/.test(ua) ? "iPhone" : /iPad/.test(ua) ? "iPad" : /Android/.test(ua) ? "Android" : /Mac OS X|Macintosh/.test(ua) ? "macOS"
+    : /Windows/.test(ua) ? "Windows" : /Linux/.test(ua) ? "Linux" : "";
+  return system ? `${browser} on ${system}` : browser;
+}
 
 /**
  * @param {object} deps
@@ -95,10 +109,14 @@ export function createAuthController({ auth, seo, config }) {
         const [passkeys, sessions] = await Promise.all([auth.passkeys(), auth.listSessions()]);
         res.render("pages/admin/account", {
           layout: "admin",
-          meta: meta("Account"),
+          meta: meta("Account | Admin"),
+          nav: buildAdminNav(config, "account"),
           section: "account",
+          pageTitle: "Account",
           passkeys: passkeys.map((key) => ({ id: key.credentialId, name: key.name, createdAt: key.createdAt, lastUsedAt: key.lastUsedAt, backedUp: key.backedUp })),
-          sessions: sessions.map((s) => ({ current: s.idHash === req.admin.idHash, method: s.method, userAgent: s.userAgent, createdAt: s.createdAt, lastSeenAt: s.lastSeenAt })),
+          sessions: sessions
+            .map((s) => ({ current: s.idHash === req.admin.idHash, method: METHOD_LABELS[s.method] || s.method, browser: describeBrowser(s.userAgent), createdAt: s.createdAt, lastSeenAt: s.lastSeenAt }))
+            .sort((a, b) => Number(b.current) - Number(a.current)),
           simplelogin: auth.methods.simplelogin,
           allowedId: config.admin.simplelogin.allowedId,
           notice: req.query.notice,

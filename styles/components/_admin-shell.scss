@@ -1,12 +1,82 @@
 @use "../abstracts/mixins" as *;
 @use "../abstracts/tokens";
 
-// The admin around everything: olive sidebar, the page head, lists, the dashboard and the sign in page. Quiet on
-// purpose, the one bit of brand is the leaf square that marks whats published, scheduled or a draft.
+// The admin around everything: the olive sidebar, page heads, panels, the lists, status pills, tables and the sign
+// in page. Its a work tool so its quieter and denser than the site: the serif is only used for the page title, the
+// rest is the body font at a few clear sizes, and colour is kept for one job, showing whats live and whats not.
+//
+// Sizes used everywhere in here:
+//   page title   serif, about 2rem
+//   section      body font 1.05rem bold (panel heads)
+//   text         0.95rem
+//   small        0.82rem (meta lines, hints, table heads)
 
 body.admin {
   min-height: 100vh;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  background: var(--color-bg);
+
+  // The site's buttons slide their label over on hover to make room for the leaf, lovely once on a page but
+  // jumpy with twenty of them in a list. In here they just change colour
+  .button {
+    min-height: 40px;
+    padding: 0.45rem 1rem;
+    font-size: 0.92rem;
+
+    &::before { display: none; }
+
+    @include hover {
+      padding-left: 1rem;
+      padding-right: 1rem;
+
+      svg { transform: none; }
+    }
+  }
+
+  .button--small {
+    min-height: 34px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+
+    @include hover {
+      padding-left: 0.75rem;
+      padding-right: 0.75rem;
+    }
+  }
+
+  .input,
+  .select,
+  .textarea {
+    min-height: 42px;
+    padding: 0.5rem 0.75rem;
+    font-size: 16px;
+    border-width: 1px;
+  }
+
+  .textarea {
+    min-height: 6rem;
+  }
+
+  .label {
+    font-size: 0.9rem;
+  }
+
+  .hint {
+    font-size: 0.82rem;
+    margin-top: -0.15rem;
+  }
+
+  .field {
+    gap: 0.35rem;
+  }
+
+  .alert {
+    font-size: 0.92rem;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
 }
 
 .skip-link {
@@ -57,7 +127,7 @@ body.admin {
   --button-border: var(--color-danger);
 }
 
-// The leaf: filled sage is live, a hollow square is a draft, blush is waiting for its time, struck is the trash
+// The leaf square, still used in the editor's top bar next to the state
 .leaf {
   flex: none;
   display: inline-block;
@@ -73,12 +143,56 @@ body.admin {
   box-shadow: inset 0 0 0 2px var(--color-line-strong);
 }
 
-.leaf--scheduled {
-  background: var(--color-highlight);
+.leaf--scheduled { background: var(--color-highlight); }
+.leaf--trash { background: var(--color-line); }
+
+// Status pills: the one place colour means something. Live is sage, waiting is blush, a draft is just an outline
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.12rem 0.55rem 0.12rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.4;
+  white-space: nowrap;
+  background: var(--color-bg-sunken);
+  color: var(--color-text-muted);
+
+  &::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
 }
 
-.leaf--trash {
-  background: var(--color-line);
+.pill--published {
+  background: var(--color-leaf-soft);
+  color: var(--color-success);
+}
+
+.pill--scheduled {
+  background: var(--color-highlight-soft);
+  color: var(--color-text);
+
+  &::before { background: #{tokens.brand(blush)}; }
+}
+
+.pill--draft {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--color-line-strong);
+
+  &::before {
+    background: transparent;
+    box-shadow: inset 0 0 0 1.5px currentColor;
+  }
+}
+
+.pill--trash {
+  text-decoration: line-through;
 }
 
 // Shell: sidebar left, page right. Under 60rem the sidebar becomes a bar with a menu button
@@ -88,7 +202,7 @@ body.admin {
 
   @media (min-width: 60rem) {
     display: grid;
-    grid-template-columns: 15rem minmax(0, 1fr);
+    grid-template-columns: 14.5rem minmax(0, 1fr);
   }
 }
 
@@ -100,7 +214,7 @@ body.admin {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-4);
 
   @media (min-width: 60rem) {
     position: sticky;
@@ -110,7 +224,9 @@ body.admin {
     flex-direction: column;
     align-items: stretch;
     flex-wrap: nowrap;
-    padding: var(--space-5) var(--space-4);
+    padding: var(--space-4) var(--space-3);
+    scrollbar-width: thin;
+    scrollbar-color: #{tokens.brand(olive-80)} transparent;
   }
 
   :focus-visible {
@@ -126,20 +242,32 @@ body.admin {
   text-decoration: none;
   margin-right: auto;
 
+  small {
+    margin-left: 0.2rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: #{tokens.brand(sage)};
+  }
+
   @media (min-width: 60rem) {
-    margin: 0 0 var(--space-5) var(--space-2);
+    margin: 0 0 var(--space-4) var(--space-2);
   }
 }
 
 .admin-bar__menu {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font: inherit;
   font-weight: 700;
   color: inherit;
   background: transparent;
   border: 1px solid #{tokens.brand(olive-80)};
   border-radius: var(--radius-2);
-  padding: var(--space-1) var(--space-3);
+  padding: 0.35rem var(--space-3);
   cursor: pointer;
+
+  svg { width: 1rem; height: 1rem; }
 
   @media (min-width: 60rem) {
     display: none;
@@ -149,6 +277,7 @@ body.admin {
 .admin-nav {
   flex-basis: 100%;
   display: none;
+  padding-bottom: var(--space-3);
 
   &.is-open {
     display: block;
@@ -158,6 +287,7 @@ body.admin {
     display: flex;
     flex-direction: column;
     flex: 1;
+    padding-bottom: 0;
   }
 
   ul {
@@ -168,44 +298,46 @@ body.admin {
 }
 
 .admin-nav__group {
-  margin: var(--space-5) 0 var(--space-1) var(--space-2);
+  margin: var(--space-4) 0 0.15rem var(--space-2);
   font-family: var(--font-body);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
   color: #{tokens.brand(sage)};
 }
 
 .admin-nav__link {
-  position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   width: 100%;
-  padding: 0.35rem var(--space-2) 0.35rem calc(var(--space-2) + 1rem);
+  padding: 0.32rem var(--space-2);
   border-radius: var(--radius-2);
   color: inherit;
   font: inherit;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-align: left;
   text-decoration: none;
+  opacity: 0.88;
+
+  svg {
+    flex: none;
+    width: 0.95rem;
+    height: 0.95rem;
+    color: #{tokens.brand(sage)};
+  }
 
   @include hover {
     background: #{tokens.brand(olive-90)};
+    opacity: 1;
   }
 
   &.is-current {
-    background: #{tokens.brand(olive-90)};
+    background: #{tokens.brand(cream)};
+    color: #{tokens.brand(olive)};
     font-weight: 750;
+    opacity: 1;
 
-    &::before {
-      content: "";
-      position: absolute;
-      left: var(--space-2);
-      top: 50%;
-      width: 0.5rem;
-      height: 0.5rem;
-      margin-top: -0.25rem;
-      background: #{tokens.brand(sage)};
-    }
+    svg { color: #{tokens.brand(olive)}; }
   }
 }
 
@@ -216,8 +348,8 @@ body.admin {
 }
 
 .admin-nav__foot {
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
   border-top: 1px solid #{tokens.brand(olive-80)};
 
   @media (min-width: 60rem) {
@@ -225,70 +357,189 @@ body.admin {
   }
 }
 
+.admin-nav__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+
+  form { flex: 1; }
+}
+
+.admin-nav__theme {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: var(--radius-2);
+  background: transparent;
+  color: #{tokens.brand(sage)};
+  cursor: pointer;
+
+  svg { width: 1rem; height: 1rem; }
+
+  @include hover {
+    background: #{tokens.brand(olive-90)};
+  }
+}
+
 .admin-main {
   min-width: 0;
   padding: var(--space-5) var(--gutter) var(--space-8);
+
+  @include up(md) {
+    padding: var(--space-6) var(--space-6) var(--space-8);
+  }
 
   &:focus {
     outline: none;
   }
 
   > * {
-    max-width: 68rem;
+    max-width: 72rem;
+  }
+
+  > .admin-editor {
+    max-width: 56rem;
   }
 }
 
-// Page heads: the serif title on the left, the main actions on the right
+// Page heads: the serif title, one line saying what the page is for, the main actions on the right
 
 .admin-head {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
-  align-items: flex-end;
+  gap: var(--space-3) var(--space-4);
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: var(--space-5);
 
   h1 {
-    font-size: var(--step-4);
+    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem);
   }
+}
+
+.admin-head__text {
+  flex: 1 1 22rem;
+  max-width: 44rem;
+}
+
+.admin-head__lede {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
 }
 
 .admin-head__actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  align-items: center;
 }
 
 .admin-head__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   margin-bottom: var(--space-2);
-  font-size: var(--step--1);
-}
-
-.admin-head__sub {
-  margin-top: var(--space-1);
+  font-size: 0.85rem;
+  font-weight: 650;
   color: var(--color-text-muted);
-}
+  text-decoration: none;
 
-.admin-intro {
-  max-width: var(--measure);
-  margin-bottom: var(--space-5);
-  color: var(--color-text-muted);
+  svg { width: 0.8rem; height: 0.8rem; }
+
+  @include hover {
+    color: var(--color-text);
+    text-decoration: underline;
+  }
 }
 
 .admin-main .alert {
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-4);
 }
 
-.admin-block {
-  margin-bottom: var(--space-6);
+// Panels: a raised surface for one thing, with a head (what it is, and maybe a link) and a body
 
-  > h2 {
-    font-size: var(--step-1);
-    margin-bottom: var(--space-3);
+.stack {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+
+.panel {
+  min-width: 0;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+}
+
+.panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+
+  h2 {
+    font-family: var(--font-body);
+    font-size: 1.02rem;
+    font-weight: 800;
+    letter-spacing: 0;
   }
+
+  p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+
+  a {
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+}
+
+.panel__count {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.panel__body {
+  padding: var(--space-4);
 
   > * + * {
     margin-top: var(--space-3);
+  }
+}
+
+.panel__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-line);
+  background: color-mix(in srgb, var(--color-bg-sunken) 45%, transparent);
+  border-radius: 0 0 8px 8px;
+}
+
+// Two columns on wide screens: the main thing and a narrower side
+.admin-split {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+  }
+}
+
+// On a phone the dashboard shows what needs you (drafts, scheduled) before the long list of recent changes
+.admin-split--side-first > .stack {
+  @include down(lg) {
+    order: -1;
   }
 }
 
@@ -297,104 +548,188 @@ body.admin {
 }
 
 .admin-empty--big {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
   padding: var(--space-7) var(--space-5);
-  border: 1px dashed var(--color-line-strong);
-  border-radius: var(--radius-2);
   text-align: center;
 
-  > * + * {
-    margin-top: var(--space-4);
+  svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-line-strong);
   }
 }
 
-// Dashboard
+// Quiet actions in rows: an icon and a word, no border until you point at them
+.qbutton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 32px;
+  padding: 0.2rem 0.55rem;
+  border: 0;
+  border-radius: var(--radius-2);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 650;
+  text-decoration: none;
+  cursor: pointer;
 
-.admin-dash {
-  display: grid;
-  gap: var(--space-5) var(--space-7);
-
-  @include up(md) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  svg {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex: none;
   }
 
-  .admin-block {
-    margin: 0;
+  @include hover {
+    background: var(--color-bg-sunken);
+    color: var(--color-text);
   }
 
-  .admin-block--wide {
-    grid-column: 1 / -1;
+  &:focus-visible {
+    @include focus-ring(1px);
+  }
+
+  &[data-armed="true"] {
+    background: var(--color-danger);
+    color: #fff;
   }
 }
 
-.admin-counts {
+.qbutton--danger {
+  @include hover {
+    color: var(--color-danger);
+  }
+}
+
+// Dashboard: the numbers in one band, then what needs you, then what happened
+
+.admin-stats {
   display: grid;
-  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 0 var(--space-5);
   padding: 0;
   list-style: none;
+  background: var(--color-bg-raised);
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  overflow: hidden;
 
-  a {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-3);
-    padding: var(--space-2) 0;
-    border-bottom: 1px solid var(--color-line);
-    text-decoration: none;
-    color: var(--color-text-muted);
+  @include up(md) {
+    grid-template-columns: repeat(var(--stats, 4), minmax(0, 1fr));
+  }
 
-    @include hover {
-      color: var(--color-text);
+  &[data-stats="3"] { --stats: 3; }
+  &[data-stats="5"] { --stats: 5; }
+
+  li + li {
+    border-left: 1px solid var(--color-line);
+  }
+
+  li:nth-child(3) {
+    @media (max-width: 55.98rem) {
+      border-left: 0;
+    }
+  }
+
+  li:nth-child(n + 3) {
+    @media (max-width: 55.98rem) {
+      border-top: 1px solid var(--color-line);
     }
   }
 }
 
-.admin-counts__name {
-  font-weight: 750;
-  color: var(--color-text);
+.admin-stat {
+  display: grid;
+  gap: 0.1rem;
+  height: 100%;
+  padding: var(--space-4);
+  text-decoration: none;
+  color: inherit;
+
+  @include hover {
+    background: color-mix(in srgb, var(--color-bg-sunken) 55%, transparent);
+  }
 }
+
+.admin-stat__label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+
+  svg { width: 0.9rem; height: 0.9rem; }
+}
+
+.admin-stat__number {
+  @include display-type;
+  font-size: 2rem;
+  line-height: 1.1;
+}
+
+.admin-stat__note {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+// Rows: one line per thing, used on the dashboard and in panels
 
 .admin-rows {
   margin: 0;
   padding: 0;
   list-style: none;
+
+  > li + li {
+    border-top: 1px solid var(--color-line);
+  }
 }
 
 .admin-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-1) var(--space-3);
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--color-line);
+  padding: 0.6rem var(--space-4);
+  min-width: 0;
+
+  > a:not(.qbutton) {
+    font-weight: 700;
+    text-decoration: none;
+
+    @include hover { text-decoration: underline; }
+  }
+}
+
+.admin-row__main {
+  flex: 1 1 14rem;
+  min-width: 0;
 
   > a {
     font-weight: 700;
-  }
+    text-decoration: none;
 
-  .leaf {
-    margin-right: 0;
+    @include hover { text-decoration: underline; }
   }
 }
 
 .admin-row__meta {
   color: var(--color-text-muted);
-  font-size: var(--step--1);
+  font-size: 0.82rem;
 }
 
-.admin-row--passkey {
-  align-items: center;
-}
-
-.admin-inline-form {
+.admin-row__end {
+  margin-left: auto;
   display: flex;
-  gap: var(--space-2);
   align-items: center;
-
-  .input {
-    width: 14rem;
-  }
+  gap: var(--space-2);
 }
 
-// Lists of posts, pages and projects
+// Lists of posts, pages and projects: a table on wide screens, stacked cards on a phone
 
 .admin-toolbar {
   display: flex;
@@ -402,141 +737,273 @@ body.admin {
   gap: var(--space-3);
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-line);
 }
 
 .admin-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  gap: 0.15rem;
+  padding: 0.2rem;
+  background: var(--color-bg-sunken);
+  border-radius: 6px;
 }
 
 .admin-tabs__tab {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-2);
+  padding: 0.25rem 0.7rem;
+  border-radius: 4px;
   text-decoration: none;
+  font-size: 0.88rem;
   font-weight: 650;
   color: var(--color-text-muted);
 
   @include hover {
     color: var(--color-text);
-    background: var(--color-bg-sunken);
   }
 
   &.is-current {
     color: var(--color-text);
-    background: var(--color-bg-sunken);
-    box-shadow: inset 0 -2px 0 var(--color-text);
+    background: var(--color-bg-raised);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
   }
 }
 
 .admin-tabs__count {
-  font-weight: 400;
-  font-size: var(--step--1);
+  margin-left: 0.35rem;
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
 }
 
 .admin-search {
   display: flex;
   gap: var(--space-2);
-
-  .input {
-    width: 14rem;
-    padding-block: 0.4rem;
-  }
 }
 
-.admin-entries {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid var(--color-line);
+body.admin .admin-search .input {
+  width: 13rem;
+  min-height: 34px;
+  padding-block: 0.2rem;
 }
 
-.admin-entry {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--space-2) var(--space-1);
-  padding: var(--space-4) 0;
-  border-bottom: 1px solid var(--color-line);
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
 
-  > .leaf {
-    margin-top: 0.55rem;
+  th {
+    padding: 0.5rem var(--space-3);
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--color-line);
   }
 
-  @include up(md) {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: start;
+  td {
+    padding: 0.7rem var(--space-3);
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-line);
   }
-}
 
-.admin-entry__title {
-  font-family: var(--font-body);
-  font-size: var(--step-0);
-  font-weight: 750;
-  letter-spacing: 0;
+  th:first-child,
+  td:first-child {
+    padding-left: var(--space-4);
+  }
 
-  a {
-    text-decoration: none;
+  th:last-child,
+  td:last-child {
+    padding-right: var(--space-4);
+  }
 
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr {
     @include hover {
-      text-decoration: underline;
+      background: color-mix(in srgb, var(--color-bg-sunken) 40%, transparent);
     }
   }
+
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    word-break: break-all;
+  }
+
+  .is-off {
+    color: var(--color-text-muted);
+  }
 }
 
-.admin-entry__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 var(--space-4);
-  margin-top: 0.15rem;
-  font-size: var(--step--1);
+.admin-table__title {
+  display: block;
+  font-weight: 750;
+  text-decoration: none;
+
+  @include hover { text-decoration: underline; }
+}
+
+.admin-table__sub {
+  display: block;
+  margin-top: 0.1rem;
+  font-size: 0.8rem;
   color: var(--color-text-muted);
+  overflow-wrap: anywhere;
 }
 
-.admin-entry__summary {
-  margin-top: var(--space-1);
-  max-width: var(--measure);
-  font-size: var(--step--1);
+.admin-table__when {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
-.admin-entry__actions {
-  grid-column: 2;
+.admin-table__actions {
   display: flex;
+  justify-content: flex-end;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: 0.15rem;
 
-  @include up(md) {
-    grid-column: 3;
-    justify-content: flex-end;
+  form { display: contents; }
+}
+
+// Under md the table turns into one block per row, the head row goes
+@media (max-width: 55.98rem) {
+  .admin-table--entries {
+    thead { @include visually-hidden; }
+
+    tr,
+    td {
+      display: block;
+    }
+
+    tr {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-line);
+    }
+
+    tbody tr:last-child { border-bottom: 0; }
+
+    td {
+      padding: 0 !important;
+      border: 0;
+    }
+
+    td + td { margin-top: var(--space-2); }
+
+    .admin-table__actions {
+      justify-content: flex-start;
+      margin-left: -0.55rem;
+    }
   }
 }
 
 .admin-facts {
   display: grid;
   gap: var(--space-2);
+  margin: 0;
 
   div {
     display: grid;
-    gap: var(--space-3);
-    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: var(--space-1) var(--space-3);
+
+    @include up(sm) {
+      grid-template-columns: 9rem minmax(0, 1fr);
+    }
   }
 
   dt {
-    font-weight: 750;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    font-size: 0.88rem;
   }
 
   dd {
     margin: 0;
+    overflow-wrap: anywhere;
   }
 }
 
-.admin-external {
+.admin-links {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--color-line);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 650;
+    text-decoration: none;
+
+    svg { width: 0.8rem; height: 0.8rem; color: var(--color-text-muted); }
+
+    @include hover {
+      border-color: var(--color-line-strong);
+      background: var(--color-bg-sunken);
+    }
+  }
+}
+
+// Health checks: a small grid, the dot and word say the state
+
+.admin-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-check {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.15rem 0.6rem;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-line);
+  border-right: 1px solid var(--color-line);
+  margin: 0 -1px -1px 0;
+
+  h3 {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 750;
+    letter-spacing: 0;
+  }
+
+  p {
+    grid-column: 2;
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+}
+
+.admin-check__dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-top: 0.4rem;
+  transform: rotate(45deg);
+  background: var(--color-line-strong);
+
+  .admin-check--ok & { background: var(--color-leaf); }
+  .admin-check--degraded & { background: #{tokens.brand(blush)}; }
+  .admin-check--down & { background: var(--color-danger); }
+}
+
+.admin-check__state {
+  font-weight: 650;
+  color: var(--color-text-muted);
+
+  .admin-check--down & { color: var(--color-danger); }
 }
 
 // Revisions: the list of versions on the left, the chosen one on the right
@@ -546,7 +1013,7 @@ body.admin {
   gap: var(--space-5);
 
   @include up(lg) {
-    grid-template-columns: 17rem minmax(0, 1fr);
+    grid-template-columns: 18rem minmax(0, 1fr);
     align-items: start;
   }
 }
@@ -555,39 +1022,32 @@ body.admin {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.revisions__list li + li {
   border-top: 1px solid var(--color-line);
 }
 
 .revisions__list a {
   display: grid;
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--color-line);
+  gap: 0.1rem;
+  padding: 0.55rem var(--space-4);
   text-decoration: none;
+  font-weight: 650;
 
   span {
-    font-size: var(--step--1);
+    font-size: 0.8rem;
+    font-weight: 500;
     color: var(--color-text-muted);
+  }
+
+  @include hover {
+    background: color-mix(in srgb, var(--color-bg-sunken) 45%, transparent);
   }
 
   &.is-current {
     background: var(--color-bg-sunken);
     box-shadow: inset 3px 0 0 var(--color-text);
-  }
-}
-
-.revisions__view > * + * {
-  margin-top: var(--space-4);
-}
-
-.revisions__head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-3);
-  align-items: center;
-
-  h2 {
-    font-size: var(--step-2);
   }
 }
 
@@ -598,7 +1058,7 @@ body.admin {
   background: var(--color-code-bg);
   border-radius: var(--radius-2);
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   line-height: 1.55;
   white-space: pre-wrap;
   word-break: break-word;
@@ -617,11 +1077,11 @@ body.admin {
 }
 
 .signin__panel {
-  width: min(26rem, 100%);
+  width: min(25rem, 100%);
   padding: var(--space-6) var(--space-5);
   background: var(--color-bg-raised);
   border: 1px solid var(--color-line);
-  border-radius: var(--radius-2);
+  border-radius: 8px;
 
   h1 {
     margin: var(--space-4) 0 var(--space-5);
@@ -642,28 +1102,49 @@ body.admin {
   }
 }
 
-.signin__primary {
-  width: 100%;
-  justify-content: center;
-}
-
+.signin__primary,
 .signin__passkey .button,
 .signin__dev .button {
   width: 100%;
   justify-content: center;
+  min-height: 46px !important;
 }
 
 .signin__back {
   margin-top: var(--space-6);
-  font-size: var(--step--1);
+  font-size: 0.85rem;
 }
 
 .form-status {
-  font-size: var(--step--1);
+  font-size: 0.85rem;
   color: var(--color-text-muted);
 
   &.is-error {
     color: var(--color-danger);
     font-weight: 700;
   }
+}
+
+code {
+  overflow-wrap: anywhere;
+}
+
+// Renaming a passkey in its row
+.admin-inline-form {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.admin-inline-form .input,
+.admin-inline-input {
+  width: 12rem;
+  min-height: 34px !important;
+  padding-block: 0.25rem !important;
+}
+
+// Grey text in an empty field shows what the site uses until you write your own, so it needs to be readable
+body.admin ::placeholder {
+  color: color-mix(in srgb, var(--color-text-muted) 80%, transparent);
+  opacity: 1;
 }

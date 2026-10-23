@@ -1,15 +1,15 @@
 <header class="admin-head">
-  <div>
-    <p class="admin-head__back"><a href="/admin/{{type}}/{{entry.id}}">Back to the editor</a></p>
+  <div class="admin-head__text">
+    <a class="admin-head__back" href="/admin/{{type}}/{{entry.id}}">{{icon "arrow-left"}}Back to the editor</a>
     <h1>Revisions</h1>
-    <p class="admin-head__sub">{{entry.title}}</p>
+    <p class="admin-head__lede">Every saved version of <strong>{{entry.title}}</strong>, newest first. Pick one to see it, restore it if you want it back.</p>
   </div>
 </header>
 
 {{#if notice}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>Not restored: {{notice}}</span></p>{{/if}}
 
 <div class="revisions">
-  <nav class="revisions__list" aria-label="Revisions">
+  <nav class="panel revisions__list" aria-label="Revisions">
     <ol role="list">
       {{#each revisions}}
       <li><a href="?rev={{id}}"{{#if current}} aria-current="true" class="is-current"{{/if}}><time datetime="{{isoDateTime createdAt}}" data-local-time>{{isoDateTime createdAt}}</time><span>{{revisionReason reason}}{{#if @first}}, newest{{/if}}</span></a></li>
@@ -17,19 +17,19 @@
     </ol>
   </nav>
   {{#if selected}}
-  <section class="revisions__view" aria-labelledby="rev-title">
-    <div class="revisions__head">
-      <h2 id="rev-title">{{selected.title}}</h2>
-      <form method="post" action="/admin/{{type}}/{{entry.id}}/revisions/{{selected.id}}/restore" data-confirm-form>
-        <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        <button class="button" type="submit" data-confirm-label="Press again to restore this version">Restore this version</button>
-      </form>
+  <section class="panel" aria-labelledby="rev-title">
+    <div class="panel__head"><h2 id="rev-title">{{selected.title}}</h2></div>
+    <div class="panel__body">
+      <h3 class="label">Text</h3>
+      <pre class="revisions__text">{{selected.body}}</pre>
+      <h3 class="label">Details</h3>
+      <pre class="revisions__text revisions__text--small">{{selected.metaJson}}</pre>
     </div>
-    <p class="hint">Restoring copies this version's title, address, details and text back into the editor's current version. {{#if (eq entry.state "published")}}Its published, so the change goes live straight away.{{else}}It stays a {{lower entry.stateLabel}}.{{/if}} The version you have now is kept as a revision too.</p>
-    <h3>Text</h3>
-    <pre class="revisions__text">{{selected.body}}</pre>
-    <h3>Details</h3>
-    <pre class="revisions__text revisions__text--small">{{selected.metaJson}}</pre>
+    <form class="panel__foot" method="post" action="/admin/{{type}}/{{entry.id}}/revisions/{{selected.id}}/restore" data-confirm-form>
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      <button class="button button--small" type="submit" data-confirm-label="Press again to restore this version">Restore this version</button>
+      <span class="hint">{{#if (eq entry.state "published")}}It's published, so this goes live straight away.{{else}}It stays a {{lower entry.stateLabel}}.{{/if}} The version you have now is kept as a revision too.</span>
+    </form>
   </section>
   {{/if}}
 </div>

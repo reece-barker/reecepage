@@ -1,5 +1,5 @@
 // /media (the public library), /media/:slug (one item), /media/files/:name (the files themselves) and the
-// password protected /admin/media where Reece uploads, describes, publishes and deletes things.
+// /admin/library where Reece uploads, describes, publishes and deletes things.
 import { buildAdminNav } from "./admin-controller.js";
 import { readFile, rm } from "node:fs/promises";
 import { notFound } from "../middleware/errors.js";
@@ -38,7 +38,7 @@ export function createMediaController({ media, seo, config }) {
       layout: "admin",
       nav: buildAdminNav(config, "media"),
       section: "media",
-      meta: seo.build({ title: "Media | Admin", description: "Upload and manage pictures and videos for reece.page.", path: "/admin/media", noindex: true }),
+      meta: seo.build({ title: "Media | Admin", description: "Upload and manage pictures and videos for reece.page.", path: "/admin/library", noindex: true }),
       items,
       notice,
       error,
@@ -166,7 +166,7 @@ export function createMediaController({ media, seo, config }) {
       async update(req, res, next) {
         try {
           await media.update(Number(req.params.id), req.body || {});
-          res.redirect(303, "/admin/media?saved=1");
+          res.redirect(303, "/admin/library?saved=1");
         } catch (error) {
           if (error instanceof MediaError) return adminPage(res, { error: error.message, status: error.status }).catch(next);
           next(error);
@@ -176,7 +176,7 @@ export function createMediaController({ media, seo, config }) {
       async remove(req, res, next) {
         try {
           await media.remove(Number(req.params.id));
-          res.redirect(303, "/admin/media?deleted=1");
+          res.redirect(303, "/admin/library?deleted=1");
         } catch (error) { next(error); }
       }
     }

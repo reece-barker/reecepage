@@ -1,4 +1,4 @@
-// The upload screen on /admin/media. Files go up as the request body (no multipart), with the text fields in
+// The upload screen on /admin/library. Files go up as the request body (no multipart), with the text fields in
 // headers, so the server can stream big videos straight to disk. Only loaded on that page.
 (function () {
   "use strict";
@@ -45,7 +45,7 @@
         button.disabled = false;
         if (!result.ok) { status.textContent = result.error; progress.hidden = true; return; }
         status.textContent = "Uploaded. It is not published yet, tick Published below and save.";
-        window.location.assign("/admin/media?saved=1#title-" + result.item.id);
+        window.location.assign("/admin/library?saved=1#title-" + result.item.id);
       });
     });
   }
@@ -60,7 +60,7 @@
       var url = "/admin/media/" + extra.getAttribute("data-id") + "/" + extra.getAttribute("data-media-extra");
       put(url, input.files[0], extra.getAttribute("data-csrf")).then(function (result) {
         status.textContent = result.ok ? "Done." : result.error;
-        if (result.ok) window.location.assign("/admin/media?saved=1");
+        if (result.ok) window.location.assign("/admin/library?saved=1");
       });
     });
   });

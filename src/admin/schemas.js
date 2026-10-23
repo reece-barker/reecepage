@@ -11,9 +11,9 @@ export const DATA_SCHEMAS = {
   timeline: {
     file: "timeline.yml",
     title: "Experience and education",
-    help: "The timeline on the about page and the CV. Newest first. Drag order with the up and down buttons.",
+    help: "The timeline on the about page and the CV, newest first. Change the order with the arrows on each row.",
     comment: "Education and work, newest first. when is free text on purpose: some things are known by year, some by age",
-    root: { type: "objects", itemLabel: "title", fields: [
+    root: { type: "objects", itemLabel: "title", itemMeta: ["place", "when"], singular: "entry", fields: [
       { name: "when", label: "When", type: "text", required: true, help: "Free text: 2024 to 2026, Since 2024, From February 2027" },
       { name: "title", label: "Title", type: "text", required: true },
       { name: "place", label: "Where", type: "text" },
@@ -30,7 +30,7 @@ export const DATA_SCHEMAS = {
     comment: "What Reece is working on right now. Change the date whenever this list changes, the page shows it",
     root: { type: "object", fields: [
       { name: "updated", label: "Last updated", type: "date", required: true },
-      { name: "items", label: "Things I am doing", type: "objects", itemLabel: "title", fields: [
+      { name: "items", label: "Things I am doing", type: "objects", itemLabel: "title", itemMeta: ["link"], singular: "thing", fields: [
         { name: "title", label: "Title", type: "text", required: true },
         { name: "text", label: "Text", type: "textarea" },
         { name: "link", label: "Link (a page on this site, like /projects/...)", type: "url" }
@@ -43,7 +43,7 @@ export const DATA_SCHEMAS = {
     title: "References and quotes",
     help: "Quotes from employers, teachers and partners. Only shown when you tick that they agreed to it. Their email and phone only appear on the site when they agreed to that too, otherwise they stay here and in the private CV.",
     comment: "References from people Reece worked with. Nothing here is public unless permission is ticked",
-    root: { type: "objects", itemLabel: "name", fields: [
+    root: { type: "objects", itemLabel: "name", itemMeta: ["role", "organisation"], singular: "reference", fields: [
       { name: "name", label: "Name", type: "text", required: true },
       { name: "role", label: "Their role", type: "text", required: true, help: "For example Head of IT" },
       { name: "organisation", label: "Organisation", type: "text", required: true },
@@ -69,7 +69,7 @@ export const DATA_SCHEMAS = {
       { name: "location", label: "Location", type: "text" },
       { name: "availability", label: "Availability", type: "text", help: "For example Internship from September 2027" },
       { name: "show_phone", label: "Show the phone number on the CV", type: "checkbox" },
-      { name: "languages", label: "Languages", type: "objects", itemLabel: "name", fields: [
+      { name: "languages", label: "Languages", type: "objects", itemLabel: "name", itemMeta: ["level"], singular: "language", fields: [
         { name: "name", label: "Language", type: "text", required: true },
         { name: "level", label: "Level", type: "text", required: true }
       ] },
@@ -83,9 +83,9 @@ export const DATA_SCHEMAS = {
     title: "Skills",
     help: "Grouped skills, each with the projects (slugs) that show it. The content check fails if a slug does not exist.",
     comment: "Skills with the work that shows them. No self ratings or percentage bars, the evidence links do the talking",
-    root: { type: "objects", itemLabel: "group", fields: [
+    root: { type: "objects", itemLabel: "group", singular: "group", fields: [
       { name: "group", label: "Group", type: "text", required: true },
-      { name: "items", label: "Skills", type: "objects", itemLabel: "name", fields: [
+      { name: "items", label: "Skills", type: "objects", itemLabel: "name", singular: "skill", fields: [
         { name: "name", label: "Skill", type: "text", required: true },
         { name: "evidence", label: "Shown in (project slugs)", type: "strings" },
         { name: "note", label: "Note", type: "text" }
@@ -98,7 +98,7 @@ export const DATA_SCHEMAS = {
     help: "The code, earth and people texts next to the tree on the home page.",
     comment: "The three branches of the tree on the home page. limb is the index the tree script uses to light the right branch",
     fixedLength: true,
-    root: { type: "objects", itemLabel: "title", fields: [
+    root: { type: "objects", itemLabel: "title", itemMeta: ["id"], fields: [
       { name: "id", label: "Id", type: "select", options: BRANCHES, required: true },
       { name: "limb", label: "Tree limb (0, 1 or 2)", type: "select", options: ["0", "1", "2"], required: true, number: true },
       { name: "title", label: "Title", type: "text", required: true },
@@ -117,7 +117,7 @@ const LINK_FIELDS = [
 Object.assign(DATA_SCHEMAS, {
   settings: {
     title: "Site settings",
-    help: "Your name, description, email and profiles as they appear in the header, footer, search results and share cards. Leave a field empty to use the built in default.",
+    help: "Your name, description, email and profiles as they appear in the header, footer, search results and share cards. The grey text in an empty field is what the site uses until you write your own.",
     root: { type: "object", fields: [
       { name: "name", label: "Site name", type: "text", max: 60, help: "Shown in the header, the browser tab and search results" },
       { name: "short_name", label: "Short name", type: "text", max: 30, help: "Used where space is tight, like a phone home screen" },
@@ -144,14 +144,14 @@ Object.assign(DATA_SCHEMAS, {
     title: "Menus",
     help: "The links in the header and footer. Links to sections that are switched off (like writing) are hidden automatically.",
     root: { type: "object", fields: [
-      { name: "primary", label: "Header menu", type: "objects", itemLabel: "label", fields: LINK_FIELDS },
-      { name: "more", label: "Extra footer links", type: "objects", itemLabel: "label", fields: LINK_FIELDS },
-      { name: "legal", label: "Legal links in the footer", type: "objects", itemLabel: "label", fields: LINK_FIELDS }
+      { name: "primary", label: "Header menu", type: "objects", itemLabel: "label", itemMeta: ["href"], singular: "link", fields: LINK_FIELDS },
+      { name: "more", label: "Extra footer links", type: "objects", itemLabel: "label", itemMeta: ["href"], singular: "link", fields: LINK_FIELDS },
+      { name: "legal", label: "Legal links in the footer", type: "objects", itemLabel: "label", itemMeta: ["href"], singular: "link", fields: LINK_FIELDS }
     ] }
   },
   home: {
     title: "Home page",
-    help: "The texts on the home page. The tree branches, the selected projects (tick On the home page on a project) and Right now have their own editors.",
+    help: "The texts on the home page, the grey text in an empty field is what shows until you change it. The tree branches, the selected projects (tick On the home page on a project) and Right now have their own editors.",
     root: { type: "object", fields: [
       { name: "hero_lede", label: "Intro under your name", type: "textarea", max: 400 },
       { name: "hero_button", label: "Main button", type: "text", max: 40 },

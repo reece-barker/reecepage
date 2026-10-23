@@ -4,7 +4,7 @@
 
   <div class="studio__bar">
     <a class="studio__back" href="/admin/{{type}}">{{schema.title}}</a>
-    <p class="studio__state" data-state>{{#if entry}}<span class="leaf leaf--{{entry.state}}" aria-hidden="true"></span>{{entry.stateLabel}}{{else}}<span class="leaf leaf--draft" aria-hidden="true"></span>New {{schema.singular}}, not saved yet{{/if}}</p>
+    <p class="studio__state" data-state>{{#if entry}}<span class="pill pill--{{entry.state}}">{{entry.stateLabel}}</span>{{else}}<span class="pill pill--draft">New {{schema.singular}}, not saved yet</span>{{/if}}</p>
     <p class="studio__status" role="status" aria-live="polite" data-status></p>
     <div class="studio__mode" role="group" aria-label="How to write" data-mode-group hidden>
       <button type="button" class="studio__mode-button" aria-pressed="true" data-mode="blocks">Blocks</button>
@@ -28,6 +28,11 @@
     <section class="studio__write" id="pane-write" role="tabpanel" aria-labelledby="tab-write" data-pane="write">
       <label class="visually-hidden" for="studio-title">Title</label>
       <textarea class="studio__title" id="studio-title" rows="1" placeholder="Title" data-title></textarea>
+      <div class="studio__lede-wrap" data-lede-wrap hidden>
+        <label class="visually-hidden" for="studio-lede" data-lede-label>Summary</label>
+        <textarea class="studio__lede" id="studio-lede" rows="1" data-lede></textarea>
+      </div>
+      <div class="studio__facts" data-facts hidden></div>
       <div class="studio__canvas" data-canvas>
         <noscript><p class="alert alert--error">The editor needs JavaScript.</p></noscript>
       </div>
@@ -63,7 +68,7 @@
         <div class="studio__group" data-address-group>
           <h2>Address</h2>
           <div class="field">
-            <label class="label" for="studio-slug">Address</label>
+            <label class="visually-hidden" for="studio-slug">Address</label>
             <p class="hint" id="studio-slug-hint" data-slug-hint>Made from the title if you leave it empty. Lowercase letters, numbers and hyphens.</p>
             <input class="input" id="studio-slug" type="text" spellcheck="false" autocapitalize="off" aria-describedby="studio-slug-hint" data-slug>
           </div>

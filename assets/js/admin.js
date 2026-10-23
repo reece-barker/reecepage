@@ -51,7 +51,8 @@
   document.querySelectorAll("[data-confirm-form]").forEach(function (form) {
     var button = form.querySelector("[data-confirm-label]");
     if (!button) return;
-    var original = button.textContent;
+    // The button can have an icon in it, so the whole inside is kept (its our own markup from the page, not typed text)
+    var original = button.innerHTML;
     var timer = null;
     form.addEventListener("submit", function (event) {
       if (button.getAttribute("data-armed") === "true") return;
@@ -61,7 +62,7 @@
       clearTimeout(timer);
       timer = setTimeout(function () {
         button.removeAttribute("data-armed");
-        button.textContent = original;
+        button.innerHTML = original;
       }, 5000);
     });
   });

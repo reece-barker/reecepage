@@ -56,7 +56,9 @@ export function createRouter(c, m) {
   router.post("/admin/account/passkeys/:key/remove", ...form, auth.passkeyRemove);
   router.post("/admin/account/sessions/others", ...form, auth.signOutOthers);
 
-  router.get("/admin/media", ...page, c.media.admin.page);
+  // The page is /admin/library and not /admin/media: nginx has a location for /admin/media/ (big uploads) and sends
+  // /admin/media to /admin/media/, which this app sent back without the slash, round and round forever
+  router.get("/admin/library", ...page, c.media.admin.page);
   router.get("/admin/media/library.json", ...admin, a.mediaLibrary);
   router.put("/admin/media/upload", ...admin, m.csrf.protect, c.media.admin.upload);
   router.put("/admin/media/:id/captions", ...admin, m.csrf.protect, c.media.admin.captions);

@@ -75,7 +75,7 @@ export const ENDPOINT_GROUPS = [
       { method: "POST", path: "/admin/account/passkeys/:key/rename", what: "Renames a passkey" },
       { method: "POST", path: "/admin/account/passkeys/:key/remove", what: "Removes a passkey" },
       { method: "POST", path: "/admin/account/sessions/others", what: "Signs every other browser out" },
-      { method: "GET", path: "/admin/media", what: "Upload, describe, publish and delete pictures and videos" },
+      { method: "GET", path: "/admin/library", what: "Upload, describe, publish and delete pictures and videos" },
       { method: "GET", path: "/admin/media/library.json", what: "The media library for the picker in the editor" },
       { method: "PUT", path: "/admin/media/upload", what: "The upload itself (sent by the media page and the editor)" },
       { method: "PUT", path: "/admin/media/:id/captions", what: "Adds captions to a video" },

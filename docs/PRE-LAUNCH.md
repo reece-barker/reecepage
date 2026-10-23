@@ -35,7 +35,7 @@ The step by step for the server is in [DEPLOYMENT.md](DEPLOYMENT.md), this is th
 
 - [ ] Fill or delete every `todo` (`npm run content:check` lists them, 21 in projects)
 - [ ] Read and edit "How this site is built", it was drafted from the code
-- [ ] Real photos through /admin/media, placed in the project write ups or articles
+- [ ] Real photos through /admin/library, placed in the project write ups or articles
 - [ ] Update `content/data/now.yml` and its date
 - [ ] `legal.updated` set to the date the legal texts were last changed
 - [ ] `npm run images:og` after the last content change

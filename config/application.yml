@@ -59,6 +59,7 @@ navigation:
 # Old addresses from the first static version of the site, each one gets a permanent redirect to its new home.
 # Only paths listed here are redirected, nothing user supplied ever decides where a redirect goes
 redirects:
+  /admin/media: /admin/library
   /work: /projects
   /work/microclimate-control: /projects/microclimate-startup
   /legal: /impressum

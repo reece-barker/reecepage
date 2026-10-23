@@ -9,6 +9,7 @@ import { ENDPOINT_GROUPS, EXTERNAL_LINKS } from "../admin/endpoints.js";
 import { AdminError, ContentAdmin } from "../services/content-admin.js";
 import { buildEntry, ContentError } from "../services/content-service.js";
 import { notFound } from "../middleware/errors.js";
+import { HOME_DEFAULTS } from "../services/settings-service.js";
 
 const run = promisify(execFile);
 const PREVIEW_MINUTES = 30;
@@ -23,11 +24,11 @@ export const ADMIN_NAV = [
     { id: "pages", label: "Pages", href: "/admin/pages", icon: "page" },
     { id: "projects", label: "Projects", href: "/admin/projects", icon: "grid" },
     { id: "tools", label: "Tools", href: "/admin/tools", icon: "tool", feature: "tools" },
-    { id: "media", label: "Media", href: "/admin/media", icon: "image" }
+    { id: "media", label: "Media", href: "/admin/library", icon: "image" }
   ] },
   { group: "About you", items: [
     { id: "timeline", label: "Experience", href: "/admin/lists/timeline", icon: "list" },
-    { id: "skills", label: "Skills", href: "/admin/lists/skills", icon: "list" },
+    { id: "skills", label: "Skills", href: "/admin/lists/skills", icon: "spark" },
     { id: "cv", label: "CV", href: "/admin/lists/cv", icon: "page" },
     { id: "references", label: "References", href: "/admin/lists/references", icon: "quote" },
     { id: "now", label: "Right now", href: "/admin/lists/now", icon: "clock" }
@@ -47,6 +48,17 @@ export const ADMIN_NAV = [
 
 // Where each list shows on the site, for the "See it on the site" link
 const LIST_PUBLIC = { timeline: "/about#experience", now: "/#now-title", references: "/references", cv: "/cv", skills: "/about#skills", branches: "/", home: "/", menus: "/", settings: "/" };
+
+const TYPE_ICONS = { writing: "pen", pages: "page", projects: "grid", tools: "tool", legal: "scale" };
+
+// One line under each list's title saying what it is
+const LIST_LEDES = {
+  writing: "The articles on /writing and in the feed. Drafts and scheduled posts stay off the site until they go live.",
+  pages: "Pages at their own address, like /about. New ones you make show up at /your-address.",
+  projects: "Everything on /projects. The ones ticked for the home page show there too.",
+  tools: "The small tools on /tools.",
+  legal: "The impressum, privacy policy and the rest. Your name, address and the other facts are filled in from the settings."
+};
 
 const STATE_LABELS = { published: "Published", scheduled: "Scheduled", draft: "Draft", trash: "In the trash" };
 
@@ -103,6 +115,8 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
       updatedAt: entry.updatedAt ? new Date(entry.updatedAt).toISOString() : null,
       createdAt: entry.createdAt ? new Date(entry.createdAt).toISOString() : null,
       url: schema.publicPath(entry.slug),
+      typeLabel: schema.singular.charAt(0).toUpperCase() + schema.singular.slice(1),
+      icon: TYPE_ICONS[entry.type],
       summary: entry.meta?.summary || entry.meta?.lead || entry.meta?.description || "",
       branch: entry.meta?.branch ? BRANCH_LABELS[entry.meta.branch] || entry.meta.branch : null
     };
@@ -150,9 +164,15 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
         }
         const cards = Object.entries(ENTRY_SCHEMAS)
           .filter(([, schema]) => !schema.fixed && (!schema.feature || config.features[schema.feature]))
-          .map(([type, schema]) => ({ type, title: schema.title, singular: schema.singular, href: `/admin/${type}`, count: counts[type]?.published || 0, drafts: counts[type]?.draft || 0 }));
+          .map(([type, schema]) => ({ type, title: schema.title, singular: schema.singular, href: `/admin/${type}`, icon: TYPE_ICONS[type], count: counts[type]?.published || 0, drafts: counts[type]?.draft || 0 }));
+        // The media count is a nice to have, without the database the media library isnt there at all
+        const mediaItems = media.available ? await media.list({ publishedOnly: false }).catch(() => null) : null;
         page(res, "dashboard", "dashboard", "Dashboard", {
           cards,
+          hasMedia: Boolean(mediaItems),
+          mediaCount: mediaItems ? mediaItems.length : 0,
+          mediaPublished: mediaItems ? mediaItems.filter((item) => item.published).length : 0,
+          statCount: cards.length + (mediaItems ? 1 : 0),
           recent: recent.map(present),
           scheduled: scheduled.sort((a, b) => new Date(a.publishAt) - new Date(b.publishAt)),
           drafts: drafts.slice(0, 6),
@@ -180,6 +200,7 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
         page(res, "list", type, schema.title, {
           type,
           schema: { title: schema.title, singular: schema.singular, fixed: Boolean(schema.fixed) },
+          lede: LIST_LEDES[type],
           items,
           filter,
           search,
@@ -368,6 +389,21 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
       const schema = DATA_SCHEMAS[req.params.name];
       if (!schema) return next(notFound());
       try {
+        let value = await contentAdmin.readDocument(req.params.name);
+        // What the site uses while a field is empty, shown greyed out in the field so an empty form doesnt look
+        // like an empty site. The menus are filled in for real, a list of links is easier to change than to type
+        let defaults = null;
+        if (req.params.name === "settings") {
+          const site = config.site;
+          defaults = { name: site.name, short_name: site.short_name, description: site.description, email: site.email, profiles: { ...site.profiles } };
+        }
+        if (req.params.name === "home") defaults = HOME_DEFAULTS;
+        if (req.params.name === "menus") {
+          value = { ...(value || {}) };
+          for (const key of ["primary", "more", "legal"]) {
+            if (!Array.isArray(value[key]) || !value[key].length) value[key] = (config.navigation[key] || []).map((link) => ({ label: link.label, href: link.href }));
+          }
+        }
         page(res, "list-editor", req.params.name, schema.title, {
           help: schema.help,
           name: req.params.name,
@@ -378,7 +414,8 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
             saveUrl: `/admin/lists/${req.params.name}`,
             root: schema.root,
             fixedLength: Boolean(schema.fixedLength),
-            value: await contentAdmin.readDocument(req.params.name),
+            value,
+            defaults,
             cvPdf: req.params.name === "cv" && config.isDevelopment
           }),
           scripts: ["js/admin-fields.js", "js/admin-list.js"]

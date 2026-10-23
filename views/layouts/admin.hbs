@@ -25,25 +25,27 @@
     <header class="admin-bar">
       <a class="admin-brand" href="/admin">
         <img src="{{asset "images/brand/reece-dove-symbol-colour-on-dark.svg"}}" alt="" width="30" height="24">
-        <span>reece.page</span>
+        <span>reece.page <small>admin</small></span>
       </a>
-      <button class="admin-bar__menu" type="button" aria-expanded="false" aria-controls="admin-nav" data-admin-menu>Menu</button>
+      <button class="admin-bar__menu" type="button" aria-expanded="false" aria-controls="admin-nav" data-admin-menu>{{icon "menu"}}<span>Menu</span></button>
       <nav class="admin-nav" id="admin-nav" aria-label="Admin">
-        <a class="admin-nav__link{{#if (eq section "dashboard")}} is-current{{/if}}" href="/admin"{{#if (eq section "dashboard")}} aria-current="page"{{/if}}>Dashboard</a>
+        <a class="admin-nav__link{{#if (eq section "dashboard")}} is-current{{/if}}" href="/admin"{{#if (eq section "dashboard")}} aria-current="page"{{/if}}>{{icon "dashboard"}}<span>Dashboard</span></a>
         {{#each nav}}
         <h2 class="admin-nav__group">{{group}}</h2>
         <ul role="list">
-          {{#each items}}<li><a class="admin-nav__link{{#if current}} is-current{{/if}}" href="{{href}}"{{#if current}} aria-current="page"{{/if}}>{{label}}</a></li>{{/each}}
+          {{#each items}}<li><a class="admin-nav__link{{#if current}} is-current{{/if}}" href="{{href}}"{{#if current}} aria-current="page"{{/if}}>{{icon icon}}<span>{{label}}</span></a></li>{{/each}}
         </ul>
         {{/each}}
         <div class="admin-nav__foot">
-          <a class="admin-nav__link" href="/" target="_blank" rel="noopener">View the site</a>
-          <a class="admin-nav__link{{#if (eq section "account")}} is-current{{/if}}" href="/admin/account">Account</a>
-          <form method="post" action="/admin/logout">
-            <input type="hidden" name="_csrf" value="{{csrfToken}}">
-            <button class="admin-nav__link admin-nav__button" type="submit">Sign out</button>
-          </form>
-          <button class="admin-nav__link admin-nav__button" type="button" data-theme-toggle>Switch theme</button>
+          <a class="admin-nav__link" href="/" target="_blank" rel="noopener">{{icon "external"}}<span>View the site</span></a>
+          <a class="admin-nav__link{{#if (eq section "account")}} is-current{{/if}}" href="/admin/account"{{#if (eq section "account")}} aria-current="page"{{/if}}>{{icon "key"}}<span>Account</span></a>
+          <div class="admin-nav__row">
+            <form method="post" action="/admin/logout">
+              <input type="hidden" name="_csrf" value="{{csrfToken}}">
+              <button class="admin-nav__link admin-nav__button" type="submit">{{icon "sign-out"}}<span>Sign out</span></button>
+            </form>
+            <button class="admin-nav__theme" type="button" data-theme-toggle aria-label="Switch between light and dark">{{icon "moon"}}</button>
+          </div>
         </div>
       </nav>
     </header>

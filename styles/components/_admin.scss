@@ -1,61 +1,23 @@
-// The private admin pages, so the link board, the content lists and the form editor, nobody else ever see's these
+@use "../abstracts/mixins" as *;
 
-.admin .admin-section { margin-top: var(--space-8); }
-.admin .alert + .admin-section { margin-top: var(--space-7); }
+// The forms for the lists and settings (timeline, skills, menus, site settings and the rest) and the details panel
+// in the post editor, theyre all built by assets/js/admin-fields.js from the same field lists
 
-.h-small { font-size: var(--step-1); margin-bottom: var(--space-4); }
-
-.admin-cards {
+.admin-editor {
   display: grid;
   gap: var(--space-4);
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  max-width: 52rem;
 }
 
-.admin-card {
-  display: block;
-  padding: var(--space-4);
-  border: var(--border-thin) solid var(--color-line);
-  border-radius: var(--radius-2);
-  background: var(--color-bg-raised);
-  text-decoration: none;
-  color: inherit;
+.admin-editor__panel {
+  padding: var(--space-5);
 
-  &:hover { border-color: var(--color-line-strong); }
-  p { margin: var(--space-1) 0 0; color: var(--color-text-muted); font-size: var(--step--1); }
-}
-
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--step--1);
-
-  th, td {
-    text-align: left;
-    vertical-align: top;
-    padding: var(--space-2) var(--space-3) var(--space-2) 0;
-    border-bottom: var(--border-thin) solid var(--color-line);
+  @include down(sm) {
+    padding: var(--space-4);
   }
-
-  th { font-weight: 750; }
-  code { font-family: var(--font-mono); word-break: break-all; }
-  .is-off { color: var(--color-text-muted); }
 }
 
-.admin-table--endpoints td:first-child { width: 4.5rem; font-family: var(--font-mono); }
-
-.admin-table__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-
-// The editor, its the biggest bit
-
-.admin-editor { display: grid; gap: var(--space-5); }
-
+// The save bar sticks to the bottom of the window, so Save is always one click away on a long list
 .admin-editor__bar {
   position: sticky;
   bottom: 0;
@@ -64,67 +26,257 @@
   flex-wrap: wrap;
   gap: var(--space-3);
   align-items: center;
-  padding: var(--space-3) 0;
+  margin: 0 calc(var(--space-2) * -1);
+  padding: var(--space-3) var(--space-2);
   background: var(--color-bg);
-  border-top: var(--border-thin) solid var(--color-line);
+  border-top: 1px solid var(--color-line);
 }
 
-.editor-fields { display: grid; gap: var(--space-4); }
-
-.editor-fields label,
-.editor-group > legend { font-weight: 750; display: block; margin-bottom: var(--space-1); }
-
-.editor-fields input:not([type="checkbox"]),
-.editor-fields select,
-.editor-fields textarea,
-.editor-body textarea {
-  width: 100%;
+.editor-fields {
+  display: grid;
+  gap: var(--space-4);
 }
 
+// A group of fields inside a form, like Profiles in the settings: a small heading and a line under it
 .editor-group {
-  border: var(--border-thin) solid var(--color-line);
-  border-radius: var(--radius-2);
-  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-3) 0 0;
+  padding: var(--space-4) 0 0;
+  border: 0;
+  border-top: 1px solid var(--color-line);
+  min-width: 0;
+
+  > .hint {
+    margin-top: -0.4rem;
+  }
+}
+
+.editor-group__title {
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: var(--space-1);
+  font-weight: 800;
+  font-size: 1rem;
+
+  + * {
+    clear: both;
+  }
+}
+
+// Lines of text, like tags or Coming next
+.editor-strings-group {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
   margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+
+  > .label {
+    padding: 0;
+  }
+
+  .editor-strings {
+    justify-self: stretch;
+  }
 }
 
-.editor-items { display: grid; gap: var(--space-4); }
-
-.editor-item {
-  border: var(--border-thin) solid var(--color-line);
-  border-radius: var(--radius-2);
-  padding: var(--space-4);
-  background: var(--color-bg-raised);
+.editor-strings {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.editor-item__number { font-weight: 750; color: var(--color-text-muted); margin-bottom: var(--space-2); }
+.editor-strings__row {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
 
-.editor-item__controls,
-.editor-toolbar {
+  .input {
+    flex: 1;
+  }
+}
+
+// Repeating things (jobs, references, links): each is a row that opens to its fields
+
+.editor-objects {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.editor-items__head {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+  align-items: flex-end;
+  justify-content: space-between;
+
+  .hint {
+    margin-top: 0.15rem;
+  }
+}
+
+.editor-objects--root > .editor-items__head {
+  justify-content: flex-end;
+  margin-top: calc(var(--space-2) * -1);
+}
+
+.editor-items {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  background: var(--color-bg-raised);
+
+  &:empty {
+    display: none;
+  }
+}
+
+.editor-items__empty {
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--color-line-strong);
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+}
+
+.editor-items__add {
+  display: flex;
+}
+
+.editor-item {
+  min-width: 0;
+
+  + .editor-item {
+    border-top: 1px solid var(--color-line);
+  }
+
+  &.is-open {
+    background: color-mix(in srgb, var(--color-bg-sunken) 35%, transparent);
+  }
+}
+
+.editor-item__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding-right: var(--space-2);
+}
+
+.editor-item__toggle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.6rem var(--space-3);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  > svg {
+    flex: none;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-left: auto;
+    color: var(--color-text-muted);
+    transition: transform var(--duration-1) ease;
+  }
+
+  &[aria-expanded="true"] > svg {
+    transform: rotate(90deg);
+  }
+
+  &:focus-visible {
+    @include focus-ring(-2px);
+  }
+
+  @include hover {
+    .editor-item__title { text-decoration: underline; }
+  }
+}
+
+.editor-item__number {
+  flex: none;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  background: var(--color-bg-sunken);
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: var(--color-text-muted);
+}
+
+.editor-item__text {
+  min-width: 0;
+  display: grid;
+}
+
+.editor-item__title {
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.editor-item__meta {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:empty { display: none; }
+}
+
+.editor-item__controls {
+  display: flex;
+  gap: 0.1rem;
+
+  .qbutton {
+    min-height: 30px;
+    padding-inline: 0.4rem;
+  }
+
+  .qbutton:disabled {
+    opacity: 0.3;
+    cursor: default;
+    background: transparent;
+  }
+}
+
+.editor-item__body {
+  padding: var(--space-2) var(--space-4) var(--space-4) calc(var(--space-3) + 1.6rem + var(--space-3));
+
+  @include down(sm) {
+    padding-left: var(--space-3);
+  }
+}
+
+.editor-item__foot {
+  display: flex;
+  justify-content: flex-end;
   margin-top: var(--space-3);
 }
 
-.editor-strings { display: grid; gap: var(--space-2); }
-.editor-strings__row { display: flex; gap: var(--space-2); align-items: center; }
-.editor-strings__row input { flex: 1; }
-
-.editor-columns {
-  display: grid;
-  gap: var(--space-5);
-
-  @media (min-width: 64rem) { grid-template-columns: 1fr 1fr; }
-}
-
-.editor-body textarea { min-height: 28rem; font-family: var(--font-mono); font-size: 0.9rem; }
-
-.editor-preview {
-  border: var(--border-thin) dashed var(--color-line-strong);
-  border-radius: var(--radius-2);
-  padding: var(--space-4);
-  min-height: 10rem;
+// Nested lists inside an item (skills in a group) sit a little lighter
+.editor-item .editor-items {
+  background: var(--color-bg);
 }
 
 .editor-delete { color: var(--color-danger); }

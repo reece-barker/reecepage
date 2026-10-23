@@ -31,7 +31,7 @@ after(async () => {
 });
 
 async function adminSession() {
-  const page = await request(ctx.app).get("/admin/media").set("Cookie", session.cookie).expect(200);
+  const page = await request(ctx.app).get("/admin/library").set("Cookie", session.cookie).expect(200);
   const cookie = [session.cookie, cookieHeader(page)].filter(Boolean).join("; ");
   return { cookie, csrf: /data-csrf="([^"]+)"/.exec(page.text)[1], html: page.text };
 }
@@ -45,10 +45,10 @@ function upload(session, body, fields) {
 
 test("the media admin needs a session and is never cached or indexed", async () => {
   const plain = await buildTestApp({ withDatabase: false });
-  await request(plain.app).get("/admin/media").expect(503);
+  await request(plain.app).get("/admin/library").expect(503);
   await plain.close();
-  await request(ctx.app).get("/admin/media").set("Accept", "text/html").expect(303).expect("Location", "/admin/login?next=%2Fadmin%2Fmedia");
-  const ok = await request(ctx.app).get("/admin/media").set("Cookie", session.cookie).expect(200);
+  await request(ctx.app).get("/admin/library").set("Accept", "text/html").expect(303).expect("Location", "/admin/login?next=%2Fadmin%2Flibrary");
+  const ok = await request(ctx.app).get("/admin/library").set("Cookie", session.cookie).expect(200);
   assert.match(ok.headers["cache-control"], /no-store/);
   assert.match(ok.text, /noindex/);
 });

@@ -369,7 +369,7 @@ cd /srv/reece-page && npm run media:add -- /tmp/reece-barker-long-form-v3.mp4 --
   --credit "Music composed for this video. Piano: Salamander Grand Piano by Alexander Holm (CC BY 3.0). Strings and percussion: VSCO 2 Community Edition (CC0). Full credits on the copyright page."
 ```
 
-Smaller pictures and clips can go through https://reece.page/admin/media in the browser.
+Smaller pictures and clips can go through https://reece.page/admin/library in the browser.
 
 ## 12. Backups
 

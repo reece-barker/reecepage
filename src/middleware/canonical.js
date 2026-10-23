@@ -24,7 +24,10 @@ export function canonicalRedirects(config) {
     if (req.path.length > 1 && req.path.endsWith("/")) {
       // Leading slashes are collapsed too: "//evil.example/" must never turn into a redirect to another site
       const trimmed = `/${req.path.replace(/^\/+/, "").replace(/\/+$/, "")}`;
-      return res.redirect(301, `${trimmed}${query}`);
+      // Straight to the final address when the trimmed one has moved, one hop instead of two (and /admin/media/
+      // from nginx doesnt bounce back to /admin/media and loop)
+      const moved = redirects[trimmed.toLowerCase()];
+      return res.redirect(301, moved || `${trimmed}${query}`);
     }
 
     const target = redirects[req.path.toLowerCase()];

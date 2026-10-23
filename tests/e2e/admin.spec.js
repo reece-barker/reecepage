@@ -53,7 +53,7 @@ test("write, switch to Markdown and back, publish, and see it on the site", asyn
   expect(errors).toEqual([]);
 });
 
-for (const path of ["/admin", "/admin/writing", "/admin/writing/new", "/admin/lists/timeline", "/admin/lists/settings", "/admin/account", "/admin/media", "/admin/system"]) {
+for (const path of ["/admin", "/admin/writing", "/admin/writing/new", "/admin/lists/timeline", "/admin/lists/settings", "/admin/account", "/admin/library", "/admin/system"]) {
   test(`${path} is accessible and clean`, async ({ page }) => {
     const errors = watchConsole(page);
     await signIn(page);

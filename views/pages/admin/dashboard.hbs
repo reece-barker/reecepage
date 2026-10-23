@@ -1,7 +1,10 @@
 <header class="admin-head">
-  <h1>Dashboard</h1>
+  <div class="admin-head__text">
+    <h1>Dashboard</h1>
+    <p class="admin-head__lede">What's on the site, what's waiting, and what changed last.</p>
+  </div>
   <div class="admin-head__actions">
-    {{#each cards}}<a class="button{{#unless @first}} button--secondary{{/unless}}" href="{{href}}/new">New {{singular}}</a>{{/each}}
+    {{#each cards}}<a class="button{{#unless @first}} button--secondary{{/unless}}" href="{{href}}/new">{{icon "plus"}}New {{singular}}</a>{{/each}}
   </div>
 </header>
 
@@ -9,58 +12,81 @@
 <p class="alert alert--error" role="alert">{{icon "alert"}}<span>The site is showing the files from content/ because the database couldnt be read. Changes saved here wont show until it can, see Status and links.</span></p>
 {{/if}}
 
-<div class="admin-dash">
-  <section class="admin-block" aria-labelledby="counts-title">
-    <h2 id="counts-title">On the site</h2>
-    <ul class="admin-counts" role="list">
-      {{#each cards}}
-      <li><a href="{{href}}"><span class="admin-counts__name">{{title}}</span><span>{{count}} published{{#if drafts}}, {{drafts}} {{plural drafts "draft" "drafts"}}{{/if}}</span></a></li>
-      {{/each}}
-    </ul>
-  </section>
+<ul class="admin-stats" role="list" data-stats="{{statCount}}">
+  {{#each cards}}
+  <li><a class="admin-stat" href="{{href}}">
+    <span class="admin-stat__label">{{icon icon}}{{title}}</span>
+    <span class="admin-stat__number">{{count}}</span>
+    <span class="admin-stat__note">published{{#if drafts}}, {{drafts}} {{plural drafts "draft" "drafts"}}{{/if}}</span>
+  </a></li>
+  {{/each}}
+  {{#if hasMedia}}
+  <li><a class="admin-stat" href="/admin/library">
+    <span class="admin-stat__label">{{icon "image"}}Media</span>
+    <span class="admin-stat__number">{{mediaCount}}</span>
+    <span class="admin-stat__note">{{mediaPublished}} on the media page</span>
+  </a></li>
+  {{/if}}
+</ul>
 
-  <section class="admin-block" aria-labelledby="soon-title">
-    <h2 id="soon-title">Coming up</h2>
-    {{#if scheduled.length}}
-    <ul class="admin-rows" role="list">
-      {{#each scheduled}}
-      <li class="admin-row"><span class="leaf leaf--{{state}}" aria-hidden="true"></span><a href="/admin/{{type}}/{{id}}">{{title}}</a><span class="admin-row__meta">goes live <time datetime="{{publishAt}}" data-local-time>{{publishAt}}</time></span></li>
-      {{/each}}
-    </ul>
-    {{else}}
-    <p class="admin-empty">Nothing scheduled. Pick a time next to Publish in the editor to put something here.</p>
-    {{/if}}
-  </section>
-
-  <section class="admin-block" aria-labelledby="drafts-title">
-    <h2 id="drafts-title">Drafts</h2>
-    {{#if drafts.length}}
-    <ul class="admin-rows" role="list">
-      {{#each drafts}}
-      <li class="admin-row"><span class="leaf leaf--{{state}}" aria-hidden="true"></span><a href="/admin/{{type}}/{{id}}">{{title}}</a><span class="admin-row__meta">changed <time datetime="{{updatedAt}}" data-local-time>{{updatedAt}}</time></span></li>
-      {{/each}}
-    </ul>
-    {{else}}
-    <p class="admin-empty">No drafts. Everything you've started is on the site.</p>
-    {{/if}}
-  </section>
-
-  <section class="admin-block admin-block--wide" aria-labelledby="recent-title">
-    <h2 id="recent-title">Recently changed</h2>
+<div class="admin-split admin-split--side-first">
+  <section class="panel" aria-labelledby="recent-title">
+    <div class="panel__head"><h2 id="recent-title">Recently changed</h2></div>
+    {{#if recent.length}}
     <ul class="admin-rows" role="list">
       {{#each recent}}
-      <li class="admin-row"><span class="leaf leaf--{{state}}" aria-hidden="true"><span class="visually-hidden">{{stateLabel}}</span></span><a href="/admin/{{type}}/{{id}}">{{title}}</a><span class="admin-row__meta">{{stateLabel}}, <time datetime="{{updatedAt}}" data-local-time>{{updatedAt}}</time></span></li>
+      <li class="admin-row">
+        <div class="admin-row__main">
+          <a href="/admin/{{type}}/{{id}}">{{title}}</a>
+          <div class="admin-row__meta">{{typeLabel}}, changed <time datetime="{{updatedAt}}" data-local-time>{{updatedAt}}</time></div>
+        </div>
+        <span class="pill pill--{{state}}">{{stateLabel}}</span>
+      </li>
       {{/each}}
     </ul>
+    {{else}}
+    <p class="panel__body admin-empty">Nothing yet. Write something and it shows up here.</p>
+    {{/if}}
   </section>
 
-  <section class="admin-block admin-block--wide" aria-labelledby="sync-title">
-    <h2 id="sync-title">GitHub</h2>
-    {{#if syncEnabled}}
-    <p>{{#if (eq sync.state "ok")}}Up to date with GitHub.{{else if (eq sync.state "failed")}}The last copy to GitHub failed: {{sync.lastError.message}}{{else}}Waiting to copy the latest changes to GitHub.{{/if}} <a href="/admin/sync">GitHub sync</a></p>
-    {{else}}
-    <p>Published content isnt copied to GitHub from here (no GITHUB_SYNC_TOKEN), which is normal on your own computer. <a href="/admin/sync">More about the sync</a></p>
-    {{/if}}
-    {{#if (eq signedInWith "dev")}}<p class="hint">Signed in with the development sign in.</p>{{/if}}
-  </section>
+  <div class="stack">
+    <section class="panel" aria-labelledby="drafts-title">
+      <div class="panel__head"><h2 id="drafts-title">Drafts <span class="panel__count">{{drafts.length}}</span></h2></div>
+      {{#if drafts.length}}
+      <ul class="admin-rows" role="list">
+        {{#each drafts}}
+        <li class="admin-row"><div class="admin-row__main"><a href="/admin/{{type}}/{{id}}">{{title}}</a><div class="admin-row__meta">{{typeLabel}}, <time datetime="{{updatedAt}}" data-local-time>{{updatedAt}}</time></div></div></li>
+        {{/each}}
+      </ul>
+      {{else}}
+      <p class="panel__body admin-empty">No drafts, everything you started is on the site.</p>
+      {{/if}}
+    </section>
+
+    <section class="panel" aria-labelledby="soon-title">
+      <div class="panel__head"><h2 id="soon-title">Scheduled <span class="panel__count">{{scheduled.length}}</span></h2></div>
+      {{#if scheduled.length}}
+      <ul class="admin-rows" role="list">
+        {{#each scheduled}}
+        <li class="admin-row"><div class="admin-row__main"><a href="/admin/{{type}}/{{id}}">{{title}}</a><div class="admin-row__meta">goes live <time datetime="{{publishAt}}" data-local-time>{{publishAt}}</time></div></div></li>
+        {{/each}}
+      </ul>
+      {{else}}
+      <p class="panel__body admin-empty">Nothing scheduled. Set a publish time under Details in the editor to put something here.</p>
+      {{/if}}
+    </section>
+
+    <section class="panel" aria-labelledby="sync-title">
+      <div class="panel__head"><h2 id="sync-title">GitHub</h2><a href="/admin/sync">Details</a></div>
+      <div class="panel__body">
+        {{#if syncEnabled}}
+        <p>{{#if (eq sync.state "ok")}}<span class="pill pill--published">Up to date</span>{{else if (eq sync.state "failed")}}<span class="pill pill--scheduled">Failed</span> {{sync.lastError.message}}{{else}}<span class="pill">Waiting</span> Copying the latest changes soon.{{/if}}</p>
+        {{else}}
+        <p><span class="pill">Off</span></p>
+        <p class="admin-row__meta">Saves arent copied to GitHub here because GITHUB_SYNC_TOKEN isnt set. Normal on your own computer.</p>
+        {{/if}}
+        {{#if (eq signedInWith "dev")}}<p class="admin-row__meta">Signed in with the development sign in.</p>{{/if}}
+      </div>
+    </section>
+  </div>
 </div>

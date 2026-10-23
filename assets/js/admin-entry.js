@@ -118,8 +118,70 @@
 
   // Details panel
 
-  var fields = F.buildFields(config.fields, entry ? entry.meta : {}, changed);
+  // The summary or intro line shows under the title on the page, so its written there too instead of hiding in
+  // Details. The rest of the details get a row of small chips under it, the same things the page shows up top
+  var LEDE_NAMES = ["lead", "summary"];
+  var ledeField = config.editor === "template" ? null : config.fields.filter(function (f) { return LEDE_NAMES.indexOf(f.name) !== -1; })[0];
+  var ledeInput = studio.querySelector("[data-lede]");
+  var factsBox = studio.querySelector("[data-facts]");
+  var detailFields = config.fields.filter(function (f) { return f !== ledeField; });
+  var fields = F.buildFields(detailFields, entry ? entry.meta : {}, function () { renderFacts(); changed(); });
   studio.querySelector("[data-fields]").appendChild(F.el("div", { className: "studio__group" }, [F.el("h2", { text: "Details" }), fields.node]));
+  if (ledeField) {
+    studio.querySelector("[data-lede-wrap]").hidden = false;
+    studio.querySelector("[data-lede-label]").textContent = ledeField.label;
+    ledeInput.placeholder = ledeField.name === "lead" ? "An intro line under the title (optional)" : "A summary in one or two sentences, shown under the title and in lists";
+    if (ledeField.max) ledeInput.maxLength = ledeField.max;
+    ledeInput.value = entry && entry.meta && entry.meta[ledeField.name] ? entry.meta[ledeField.name] : "";
+    ledeInput.addEventListener("input", function () { fitLede(); changed(); });
+    ledeInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (editor && editor.blocks.getBlocksCount()) editor.caret.setToFirstBlock("start"); else if (markdownArea) markdownArea.focus();
+      }
+    });
+  }
+  function fitLede() {
+    ledeInput.style.height = "auto";
+    ledeInput.style.height = ledeInput.scrollHeight + "px";
+  }
+  function metaNow() {
+    var meta = fields.get();
+    if (ledeField) meta[ledeField.name] = ledeInput.value;
+    return meta;
+  }
+
+  // The chips: what the page shows next to the title, each one opens Details
+  var FACTS = {
+    writing: function (m) { return [m.date ? "Published " + m.date : "Dated the day it goes live", m.updated ? "Updated " + m.updated : null].concat(m.tags || []); },
+    projects: function (m) { return [m.branch ? ({ code: "Code", earth: "Earth", faith: "People" }[m.branch] || m.branch) : null, m.kind, m.status, m.period, m.featured ? "On the home page" : null]; },
+    tools: function (m) { return [m.status]; },
+    pages: function () { return []; }
+  };
+  function renderFacts() {
+    var make = FACTS[config.type];
+    if (!make) return;
+    var meta = fields.get();
+    var chips = make(meta).filter(function (text) { return text && String(text).trim(); });
+    var todo = (meta.todo || []).filter(function (t) { return t && t.trim(); });
+    factsBox.textContent = "";
+    chips.forEach(function (text) {
+      var chip = F.el("button", { type: "button", className: "studio__fact", text: String(text) });
+      chip.addEventListener("click", function () { showPane("details"); });
+      factsBox.appendChild(chip);
+    });
+    var edit = F.el("button", { type: "button", className: "studio__fact studio__fact--edit", text: chips.length ? "Edit details" : "Add details" });
+    edit.addEventListener("click", function () { showPane("details"); });
+    if (config.type !== "pages") factsBox.appendChild(edit);
+    if (todo.length) {
+      var note = F.el("div", { className: "studio__todo" }, [
+        F.el("strong", { text: "Still missing (only you see this)" }),
+        F.el("ul", {}, todo.map(function (t) { return F.el("li", { text: t }); }))
+      ]);
+      factsBox.appendChild(note);
+    }
+    factsBox.hidden = !factsBox.firstChild;
+  }
   if (config.fixed) studio.querySelector("[data-address-group]").hidden = true;
   slugInput.value = entry ? entry.slug : "";
   studio.querySelector("[data-slug-hint]").textContent = "The address is " + config.publicBase.replace("SLUG", "...") + ". Made from the title if you leave it empty. Changing it on something published breaks old links to it.";
@@ -166,8 +228,7 @@
     if (entry) {
       var label = entry.state === "scheduled" ? "Scheduled for " + window.RP.formatTime(entry.publishAt) : entry.stateLabel;
       stateLine.textContent = "";
-      stateLine.appendChild(F.el("span", { className: "leaf leaf--" + entry.state, "aria-hidden": "true" }));
-      stateLine.appendChild(document.createTextNode(label));
+      stateLine.appendChild(F.el("span", { className: "pill pill--" + entry.state, text: label }));
     }
   }
 
@@ -295,7 +356,7 @@
         action: action,
         title: titleInput.value,
         slug: slugInput.value,
-        meta: fields.get(),
+        meta: metaNow(),
         body: body,
         publishAt: action === "publish" ? fromLocalInput(publishAtInput.value) : "",
         baseUpdatedAt: entry ? entry.updatedAt : undefined
@@ -463,7 +524,12 @@
   // Start
 
   var body = entry ? entry.body : "";
+  // A new one starts in the title straight away, not once the blocks have loaded, by then you might be typing
+  // somewhere else and the focus would jump away from under you
+  if (!entry) titleInput.focus();
   updateButtons();
+  renderFacts();
+  if (ledeField) requestAnimationFrame(fitLede);
   function takeSnapshot() {
     return snapshot().then(function (now) { savedSnapshot = now; });
   }
@@ -486,7 +552,6 @@
       return saved === "markdown" ? setMode("markdown") : null;
     }).then(function () {
       refreshPreview();
-      if (!entry) titleInput.focus();
     });
   }
   if (new URLSearchParams(location.search).get("notice") === "restored") say("The earlier version is back");

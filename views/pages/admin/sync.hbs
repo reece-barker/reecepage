@@ -1,26 +1,51 @@
-<header class="admin-head"><h1>GitHub sync</h1></header>
-<p class="admin-intro">Everything published here is copied to <code>content/</code> in <a href="https://github.com/{{repo}}/tree/{{branch}}/content" rel="noopener">{{repo}}</a> on <code>{{branch}}</code>, one commit per batch of changes, so git always has the newest published version and its history. Drafts and anything scheduled for later stay here until they go live, the repository is public. The references list is never copied, it holds private contact details. The commits end in [skip ci] so they dont redeploy the site.</p>
+<header class="admin-head">
+  <div class="admin-head__text">
+    <h1>GitHub sync</h1>
+    <p class="admin-head__lede">Everything published here is copied to <code>content/</code> in <a href="https://github.com/{{repo}}/tree/{{branch}}/content" rel="noopener">{{repo}}</a>, so git always has the newest version and its history.</p>
+  </div>
+</header>
 
 {{#if (eq notice "ran")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Sync finished, the result is below.</span></p>{{/if}}
 
-{{#if enabled}}
-<section class="admin-block" aria-labelledby="state-title">
-  <h2 id="state-title">Right now</h2>
-  <dl class="admin-facts">
-    <div><dt>State</dt><dd>{{#if (eq sync.state "ok")}}Up to date{{else if (eq sync.state "failed")}}Failed, retrying on its own{{else if (eq sync.state "running")}}Copying now{{else}}Waiting for the next change{{/if}}</dd></div>
-    {{#if sync.lastRun}}<div><dt>Last checked</dt><dd><time datetime="{{isoDateTime sync.lastRun}}" data-local-time>{{isoDateTime sync.lastRun}}</time></dd></div>{{/if}}
-    {{#if sync.lastCommit}}<div><dt>Last commit</dt><dd><a href="{{sync.lastCommit.url}}" rel="noopener">{{sync.lastCommit.message}}</a></dd></div>{{/if}}
-    {{#if sync.lastError}}<div><dt>Last problem</dt><dd>{{sync.lastError.message}}</dd></div>{{/if}}
-  </dl>
-  {{#if sync.blocked.length}}
-  <div class="alert alert--note">{{icon "info"}}<div><p>These files would be deleted on GitHub, because they're no longer published here. That's a lot at once, so it waits for you:</p><ul>{{#each sync.blocked}}<li><code>{{this}}</code></li>{{/each}}</ul></div></div>
+<div class="admin-split">
+  {{#if enabled}}
+  <section class="panel" aria-labelledby="state-title">
+    <div class="panel__head"><h2 id="state-title">Right now</h2>
+      {{#if (eq sync.state "ok")}}<span class="pill pill--published">Up to date</span>{{else if (eq sync.state "failed")}}<span class="pill pill--scheduled">Failed, retrying</span>{{else if (eq sync.state "running")}}<span class="pill">Copying now</span>{{else}}<span class="pill">Waiting</span>{{/if}}
+    </div>
+    <div class="panel__body">
+      <dl class="admin-facts">
+        <div><dt>Branch</dt><dd><code>{{branch}}</code></dd></div>
+        {{#if sync.lastRun}}<div><dt>Last checked</dt><dd><time datetime="{{isoDateTime sync.lastRun}}" data-local-time>{{isoDateTime sync.lastRun}}</time></dd></div>{{/if}}
+        {{#if sync.lastCommit}}<div><dt>Last commit</dt><dd><a href="{{sync.lastCommit.url}}" rel="noopener">{{sync.lastCommit.message}}</a></dd></div>{{/if}}
+        {{#if sync.lastError}}<div><dt>Last problem</dt><dd>{{sync.lastError.message}}</dd></div>{{/if}}
+      </dl>
+      {{#if sync.blocked.length}}
+      <div class="alert alert--note">{{icon "info"}}<div><p>These files would be deleted on GitHub, because they're no longer published here. That's a lot at once, so it waits for you:</p><ul>{{#each sync.blocked}}<li><code>{{this}}</code></li>{{/each}}</ul></div></div>
+      {{/if}}
+    </div>
+    <form method="post" action="/admin/sync" class="panel__foot">
+      <input type="hidden" name="_csrf" value="{{csrfToken}}">
+      {{#if sync.blocked.length}}<input type="hidden" name="confirm_deletes" value="yes">{{/if}}
+      <button class="button button--small" type="submit">{{icon "sync"}}{{#if sync.blocked.length}}Delete them and sync{{else}}Sync now{{/if}}</button>
+    </form>
+  </section>
+  {{else}}
+  <section class="panel" aria-labelledby="state-title">
+    <div class="panel__head"><h2 id="state-title">Right now</h2><span class="pill">Off</span></div>
+    <div class="panel__body">
+      <p>The sync is off here because <code>GITHUB_SYNC_TOKEN</code> isnt set.</p>
+      <p class="admin-row__meta">Thats right on your own computer. On the server, add a fine grained token with Contents read and write on the repository as the GitHub secret <code>SYNC_TOKEN</code> and run the deploy.</p>
+    </div>
+  </section>
   {{/if}}
-  <form method="post" action="/admin/sync" class="cluster">
-    <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    {{#if sync.blocked.length}}<input type="hidden" name="confirm_deletes" value="yes">{{/if}}
-    <button class="button" type="submit">{{#if sync.blocked.length}}Delete them and sync{{else}}Sync now{{/if}}</button>
-  </form>
-</section>
-{{else}}
-<div class="alert alert--note">{{icon "info"}}<div><p>The sync is off on this server because <code>GITHUB_SYNC_TOKEN</code> isnt set. Thats right on your own computer, there you pull from GitHub and run <code>npm run content:import -- --force</code>. On the server, the steps are in docs/DEPLOYMENT.md.</p></div></div>
-{{/if}}
+
+  <section class="panel" aria-labelledby="how-title">
+    <div class="panel__head"><h2 id="how-title">How it works</h2></div>
+    <div class="panel__body">
+      <p>One commit per batch of changes, a moment after you save.</p>
+      <p>Drafts and anything scheduled stay here until they go live, the repository is public. The references list is never copied, it has private contact details.</p>
+      <p>The commits end in <code>[skip ci]</code> so they dont redeploy the site. Pull before you push code yourself: <code>git pull --rebase</code>.</p>
+    </div>
+  </section>
+</div>

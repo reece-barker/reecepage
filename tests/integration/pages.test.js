@@ -71,6 +71,10 @@ test("trailing slashes and old addresses redirect permanently, and never off sit
   await request(ctx.app).get("/projects/").expect(301).expect("Location", "/projects");
   await request(ctx.app).get("/work").expect(301).expect("Location", "/projects");
   await request(ctx.app).get("/legal/privacy").expect(301).expect("Location", "/privacy");
+  // nginx turns /admin/media into /admin/media/, that has to land on the library and not bounce back
+  await request(ctx.app).get("/admin/media/").expect(301).expect("Location", "/admin/library");
+  await request(ctx.app).get("/admin/media").expect(301).expect("Location", "/admin/library");
+  await request(ctx.app).get("/work/").expect(301).expect("Location", "/projects");
   const sneaky = await request(ctx.app).get("//evil.example/").expect(301);
   assert.equal(sneaky.headers.location, "/evil.example");
 });

@@ -24,7 +24,7 @@
   }
 
   .admin-bar__menu {
-    display: block;
+    display: inline-flex;
   }
 
   .admin-nav {
@@ -258,6 +258,81 @@
   margin-top: var(--space-5);
 }
 
+// The summary or intro line, written where the page shows it: under the title, a size down
+.studio__lede {
+  display: block;
+  width: 100%;
+  max-width: var(--measure);
+  margin-top: var(--space-3);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: var(--step-1);
+  line-height: 1.5;
+  resize: none;
+  overflow: hidden;
+
+  &::placeholder {
+    color: var(--color-line-strong);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 3px 0 0 var(--color-line-strong);
+  }
+}
+
+// Chips for the details the page shows next to the title, they open the Details panel
+.studio__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  max-width: var(--measure);
+  margin-top: var(--space-4);
+}
+
+.studio__fact {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-bg-raised);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 650;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-line-strong);
+  }
+
+  &:focus-visible {
+    @include focus-ring(1px);
+  }
+}
+
+.studio__fact--edit {
+  border-style: dashed;
+  color: var(--color-text-muted);
+}
+
+// The same "still missing" box the page shows in development, so you see it while writing
+.studio__todo {
+  flex-basis: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--color-highlight);
+  border-radius: var(--radius-2);
+  background: var(--color-highlight-soft);
+  font-size: 0.88rem;
+
+  ul {
+    margin: var(--space-1) 0 0;
+    padding-left: 1.2rem;
+  }
+}
+
 // The Markdown view: a plain text area in the mono face, as tall as the text
 .studio__markdown {
   display: block;
@@ -417,7 +492,9 @@
   }
 
   // The title lines up with the blocks, which sit 4rem in to leave room for the + and drag buttons
-  .studio__title {
+  .studio__title,
+  .studio__lede-wrap,
+  .studio__facts {
     margin-left: 4rem;
   }
 }

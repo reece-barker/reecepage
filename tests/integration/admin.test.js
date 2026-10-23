@@ -61,7 +61,7 @@ test("dashboard, lists and editors render", async () => {
   assert.match(dash.text, /New post/);
   for (const type of ["writing", "pages", "projects", "legal"]) {
     const list = await get(`/admin/${type}`).expect(200);
-    assert.match(list.text, /admin-entries|admin-empty/);
+    assert.match(list.text, /admin-table--entries|admin-empty/);
   }
   await get("/admin/writing/new").expect(200);
   await get("/admin/legal/new").expect(404);

@@ -17,8 +17,8 @@
   }
 
   var built = config.root.type === "object"
-    ? F.buildFields(config.root.fields, config.value, changed)
-    : F.buildObjects(config.root, config.value, changed, { fixedLength: config.fixedLength });
+    ? F.buildFields(config.root.fields, config.value, changed, config.defaults)
+    : F.buildObjects(config.root, config.value, changed, { fixedLength: config.fixedLength, root: true });
   root.appendChild(built.node);
 
   window.addEventListener("beforeunload", function (event) {

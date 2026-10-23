@@ -1,4 +1,4 @@
-// The media library: pictures and videos uploaded on /admin/media, shown on /media and placed in articles with
+// The media library: pictures and videos uploaded on /admin/library, shown on /media and placed in articles with
 // [[media:slug]]. Files are stored on disk in MEDIA_DIR under a name nobody can guess, the database keeps the rest.
 //
 // Uploads are checked by their first bytes, not by their name or the type the browser claims, and only these get in:

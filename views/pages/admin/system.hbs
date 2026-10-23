@@ -1,42 +1,49 @@
 <header class="admin-head">
-  <h1>Status and links</h1>
-  <div class="admin-head__actions"><a class="button button--secondary" href="/status" target="_blank" rel="noopener">Public status page</a></div>
+  <div class="admin-head__text">
+    <h1>Status and links</h1>
+    <p class="admin-head__lede">Whether every part of the site is working right now, the services around it, and every address the site answers.</p>
+  </div>
+  <div class="admin-head__actions"><a class="button button--secondary button--small" href="/status" target="_blank" rel="noopener">{{icon "external"}}Public status page</a></div>
 </header>
 
-<section class="admin-block" aria-labelledby="status-title">
-  <h2 id="status-title">Status right now</h2>
-  {{#if (eq contentSource "files")}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>Content is coming from the files in content/, the database couldnt be read. Check the database line below.</span></p>{{/if}}
-  <ul class="status-list status-list--compact" role="list">
-    {{#each status.checks}}
-    <li class="status-row status-row--{{state}}"><span class="status-dot" aria-hidden="true"></span><div><h3>{{name}}</h3><p>{{detail}}</p></div><span class="status-label">{{label}}</span></li>
-    {{/each}}
-  </ul>
-</section>
+{{#if (eq contentSource "files")}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>Content is coming from the files in content/, the database couldnt be read. Check the database below.</span></p>{{/if}}
 
-<section class="admin-block" aria-labelledby="ext-title">
-  <h2 id="ext-title">Elsewhere</h2>
-  <ul class="admin-external" role="list">
-    {{#each external}}<li><a href="{{url}}" rel="noopener" target="_blank">{{label}}</a></li>{{/each}}
-  </ul>
-</section>
+<div class="stack">
+  <section class="panel" aria-labelledby="status-title">
+    <div class="panel__head"><h2 id="status-title">Right now</h2><p>Checked when this page loaded</p></div>
+    <ul class="admin-checks" role="list">
+      {{#each status.checks}}
+      <li class="admin-check admin-check--{{state}}"><span class="admin-check__dot" aria-hidden="true"></span><h3>{{name}}</h3><p><span class="admin-check__state">{{label}}.</span> {{detail}}</p></li>
+      {{/each}}
+    </ul>
+  </section>
 
-<section class="admin-block" aria-labelledby="links-title">
-  <h2 id="links-title">Every address on the site</h2>
+  <section class="panel" aria-labelledby="ext-title">
+    <div class="panel__head"><h2 id="ext-title">Elsewhere</h2><p>The services the site runs on</p></div>
+    <div class="panel__body">
+      <ul class="admin-links" role="list">
+        {{#each external}}<li><a href="{{url}}" rel="noopener" target="_blank">{{label}}{{icon "external"}}</a></li>{{/each}}
+      </ul>
+    </div>
+  </section>
+
   {{#each groups}}
-  <h3>{{title}}</h3>
-  <div class="table-scroll" tabindex="0" role="region" aria-label="{{title}}">
-    <table class="admin-table admin-table--endpoints">
-      <thead><tr><th scope="col">Method</th><th scope="col">Address</th><th scope="col">What it is for</th></tr></thead>
-      <tbody>
-        {{#each items}}
-        <tr{{#if off}} class="is-off"{{/if}}>
-          <td><code>{{method}}</code></td>
-          <td>{{#if link}}<a href="{{path}}"><code>{{path}}</code></a>{{else}}<code>{{path}}</code>{{/if}}</td>
-          <td>{{what}}{{#if off}} <strong>(switched off)</strong>{{/if}}</td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-  </div>
+  <section class="panel" aria-labelledby="group-{{@index}}">
+    <div class="panel__head"><h2 id="group-{{@index}}">{{title}} <span class="panel__count">{{items.length}}</span></h2>{{#if @first}}<p>Every address on the site</p>{{/if}}</div>
+    <div class="table-scroll" tabindex="0" role="region" aria-label="{{title}}, the table">
+      <table class="admin-table admin-table--endpoints">
+        <thead><tr><th scope="col">Method</th><th scope="col">Address</th><th scope="col">What it is for</th></tr></thead>
+        <tbody>
+          {{#each items}}
+          <tr{{#if off}} class="is-off"{{/if}}>
+            <td><code>{{method}}</code></td>
+            <td>{{#if link}}<a href="{{path}}"><code>{{path}}</code></a>{{else}}<code>{{path}}</code>{{/if}}</td>
+            <td>{{what}}{{#if off}} <span class="pill">Switched off</span>{{/if}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </section>
   {{/each}}
-</section>
+</div>
