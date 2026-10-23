@@ -1,6 +1,8 @@
 ---
 title: A production line for a LEGO bulldozer
-summary: In Saxion's Industrial Automation minor, a team of thirteen is designing a production line that assembles a LEGO Technic bulldozer every five minutes, with eight ABB robots, vision systems and PLCs.
+summary: >-
+  In Saxion's Industrial Automation minor, a team of thirteen is designing a production line that assembles a LEGO
+  Technic bulldozer every five minutes, with eight ABB robots, vision systems and PLCs.
 branch: code
 kind: Course project
 context: Saxion, Industrial Automation minor
@@ -10,11 +12,21 @@ status: In progress
 team: Thirteen students
 featured: true
 order: 2
-stack: [ABB RobotStudio, PLCs, SCADA, Ignition, Festo, Vision systems, Pneumatics]
+stack:
+  - ABB RobotStudio
+  - PLCs
+  - SCADA
+  - Ignition
+  - Festo
+  - Vision systems
+  - Pneumatics
 facts:
-  - { label: Product, value: "LEGO Technic 42163 Heavy-Duty Bulldozer, 195 parts" }
-  - { label: Target, value: "First unit in 20 minutes, then one every 5 minutes" }
-  - { label: Robots, value: "Eight ABB robots" }
+  - label: Product
+    value: LEGO Technic 42163 Heavy-Duty Bulldozer, 195 parts
+  - label: Target
+    value: First unit in 20 minutes, then one every 5 minutes
+  - label: Robots
+    value: Eight ABB robots
 todo:
   - Which station or part of the line Reece is responsible for
   - Photos or a layout drawing of the line once it exists

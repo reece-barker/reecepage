@@ -1,6 +1,8 @@
 ---
 title: Profiling traffic by sound
-summary: A Raspberry Pi that listens to passing traffic and profiles it by sound alone, to learn about emissions without a single camera. It scored nine out of ten.
+summary: >-
+  A Raspberry Pi that listens to passing traffic and profiles it by sound alone, to learn about emissions without a
+  single camera. It scored nine out of ten.
 branch: earth
 kind: Course project
 context: Saxion, time series pattern recognition
@@ -9,10 +11,16 @@ sort_date: 2026-06
 status: Finished
 featured: true
 order: 3
-stack: [Raspberry Pi, Audio classification, CUSUM, MATLAB]
+stack:
+  - Raspberry Pi
+  - Audio classification
+  - CUSUM
+  - MATLAB
 facts:
-  - { label: Grade, value: "9 out of 10" }
-  - { label: Sensor, value: "A microphone, no camera" }
+  - label: Grade
+    value: 9 out of 10
+  - label: Sensor
+    value: A microphone, no camera
 todo:
   - Whether this was a team or solo project
   - What the classifier tells apart, and how accurate it was

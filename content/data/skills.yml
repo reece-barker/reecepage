@@ -2,32 +2,44 @@
 - group: Software
   items:
     - name: JavaScript and the web
-      evidence: [scan-assistant, reece-page]
+      evidence:
+        - scan-assistant
+        - reece-page
     - name: Node.js, Express and MySQL
-      evidence: [reece-page]
+      evidence:
+        - reece-page
     - name: Browser extensions
-      evidence: [scan-assistant]
+      evidence:
+        - scan-assistant
     - name: Microsoft Power Platform
-      evidence: [mis-purchase-orders]
+      evidence:
+        - mis-purchase-orders
 - group: Hardware and automation
   items:
     - name: ABB robots and RobotStudio
-      evidence: [lego-bulldozer-production-line]
+      evidence:
+        - lego-bulldozer-production-line
     - name: PLCs, SCADA and vision systems
-      evidence: [lego-bulldozer-production-line, lego-sorting-machine]
+      evidence:
+        - lego-bulldozer-production-line
+        - lego-sorting-machine
     - name: Raspberry Pi
-      evidence: [traffic-sound-profiling]
+      evidence:
+        - traffic-sound-profiling
     - name: Embedded C and C++
       note: Saxion coursework
 - group: Data
   items:
     - name: Signal processing and change detection
-      evidence: [traffic-sound-profiling]
+      evidence:
+        - traffic-sound-profiling
     - name: Machine learning
-      evidence: [lego-sorting-machine]
+      evidence:
+        - lego-sorting-machine
       note: Saxion coursework
     - name: MATLAB
-      evidence: [traffic-sound-profiling]
+      evidence:
+        - traffic-sound-profiling
 - group: Languages
   items:
     - name: English

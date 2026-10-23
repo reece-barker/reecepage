@@ -2,12 +2,18 @@
 - id: code
   limb: 0
   title: Code
-  text: Applied Computer Science at Saxion. I like building small tools that fix real annoyances, and I teach myself whatever a project needs.
+  text: >-
+    Applied Computer Science at Saxion. I like building small tools that fix real annoyances, and I teach myself
+    whatever a project needs.
 - id: earth
   limb: 1
   title: Earth
-  text: Sustainability ambassador. I care about the changes that really cut waste or energy, and I get suspicious when something is only green on the label.
+  text: >-
+    Sustainability ambassador. I care about the changes that really cut waste or energy, and I get suspicious when
+    something is only green on the label.
 - id: faith
   limb: 2
   title: People
-  text: Being someone people can count on. Honest when it is inconvenient, patient, and doing good work even when nobody is checking.
+  text: >-
+    Being someone people can count on. Honest when it is inconvenient, patient, and doing good work even when nobody is
+    checking.

@@ -1,6 +1,8 @@
 ---
 title: AI climate control for rooms
-summary: A startup I co-founded with three classmates. Our software connects to the heating, cooling, air and lighting a building already has and runs them together, adjusted to who is actually in the room.
+summary: >-
+  A startup I co-founded with three classmates. Our software connects to the heating, cooling, air and lighting a
+  building already has and runs them together, adjusted to who is actually in the room.
 branch: earth
 kind: Startup
 context: Co-founded at Saxion
@@ -11,11 +13,13 @@ role: Co-founder
 team: Four co-founders
 featured: true
 order: 1
-stack: []
 facts:
-  - { label: Funding, value: "€2,500 from the Saxion Entrepreneurship Programme" }
-  - { label: Markets, value: "Homes, industry and healthcare" }
-  - { label: Name, value: "Not public yet" }
+  - label: Funding
+    value: €2,500 from the Saxion Entrepreneurship Programme
+  - label: Markets
+    value: Homes, industry and healthcare
+  - label: Name
+    value: Not public yet
 todo:
   - When the startup was founded (for the period line)
   - What Reece builds in the team, in one or two sentences

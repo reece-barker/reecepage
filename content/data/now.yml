@@ -1,8 +1,10 @@
 # What Reece is working on right now. Change the date whenever this list changes, the page shows it
-updated: 2026-10-12
+updated: '2026-10-12'
 items:
   - title: Industrial Automation minor
-    text: A team of thirteen designing a production line that builds a LEGO bulldozer every five minutes with eight ABB robots, plus a machine that sorts loose LEGO parts.
+    text: >-
+      A team of thirteen designing a production line that builds a LEGO bulldozer every five minutes with eight ABB
+      robots, plus a machine that sorts loose LEGO parts.
     link: /projects/lego-bulldozer-production-line
   - title: Our startup's second prototype
     text: AI that runs a room's heating, cooling, air and lighting together, starting with homes.

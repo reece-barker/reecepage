@@ -1,8 +1,13 @@
 ---
 title: How this site is built
-summary: A server rendered Express site with Handlebars, Sass and a little three.js. Why I picked boring tools, and where I spent the effort instead.
-date: 2026-10-12
-tags: [Web, Node.js, Accessibility]
+summary: >-
+  A server rendered Express site with Handlebars, Sass and a little three.js. Why I picked boring tools, and where I
+  spent the effort instead.
+date: '2026-10-12'
+tags:
+  - Web
+  - Node.js
+  - Accessibility
 todo:
   - Drafted by Claude from the code. Read it, change anything that does not sound like you, then remove this line
 ---

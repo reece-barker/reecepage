@@ -1,6 +1,8 @@
 ---
 title: Purchase orders on the Power Platform
-summary: At Munich International School I work on contract, supporting IT and building on Microsoft's Power Platform, including the purchase order system the finance team works with.
+summary: >-
+  At Munich International School I work on contract, supporting IT and building on Microsoft's Power Platform, including
+  the purchase order system the finance team works with.
 branch: code
 kind: Work
 context: Munich International School, IT and finance
@@ -10,7 +12,8 @@ status: In use
 role: Contracted IT support and Power Platform developer
 featured: false
 order: 7
-stack: [Microsoft Power Platform]
+stack:
+  - Microsoft Power Platform
 todo:
   - What the purchase order system replaced and what it changed for the finance team
   - Screenshots with internal data removed

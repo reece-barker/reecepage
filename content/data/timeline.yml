@@ -14,12 +14,17 @@
   title: IT support and Power Platform developer, on contract
   place: Munich International School
   kind: work
-  text: Supporting IT and building apps and automations on Microsoft's Power Platform, including the purchase order system the finance team uses.
+  text: >-
+    Supporting IT and building apps and automations on Microsoft's Power Platform, including the purchase order system
+    the finance team uses.
 - when: Since 2024
   title: Applied Computer Science
   place: Saxion University of Applied Sciences, Enschede
   kind: education
-  text: First year completed with the propaedeutic diploma, cum laude. Embedded C and C++, real time operating systems, signal processing and machine learning. Selected for the Saxion Honours Programme. Highest distinction at Saxion's International Project Week.
+  text: >-
+    First year completed with the propaedeutic diploma, cum laude. Embedded C and C++, real time operating systems,
+    signal processing and machine learning. Selected for the Saxion Honours Programme. Highest distinction at Saxion's
+    International Project Week.
 - when: Three summers, the last in 2024
   title: IT department, summer work
   place: Munich International School
@@ -29,15 +34,21 @@
   title: Freelance developer
   place: Self employed
   kind: work
-  text: Full stack web platforms with secure logins and live monitoring, a support and ticketing system sold on two marketplaces, and a configurator for Bronkhorst.
+  text: >-
+    Full stack web platforms with secure logins and live monitoring, a support and ticketing system sold on two
+    marketplaces, and a configurator for Bronkhorst.
 - when: Until 2024
   title: IB Diploma
   place: Munich International School
   kind: education
-  text: Computer Science, German and Geography at higher level. Extended essay on whether London's Ultra Low Emission Zone cut CO2.
+  text: >-
+    Computer Science, German and Geography at higher level. Extended essay on whether London's Ultra Low Emission Zone
+    cut CO2.
 - when: Childhood
   title: Primary school in West Sussex, then Munich
   place: England and Germany
   kind: education
-  text: I started school on the south coast of England before my family moved to Munich, where I grew up at Munich International School.
+  text: >-
+    I started school on the south coast of England before my family moved to Munich, where I grew up at Munich
+    International School.
   cv: false

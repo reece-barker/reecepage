@@ -1,6 +1,8 @@
 ---
 title: This website and the dove brand
-summary: The brand behind reece.page, from the dove and the colours to the tools that make my stationery and slides, and the website you are reading.
+summary: >-
+  The brand behind reece.page, from the dove and the colours to the tools that make my stationery and slides, and the
+  website you are reading.
 branch: code
 kind: Personal
 context: Personal project
@@ -10,9 +12,18 @@ status: Live
 role: Design and development
 featured: false
 order: 8
-stack: [Node.js, Express, Handlebars, Sass, Gulp, MySQL, Sequelize, three.js]
+stack:
+  - Node.js
+  - Express
+  - Handlebars
+  - Sass
+  - Gulp
+  - MySQL
+  - Sequelize
+  - three.js
 links:
-  - { label: How this site is built, url: /writing/how-this-site-is-built }
+  - label: How this site is built
+    url: /writing/how-this-site-is-built
 ---
 
 ## The brand

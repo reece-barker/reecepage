@@ -1,6 +1,8 @@
 ---
 title: About
-lead: I write software, build hardware and co-founded a startup. The easiest way to explain why is to start at the beginning.
+lead: >-
+  I write software, build hardware and co-founded a startup. The easiest way to explain why is to start at the
+  beginning.
 ---
 
 ## Where it started

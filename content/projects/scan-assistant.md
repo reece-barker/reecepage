@@ -1,6 +1,8 @@
 ---
 title: Scan Assistant
-summary: A Chrome extension I built for the IT team at Munich International School. It scans the school's iPads in and out, matches them against class lists and turns the result into a report automatically.
+summary: >-
+  A Chrome extension I built for the IT team at Munich International School. It scans the school's iPads in and out,
+  matches them against class lists and turns the result into a report automatically.
 branch: code
 kind: Work
 context: Munich International School, IT
@@ -10,7 +12,12 @@ status: In use
 role: Designed and built it on my own
 featured: true
 order: 4
-stack: [Chrome extension, JavaScript, Snipe-IT, Barcode scanning, Speech synthesis]
+stack:
+  - Chrome extension
+  - JavaScript
+  - Snipe-IT
+  - Barcode scanning
+  - Speech synthesis
 todo:
   - A screenshot with student names blurred or replaced
   - How many devices it has been used for

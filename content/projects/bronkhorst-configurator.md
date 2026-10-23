@@ -1,6 +1,8 @@
 ---
 title: A product configurator for Bronkhorst
-summary: For the flow meter manufacturer Bronkhorst, I built a customer configurator that checks real physics constraints as you type. I delivered it in a week.
+summary: >-
+  For the flow meter manufacturer Bronkhorst, I built a customer configurator that checks real physics constraints as
+  you type. I delivered it in a week.
 branch: code
 kind: Freelance
 context: Client project for Bronkhorst
@@ -10,7 +12,6 @@ status: Delivered
 role: Sole developer
 featured: false
 order: 6
-stack: []
 todo:
   - The year of the project
   - The stack used

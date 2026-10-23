@@ -1,6 +1,8 @@
 ---
 title: A support and ticketing system
-summary: A support and ticketing system for online communities in the entertainment space, built on Discord and connected to the APIs those communities already rely on. It was sold commercially on two marketplaces.
+summary: >-
+  A support and ticketing system for online communities in the entertainment space, built on Discord and connected to
+  the APIs those communities already rely on. It was sold commercially on two marketplaces.
 branch: code
 kind: Freelance product
 context: Freelance
@@ -10,7 +12,9 @@ status: Sold commercially
 role: Designed, built and sold it
 featured: false
 order: 5
-stack: [Discord, API integrations]
+stack:
+  - Discord
+  - API integrations
 todo:
   - The stack it is built on
   - Number of customers or communities using it, if he wants to share it
