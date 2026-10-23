@@ -3,6 +3,8 @@ name: Deploy reece.page
 on:
   push:
     branches: [main]
+  # Lets you rerun the deploy from the Actions tab, handy after changing one of the secrets below
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -10,13 +12,23 @@ jobs:
     steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          # The admin sign in and the GitHub sync, set under Settings > Secrets and variables > Actions. The deploy
+          # writes them into the server .env, an empty or missing one leaves whats there alone
+          SIMPLELOGIN_CLIENT_ID: ${{ secrets.SIMPLELOGIN_CLIENT_ID }}
+          SIMPLELOGIN_CLIENT_SECRET: ${{ secrets.SIMPLELOGIN_CLIENT_SECRET }}
+          ADMIN_SIMPLELOGIN_ID: ${{ secrets.ADMIN_SIMPLELOGIN_ID }}
+          GITHUB_SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: SIMPLELOGIN_CLIENT_ID,SIMPLELOGIN_CLIENT_SECRET,ADMIN_SIMPLELOGIN_ID,GITHUB_SYNC_TOKEN
           script: |
+            set -e
             cd /srv/reece-page
             git pull
+            node scripts/env-set.js
             npm ci
             npm run build
             npm prune --omit=dev
@@ -24,4 +36,3 @@ jobs:
             sudo systemctl restart reece-page
             sleep 2
             curl -fsS http://127.0.0.1:3000/health/ready
-

@@ -247,10 +247,8 @@ SMTP_PASSWORD=<bridge password>
 MAIL_FROM="reece.page <website@reece.page>"
 CONTACT_NOTIFY_TO=me@reece.page
 LEGAL_PHONE="<your phone number>"
-SIMPLELOGIN_CLIENT_ID=<from app.simplelogin.io/developer, see CONTENT.md>
-SIMPLELOGIN_CLIENT_SECRET=<same place>
-ADMIN_SIMPLELOGIN_ID=<shown on the sign in page the first time>
-GITHUB_SYNC_TOKEN=<fine grained token, Contents read and write on reecepage only>
+# SIMPLELOGIN_CLIENT_ID, SIMPLELOGIN_CLIENT_SECRET, ADMIN_SIMPLELOGIN_ID and GITHUB_SYNC_TOKEN are written in
+# by the deploy from the GitHub secrets, see CONTENT.md
 ERROR_DSN=<from GlitchTip, step 10>
 RELEASE=<git rev-parse --short HEAD, the deploy script can fill this>
 ```

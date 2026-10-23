@@ -69,13 +69,20 @@ reads.
 https://reece.page/admin. Signing in is SimpleLogin (Proton) or a passkey, theres no sign up, only one account gets
 in. On your computer `npm run dev` gives a one click development sign in instead.
 
-Setting up the sign in on the server, once:
+Setting up the sign in, once. The secrets live in GitHub (repo, Settings, Secrets and variables, Actions) and the
+deploy writes them into the server .env, so theres no need to ssh in:
 
 1. On https://app.simplelogin.io/developer make an app, redirect address
-   `https://reece.page/admin/login/simplelogin/callback`. Put its id and secret in the server .env as
-   `SIMPLELOGIN_CLIENT_ID` and `SIMPLELOGIN_CLIENT_SECRET`, restart.
-2. Sign in once. It refuses you but shows your SimpleLogin id. Put it in .env as `ADMIN_SIMPLELOGIN_ID`, restart.
+   `https://reece.page/admin/login/simplelogin/callback` (and `http://localhost:3000/admin/login/simplelogin/callback`
+   for your computer). Add its AppID and AppSecret as the secrets `SIMPLELOGIN_CLIENT_ID` and
+   `SIMPLELOGIN_CLIENT_SECRET`, then run the deploy from the Actions tab (Deploy reece.page, Run workflow).
+2. Sign in once. It refuses you but shows your SimpleLogin id. Add it as the secret `ADMIN_SIMPLELOGIN_ID` and run
+   the deploy again.
 3. Sign in, go to Account and add a passkey, the backup if SimpleLogin is ever down.
+4. For the GitHub commits add the token as the secret `SYNC_TOKEN` (GitHub doesnt allow secret names starting
+   with GITHUB_, the deploy puts it in .env as `GITHUB_SYNC_TOKEN`).
+
+An empty secret leaves the line in .env alone, so editing .env by hand still works too.
 
 What's in it:
 
