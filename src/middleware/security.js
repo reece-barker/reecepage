@@ -28,6 +28,9 @@ export function analyticsOrigins(config) {
 // framing its own preview page. The public site keeps the strict policy
 const isAdmin = (req) => req.path === "/admin" || req.path.startsWith("/admin/");
 const isPreview = (req) => req.path.startsWith("/admin/preview/");
+// The sign in form posts here and gets sent on to SimpleLogin, browsers check form-action for that redirect too, so
+// with only 'self' the button just silently did nothing. Only the sign in pages get the extra address
+const isSignIn = (req) => req.path.startsWith("/admin/login");
 
 export function securityHeaders(config) {
   const extra = analyticsOrigins(config);
@@ -47,7 +50,7 @@ export function securityHeaders(config) {
         "worker-src": ["'none'"],
         "object-src": ["'none'"],
         "base-uri": ["'none'"],
-        "form-action": ["'self'"],
+        "form-action": ["'self'", (req) => (isSignIn(req) ? new URL(config.admin.simplelogin.issuer).origin : "'self'")],
         "frame-ancestors": [(req) => (isPreview(req) ? "'self'" : "'none'")],
         ...(config.isProduction ? { "upgrade-insecure-requests": [] } : {})
       }

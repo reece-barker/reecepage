@@ -30,6 +30,10 @@ test("without a session pages go to the sign in page and the editor gets a 401",
   const login = await request(ctx.app).get("/admin/login").expect(200);
   assert.match(login.text, /Development sign in/);
   assert.match(login.headers["x-robots-tag"], /noindex/);
+  // The button posts here and the answer redirects to SimpleLogin, without this the browser blocks it silently
+  assert.match(login.headers["content-security-policy"], /form-action 'self' https:\/\/app\.simplelogin\.io/);
+  const home = await request(ctx.app).get("/").expect(200);
+  assert.match(home.headers["content-security-policy"], /form-action 'self' 'self';/);
 });
 
 test("the development sign in is only there when its switched on", async () => {
