@@ -9,7 +9,8 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const MANAGED_KEYS = ["SIMPLELOGIN_CLIENT_ID", "SIMPLELOGIN_CLIENT_SECRET", "ADMIN_SIMPLELOGIN_ID", "GITHUB_SYNC_TOKEN"];
+// RELEASE isnt a secret, the deploy sets it to the commit thats going live so /status shows the right version
+export const MANAGED_KEYS = ["SIMPLELOGIN_CLIENT_ID", "SIMPLELOGIN_CLIENT_SECRET", "ADMIN_SIMPLELOGIN_ID", "GITHUB_SYNC_TOKEN", "RELEASE"];
 
 // Plain when its safe, otherwise in quotes. Nodes own .env reader has no escaping inside quotes, so it picks a
 // quote character the value doesnt contain, secrets never have all three anyway

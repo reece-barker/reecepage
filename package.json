@@ -60,6 +60,7 @@
     "check": "npm run lint && npm test && npm run content:check",
     "content:check": "node --disable-warning=ExperimentalWarning scripts/content-check.js",
     "content:import": "node --disable-warning=ExperimentalWarning scripts/content-import.js",
+    "content:apply": "node --disable-warning=ExperimentalWarning scripts/content-apply.js",
     "vendor:editor": "node --disable-warning=ExperimentalWarning scripts/vendor-editor.js",
     "site:check": "node --disable-warning=ExperimentalWarning scripts/site-check.js",
     "db:migrate": "node --disable-warning=ExperimentalWarning scripts/db.js migrate",

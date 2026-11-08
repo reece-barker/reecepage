@@ -250,7 +250,7 @@ LEGAL_PHONE="<your phone number>"
 # SIMPLELOGIN_CLIENT_ID, SIMPLELOGIN_CLIENT_SECRET, ADMIN_SIMPLELOGIN_ID and GITHUB_SYNC_TOKEN are written in
 # by the deploy from the GitHub secrets, see CONTENT.md
 ERROR_DSN=<from GlitchTip, step 10>
-RELEASE=<git rev-parse --short HEAD, the deploy script can fill this>
+# RELEASE (the live commit) is written in by the deploy too
 ```
 
 ```bash
@@ -295,11 +295,16 @@ If it exits straight away, `journalctl -u reece-page -n 50` shows the list of wh
 
 ## 8. Every deploy after that
 
+A push to main does this on its own (.github/workflows/deploy.yml). By hand it is:
+
 ```bash
 cd /srv/reece-page
+BEFORE=$(git rev-parse HEAD)
 git pull
+RELEASE=$(git rev-parse --short HEAD) node scripts/env-set.js
 npm ci && npm run check && npm run build && npm prune --omit=dev
 npm run db:migrate
+npm run content:apply -- --since "$BEFORE"     # content changes from the pull, see CONTENT.md
 sudo systemctl restart reece-page
 curl -fsS https://reece.page/health/ready
 ```

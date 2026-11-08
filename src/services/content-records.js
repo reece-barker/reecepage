@@ -48,7 +48,12 @@ function markdownFiles(directory) {
 
 /** One Markdown file as an entry record. draft: true in the front matter means status draft */
 export function entryFromFile(type, file) {
-  const source = readFileSync(file, "utf8");
+  return { ...entryFromText(type, path.basename(file, ".md"), readFileSync(file, "utf8")), updatedAt: statSync(file).mtime, file };
+}
+
+/** The same from the text of a file, used for old versions out of git that arent on disk */
+export function entryFromText(type, slug, source) {
+  if (type === "legal") return { ...legalFromText(source), type, slug, status: "published", publishAt: null };
   const { data, content } = matter(source);
   const meta = plainDates({ ...data });
   if (typeof meta.sort_date === "number") meta.sort_date = String(meta.sort_date);
@@ -56,14 +61,12 @@ export function entryFromFile(type, file) {
   delete meta.draft;
   return {
     type,
-    slug: path.basename(file, ".md"),
+    slug,
     title: String(meta.title ?? "").trim(),
     status: draft ? "draft" : "published",
     publishAt: null,
     meta,
-    body: content.replace(/^\n+/, ""),
-    updatedAt: statSync(file).mtime,
-    file
+    body: content.replace(/^\n+/, "")
   };
 }
 
@@ -99,6 +102,37 @@ function legalFromText(text) {
   const head = LEGAL_HEAD.exec(text);
   const meta = head ? plainDates(parseYaml(head[1]) || {}) : {};
   return { title: String(meta.title || ""), meta, body: head ? text.slice(head[0].length) : text };
+}
+
+/**
+ * Which record a path in the repository belongs to, the opposite of repoPath. null for anything that isnt content
+ * the database holds (the CV pdf, a README)
+ */
+export function recordForPath(repoFile) {
+  let match = /^content\/data\/([a-z0-9-]+)\.yml$/.exec(repoFile);
+  if (match) return { kind: "document", name: match[1] };
+  match = /^content\/legal\/([a-z0-9-]+)\.hbs$/.exec(repoFile);
+  if (match) return { kind: "entry", type: "legal", slug: match[1] };
+  match = /^content\/(projects|writing|tools|pages)\/(?!_)([a-z0-9-]+)\.md$/.exec(repoFile);
+  if (match) return { kind: "entry", type: match[1], slug: match[2] };
+  return null;
+}
+
+/**
+ * A file text the way the admin would write it, so a hand written file and the same content saved by the admin
+ * compare equal even when the yaml is spaced or quoted diffrently. null means "not on the live site": no file, or
+ * a draft
+ */
+export function canonicalText(repoFile, text) {
+  if (text === null || text === undefined) return null;
+  const record = recordForPath(repoFile);
+  if (!record) return text;
+  if (record.kind === "document") {
+    const data = plainDates(parseYaml(text));
+    return data === null || data === undefined ? null : documentToFile(record.name, data);
+  }
+  const entry = entryFromText(record.type, record.slug, text);
+  return entry.status === "published" ? entryToFile(entry) : null;
 }
 
 /** The path in the repository an entry or document is mirrored to */

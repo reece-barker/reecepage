@@ -25,3 +25,9 @@ test("odd characters are quoted so Node reads back the same value, duplicates ar
   assert.equal(text.match(/GITHUB_SYNC_TOKEN/g).length, 1);
   assert.equal(parseEnv(text).GITHUB_SYNC_TOKEN, value);
 });
+
+test("the deploy can set RELEASE to the commit going live", () => {
+  const { text, changed } = setEnvValues("RELEASE=0ea80c9\nDB_PASSWORD=secret\n", { RELEASE: "3c64f8f" });
+  assert.deepEqual(changed, ["RELEASE"]);
+  assert.equal(text, "RELEASE=3c64f8f\nDB_PASSWORD=secret\n");
+});

@@ -27,12 +27,19 @@ jobs:
           script: |
             set -e
             cd /srv/reece-page
+            # The commit the site was on before, so content changes in this deploy can be told apart from the
+            # ones made in the admin since
+            BEFORE=$(git rev-parse HEAD)
             git pull
-            node scripts/env-set.js
+            # RELEASE is the commit thats live, /status and every error report show it
+            RELEASE=$(git rev-parse --short HEAD) node scripts/env-set.js
             npm ci
             npm run build
             npm prune --omit=dev
             npm run db:migrate
+            # Content files changed in the pull request go into the database, unless that page or list was edited
+            # in the admin since. It prints any clash and never stops the deploy
+            npm run content:apply -- --since "$BEFORE" || echo "content apply failed, the site still deploys, check the lines above"
             sudo systemctl restart reece-page
             sleep 2
             curl -fsS http://127.0.0.1:3000/health/ready

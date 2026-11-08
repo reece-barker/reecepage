@@ -23,13 +23,14 @@ The step by step for the server is in [DEPLOYMENT.md](DEPLOYMENT.md), this is th
 
 ## Server
 
-- [ ] Steps 1 to 7 of DEPLOYMENT.md, `.env` complete, `npm run db:migrate` done
+- [x] Steps 1 to 7 of DEPLOYMENT.md, `.env` complete, `npm run db:migrate` done
 - [ ] `npm run mail:verify -- --send` and the test email arrived, not in spam
-- [ ] GlitchTip running, `ERROR_DSN` set, a test error shows up, uptime monitor on /health/ready
+- [x] GlitchTip running, `ERROR_DSN` set, a test error shows up, uptime monitor on /health/ready (confirmed November 2026)
 - [ ] SimpleLogin app made and `ADMIN_SIMPLELOGIN_ID` set, /admin signs in, a passkey added under Account
-- [ ] `GITHUB_SYNC_TOKEN` set, a save in the admin shows up as a commit on GitHub
+- [x] `GITHUB_SYNC_TOKEN` set, a save in the admin shows up as a commit on GitHub
 - [ ] Introduction video added with its captions and marked featured (DEPLOYMENT.md step 11)
-- [ ] nginx logs rotate after 7 days, nightly database dump, media folder backed up off the server, one restore tried
+- [x] Nightly database dump and the media folder backed up off the server (confirmed November 2026)
+- [ ] nginx logs rotate after 7 days, and one restore from the backup tried
 
 ## Content
 
