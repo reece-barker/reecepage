@@ -320,17 +320,76 @@
 
 // The same "still missing" box the page shows in development, so you see it while writing
 .studio__todo {
-  flex-basis: 100%;
-  padding: var(--space-3) var(--space-4);
+  max-width: var(--measure);
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-3) var(--space-2) var(--space-4);
   border: 1px dashed var(--color-highlight);
   border-radius: var(--radius-2);
   background: var(--color-highlight-soft);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
+}
 
-  ul {
-    margin: var(--space-1) 0 0;
-    padding-left: 1.2rem;
+.studio__todo-head {
+  display: grid;
+  gap: 0.1rem;
+  margin-bottom: var(--space-2);
+
+  span {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
   }
+}
+
+.studio__todo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  li::before {
+    content: "";
+    flex: none;
+    width: 0.4rem;
+    height: 0.4rem;
+    background: currentColor;
+    transform: rotate(45deg);
+    opacity: 0.6;
+  }
+}
+
+// A note reads like text until you click it
+.studio__todo-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-text) 20%, transparent);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-text);
+    background: var(--color-bg-raised);
+  }
+}
+
+.studio__todo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  margin-left: calc(var(--space-2) * -1);
 }
 
 // The Markdown view: a plain text area in the mono face, as tall as the text
@@ -422,8 +481,12 @@
   transform-origin: 0 0;
 }
 
+// A phone sized frame in the middle. It needs a real width: centred with auto margins in the column it would shrink
+// to the width of its content, and the iframe inside is absolutely placed so that was nothing, an empty preview
 .studio__frame-wrap.is-phone {
-  max-width: 390px;
+  width: 390px;
+  max-width: calc(100% - 2 * var(--space-4));
+  align-self: center;
   margin-inline: auto;
 }
 
@@ -494,7 +557,8 @@
   // The title lines up with the blocks, which sit 4rem in to leave room for the + and drag buttons
   .studio__title,
   .studio__lede-wrap,
-  .studio__facts {
+  .studio__facts,
+  .studio__todo {
     margin-left: 4rem;
   }
 }

@@ -124,7 +124,12 @@
   var ledeField = config.editor === "template" ? null : config.fields.filter(function (f) { return LEDE_NAMES.indexOf(f.name) !== -1; })[0];
   var ledeInput = studio.querySelector("[data-lede]");
   var factsBox = studio.querySelector("[data-facts]");
-  var detailFields = config.fields.filter(function (f) { return f !== ledeField; });
+  // The still missing notes are edited right in their box under the title, not in Details
+  var todoField = config.fields.filter(function (f) { return f.name === "todo"; })[0];
+  var todos = todoField && entry && Array.isArray(entry.meta.todo) ? entry.meta.todo.slice() : [];
+  var todoBox = F.el("div", { className: "studio__todo", hidden: true });
+  factsBox.parentNode.insertBefore(todoBox, factsBox.nextSibling);
+  var detailFields = config.fields.filter(function (f) { return f !== ledeField && f !== todoField; });
   var fields = F.buildFields(detailFields, entry ? entry.meta : {}, function () { renderFacts(); changed(); });
   studio.querySelector("[data-fields]").appendChild(F.el("div", { className: "studio__group" }, [F.el("h2", { text: "Details" }), fields.node]));
   if (ledeField) {
@@ -148,6 +153,7 @@
   function metaNow() {
     var meta = fields.get();
     if (ledeField) meta[ledeField.name] = ledeInput.value;
+    if (todoField) meta.todo = todos.map(function (t) { return t.trim(); }).filter(Boolean);
     return meta;
   }
 
@@ -163,7 +169,6 @@
     if (!make) return;
     var meta = fields.get();
     var chips = make(meta).filter(function (text) { return text && String(text).trim(); });
-    var todo = (meta.todo || []).filter(function (t) { return t && t.trim(); });
     factsBox.textContent = "";
     chips.forEach(function (text) {
       var chip = F.el("button", { type: "button", className: "studio__fact", text: String(text) });
@@ -173,14 +178,58 @@
     var edit = F.el("button", { type: "button", className: "studio__fact studio__fact--edit", text: chips.length ? "Edit details" : "Add details" });
     edit.addEventListener("click", function () { showPane("details"); });
     if (config.type !== "pages") factsBox.appendChild(edit);
-    if (todo.length) {
-      var note = F.el("div", { className: "studio__todo" }, [
-        F.el("strong", { text: "Still missing (only you see this)" }),
-        F.el("ul", {}, todo.map(function (t) { return F.el("li", { text: t }); }))
-      ]);
-      factsBox.appendChild(note);
+    if (todoField && !todos.length) {
+      var addNote = F.el("button", { type: "button", className: "studio__fact studio__fact--edit", text: "Add a still missing note" });
+      addNote.addEventListener("click", function () { addTodo(); });
+      factsBox.appendChild(addNote);
     }
     factsBox.hidden = !factsBox.firstChild;
+  }
+
+  // The still missing box: each note is a line you can change or remove, and it goes when the last one does.
+  // Built again only when a line is added or removed, so typing in one never loses the cursor
+  function renderTodos(focusIndex) {
+    todoBox.textContent = "";
+    todoBox.hidden = !todos.length;
+    if (!todos.length) return;
+    var list = F.el("ul", { className: "studio__todo-list", role: "list" });
+    todos.forEach(function (text, i) {
+      var input = F.el("input", { className: "studio__todo-input", type: "text", value: text, maxLength: 300, "aria-label": "Still missing note " + (i + 1) });
+      input.addEventListener("input", function () { todos[i] = input.value; changed(); });
+      input.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") { event.preventDefault(); addTodo(i + 1); }
+        if (event.key === "Backspace" && !input.value) { event.preventDefault(); removeTodo(i); }
+      });
+      var remove = F.iconButton("trash", "Remove this note", function () { removeTodo(i); }, "qbutton--danger");
+      list.appendChild(F.el("li", {}, [input, remove]));
+    });
+    var add = F.iconButton("plus", "Add a note", function () { addTodo(); }, "", true);
+    var clear = F.iconButton("trash", "Remove them all", function () { todos = []; renderTodos(); renderFacts(); changed(); }, "qbutton--danger", true);
+    todoBox.appendChild(F.el("div", { className: "studio__todo-head" }, [
+      F.el("strong", { text: "Still missing" }),
+      F.el("span", { text: "Only you see these, in the editor and the preview. Remove a note when it's done." })
+    ]));
+    todoBox.appendChild(list);
+    todoBox.appendChild(F.el("div", { className: "studio__todo-actions" }, [add, clear]));
+    if (typeof focusIndex === "number") {
+      var inputs = todoBox.querySelectorAll("input");
+      var target = inputs[Math.min(focusIndex, inputs.length - 1)];
+      if (target) target.focus();
+    }
+  }
+  function addTodo(at) {
+    var index = typeof at === "number" ? at : todos.length;
+    todos.splice(index, 0, "");
+    renderTodos(index);
+    renderFacts();
+    changed();
+  }
+  function removeTodo(i) {
+    todos.splice(i, 1);
+    renderTodos(todos.length ? Math.max(0, i - 1) : undefined);
+    renderFacts();
+    if (!todos.length) titleInput.focus();
+    changed();
   }
   if (config.fixed) studio.querySelector("[data-address-group]").hidden = true;
   slugInput.value = entry ? entry.slug : "";
@@ -529,6 +578,7 @@
   if (!entry) titleInput.focus();
   updateButtons();
   renderFacts();
+  renderTodos();
   if (ledeField) requestAnimationFrame(fitLede);
   function takeSnapshot() {
     return snapshot().then(function (now) { savedSnapshot = now; });
