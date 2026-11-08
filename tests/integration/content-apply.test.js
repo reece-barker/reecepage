@@ -43,7 +43,7 @@ test("an untouched entry takes the new version, one edited in the admin is left 
     const about = await repo.findEntry("pages", "about");
     await repo.saveEntry({ ...about, body: `${about.body}\n\nA line added in the admin.` });
 
-    const newNow = nowFile.replace(/updated: .*/, "updated: '2026-11-08'");
+    const newNow = nowFile.replace(/updated: .*/, "updated: '2030-01-01'");
     const changes = [
       { path: "content/data/now.yml", before: nowFile, after: newNow },
       { path: "content/pages/about.md", before: aboutFile, after: aboutFile.replace("I", "We") },
@@ -57,7 +57,7 @@ test("an untouched entry takes the new version, one edited in the admin is left 
 
     const done = await applyPlan(repo, result);
     assert.deepEqual(done.failed, []);
-    assert.equal((await repo.getDocument("now")).updated, "2026-11-08");
+    assert.equal((await repo.getDocument("now")).updated, "2030-01-01");
     assert.equal((await repo.findEntry("projects", "brand-new-thing")).status, "published");
     assert.match((await repo.findEntry("pages", "about")).body, /A line added in the admin/);
 
