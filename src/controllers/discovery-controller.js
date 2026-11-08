@@ -27,6 +27,7 @@ export function createDiscoveryController({ config, content, seo, media, setting
       { path: "/projects", lastmod: contentDate, priority: "0.9" },
       ...content.listProjects().filter((p) => p.hasPage).map((p) => ({ path: p.url, lastmod: p.sortDate, priority: "0.7" })),
       { path: "/cv", priority: "0.7" },
+      { path: "/lebenslauf", priority: "0.6" },
       { path: "/references", priority: "0.5" },
       { path: "/contact", priority: "0.6" }
     ];
@@ -93,7 +94,7 @@ export function createDiscoveryController({ config, content, seo, media, setting
         `- [About](${url("/about")}): background, education, work and skills with the projects that show them`,
         `- [Projects](${url("/projects")}): everything he has built, with what is known about each`,
         ...(config.features.writing ? [`- [Writing](${url("/writing")}): articles`] : []),
-        `- [CV](${url("/cv")}): one page CV, also as a PDF at ${url("/cv/reece-barker-cv.pdf")}`,
+        `- [CV](${url("/cv")}): CV, also as a PDF at ${url("/cv/reece-barker-cv.pdf")}, and in German at ${url("/lebenslauf")}`,
         `- [References](${url("/references")}): quotes from people he worked with, published with permission`,
         ...(config.features.media ? [`- [Media](${url("/media")}): a video introduction (with captions and a transcript) and pictures`] : []),
         `- [Contact](${url("/contact")}): contact form, or email ${site().email}`,

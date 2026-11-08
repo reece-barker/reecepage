@@ -221,6 +221,21 @@ test("legal pages are edited as templates, a broken one is refused", async () =>
 test("cv, references and status pages render", async () => {
   const cv = await request(ctx.app).get("/cv").expect(200);
   assert.match(cv.text, /cv-sheet/);
+  assert.match(cv.text, /hreflang="de" href="[^"]*\/lebenslauf"/);
+  assert.match(cv.text, /<h2 id="cv-education">Education<\/h2>/);
+  // One column in the order a reader and an application system expect: profile, education, projects, experience
+  const order = ["cv-profile", "cv-education", "cv-projects", "cv-experience", "cv-skills"].map((id) => cv.text.indexOf(`id="${id}"`));
+  assert.deepEqual([...order].sort((x, y) => x - y), order);
+
+  // The German one uses the German fields, and falls back to English where theres nothing in German
+  const de = await request(ctx.app).get("/lebenslauf").expect(200);
+  assert.match(de.text, /<article class="cv-sheet"[^>]*lang="de"/);
+  assert.match(de.text, /Kurzprofil/);
+  assert.match(de.text, /Berufserfahrung/);
+  assert.match(de.text, /Seit 09\/2024/);
+  assert.doesNotMatch(de.text, /Since 09\/2024/);
+  assert.match(de.text, /Microsoft Power Platform/);
+  assert.match(de.text, /Auf Deutsch|In English/);
   await request(ctx.app).get("/references").expect(200);
   const status = await request(ctx.app).get("/status");
   assert.ok([200, 503].includes(status.status));

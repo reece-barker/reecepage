@@ -27,7 +27,9 @@ export function createRouter(c, m) {
   router.get("/media/:slug", c.media.show);
 
   router.get("/cv", c.profile.cv);
+  router.get("/lebenslauf", c.profile.lebenslauf);
   router.get("/cv/reece-barker-cv.pdf", c.profile.cvPdf);
+  router.get("/cv/reece-barker-lebenslauf.pdf", c.profile.lebenslaufPdf);
   router.get("/references", c.profile.references);
   router.get("/status", c.profile.status);
 

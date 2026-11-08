@@ -5,13 +5,27 @@
   kind: education
   text: A semester of project work in an international team.
   planned: true
+  de:
+    when: 03/2027 bis 08/2027
+    title: European Project Semester
+    place: Technische Hochschule Augsburg
+    text: >-
+      Ein Semester Projektarbeit in einem internationalen Team.
 - when: 09/2026 to 02/2027
   title: Industrial Automation minor
   place: Saxion
   kind: education
+  cv: false
   text: >-
     Robotics, PLCs, SCADA and vision systems, around a production line with eight ABB robots. I am responsible for the
     transport system between the stations.
+  de:
+    when: 09/2026 bis 02/2027
+    title: Minor Industrial Automation
+    place: Saxion
+    text: >-
+      Robotik, SPS, SCADA und Bildverarbeitung rund um eine Fertigungslinie mit acht ABB-Robotern. Ich bin für das
+      Transportsystem zwischen den Stationen verantwortlich.
 - when: Since 06/2026
   title: Co-founder, operations, software and finance
   place: Cognitive Atmospherics
@@ -19,6 +33,19 @@
   text: >-
     A startup building AI that runs a room's heating, cooling, air and lighting together. I look after operations,
     software, investors and financing.
+  cv_points:
+    - Operations, software, investors and financing, AI that runs a room's climate
+    - €2,500 from the Saxion Entrepreneurship Programme, second prototype in progress
+  de:
+    when: Seit 06/2026
+    title: Mitgründer, Operations, Software und Finanzen
+    place: Cognitive Atmospherics
+    text: >-
+      Ein Start-up, dessen KI Heizung, Kühlung, Lüftung und Licht eines Raums gemeinsam steuert. Ich kümmere mich um
+      Operations, Software, Investoren und Finanzierung.
+    cv_points:
+      - Operations, Software, Investoren und Finanzierung, KI für das Raumklima
+      - 2.500 € vom Saxion Entrepreneurship Programme, zweiter Prototyp in Arbeit
 - when: Since 09/2024
   title: Applied Computer Science
   place: Saxion University of Applied Sciences, Enschede
@@ -26,19 +53,60 @@
   text: >-
     First year completed with the propaedeutic diploma, cum laude. Embedded C and C++, real time operating systems,
     signal processing and machine learning. Selected for the Saxion Honours Programme. Highest distinction at Saxion's
-    International Project Week, for a product configurator for Bronkhorst built in one week.
+    International Project Week, for a product configurator for Bronkhorst built in one week. Expected to graduate in
+    2028.
+  cv_points:
+    - Propaedeutic diploma cum laude, Honours Programme (second year), graduating 2028
+    - Highest distinction at International Project Week (a Bronkhorst configurator in one week)
+    - "Minor Industrial Automation, 09/2026 to 02/2027: ABB robots, PLCs, SCADA"
+  de:
+    when: Seit 09/2024
+    title: Angewandte Informatik
+    place: Saxion University of Applied Sciences, Enschede
+    text: >-
+      Erstes Studienjahr mit dem Propädeutikum cum laude abgeschlossen. Embedded C und C++, Echtzeitbetriebssysteme,
+      Signalverarbeitung und maschinelles Lernen. Aufgenommen in das Saxion Honours Programme. Höchste
+      Auszeichnung in Saxions International Project Week, für einen Produktkonfigurator für Bronkhorst,
+      entwickelt in einer Woche. Abschluss voraussichtlich 2028.
+    cv_points:
+      - Propädeutikum cum laude, Honours Programme (zweites Jahr), Abschluss 2028
+      - Höchste Auszeichnung, International Project Week (Bronkhorst-Konfigurator in einer Woche)
+      - "Minor Industrial Automation, 09/2026 bis 02/2027: ABB-Roboter, SPS, SCADA"
 - when: 06/2024 to 07/2026
-  title: IT support and Power Platform developer, on contract
+  title: IT support and Power Platform, on contract
   place: Munich International School
   kind: work
   text: >-
     Supporting IT and building apps and automations on Microsoft's Power Platform, including a new purchase order
     system for the finance team in Power Apps.
+  cv_points:
+    - Supported IT and built apps and automations on Microsoft's Power Platform
+    - Rebuilt the finance team's purchase orders in Power Apps, with automatic exchange rates
+  de:
+    when: 06/2024 bis 07/2026
+    title: IT-Support und Power Platform (Vertrag)
+    place: Munich International School
+    text: >-
+      Unterstützung der IT sowie Apps und Automatisierungen mit Microsofts Power Platform, darunter ein neues
+      Bestellsystem für die Finanzabteilung in Power Apps.
+    cv_points:
+      - IT-Support sowie Apps und Automatisierungen mit Microsofts Power Platform
+      - Bestellwesen der Finanzabteilung neu in Power Apps, mit automatischen Wechselkursen
 - when: Summers 2021, 2022 and 2023
   title: IT department, summer work
   place: Munich International School
   kind: work
   text: Summer work in the IT department, the last summer covering IT and finance.
+  cv_points:
+    - IT in 2021 and 2022, IT and finance in 2023
+  de:
+    when: Sommer 2021, 2022 und 2023
+    title: IT-Abteilung, Ferienarbeit
+    place: Munich International School
+    text: >-
+      Ferienarbeit in der IT-Abteilung, im letzten Sommer für IT und Finanzen.
+    cv_points:
+      - IT in 2021 und 2022, IT und Finanzen 2023
 - when: 08/2022 to 05/2024
   title: IB Diploma
   place: Munich International School
@@ -46,6 +114,19 @@
   text: >-
     Computer Science, German and Geography at higher level. Extended essay on whether London's Ultra Low Emission Zone
     cut CO2.
+  cv_points:
+    - "Higher Level: Computer Science, German, Geography"
+    - "Extended essay: did London's Ultra Low Emission Zone cut CO2?"
+  de:
+    when: 08/2022 bis 05/2024
+    title: IB Diploma
+    place: Munich International School
+    text: >-
+      Computer Science, Deutsch und Geografie auf Higher Level. Extended Essay zur Frage, ob Londons Ultra Low
+      Emission Zone den CO2-Ausstoß gesenkt hat.
+    cv_points:
+      - "Higher Level: Computer Science, Deutsch, Geografie"
+      - "Extended Essay: Hat Londons Ultra Low Emission Zone den CO2-Ausstoß gesenkt?"
 - when: 03/2021 to 11/2023
   title: Freelance developer
   place: Self employed
@@ -53,6 +134,19 @@
   text: >-
     Full stack web platforms with secure logins and live monitoring, and a support and ticketing system sold to almost
     ten customers.
+  cv_points:
+    - Full stack web platforms with secure logins and live monitoring
+    - A support and ticketing system, sold to almost ten customers
+  de:
+    when: 03/2021 bis 11/2023
+    title: Freiberuflicher Entwickler
+    place: Selbstständig
+    text: >-
+      Full-Stack-Webplattformen mit sicheren Logins und Live-Monitoring sowie ein Support- und Ticketsystem, verkauft
+      an knapp zehn Kunden.
+    cv_points:
+      - Full-Stack-Webplattformen mit sicheren Logins und Live-Monitoring
+      - Ein Support- und Ticketsystem, verkauft an knapp zehn Kunden
 - when: Childhood
   title: Primary school in West Sussex, then Munich
   place: England and Germany

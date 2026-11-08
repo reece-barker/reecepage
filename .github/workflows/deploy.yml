@@ -36,6 +36,9 @@ jobs:
             npm ci
             npm run build
             npm prune --omit=dev
+            # Chromium for the CV PDFs the admin makes, only downloads when the version changed. The system libraries
+            # it needs are a one time sudo npx playwright-core install-deps chromium, see docs/DEPLOYMENT.md
+            npx --no-install playwright-core install chromium || echo "chromium download failed, the CV PDF button wont work until it does"
             npm run db:migrate
             # Content files changed in the pull request go into the database, unless that page or list was edited
             # in the admin since. It prints any clash and never stops the deploy

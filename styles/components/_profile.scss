@@ -1,5 +1,6 @@
-// The CV, references and status pages. The cv is built so it fits on one A4 page when its printed or turned into a
-// pdf, on screen it sits on a sheet so you can see what the pdf is going to look like before making it
+// The CV, references and status pages. The CV is one column, the way application systems read it, with the dates in
+// a narrow column on the left like a German Lebenslauf. On screen it sits on a sheet so you can see what the PDF is
+// going to look like, in print it flows over as many A4 pages as it needs (aim for one, two at most)
 
 .cv-tools {
   display: flex;
@@ -10,117 +11,189 @@
 }
 
 .cv-sheet {
+  --cv-ink: #2c3824;
+  --cv-soft: #56664a;
+  --cv-line: #d3cbb2;
   background: #fffdf7;
-  color: #33412a;
+  color: var(--cv-ink);
   max-width: 210mm;
   margin-inline: auto;
-  padding: 11mm 13mm 10mm;
+  padding: 12mm 14mm 11mm;
   border-radius: var(--radius-2);
   box-shadow: var(--shadow-raised);
-  font-size: 0.8rem;
-  line-height: 1.4;
+  font-size: 0.82rem;
+  line-height: 1.45;
 
   a { color: inherit; }
-  // The print stylesheet adds the address after links but on the cv the text already is the address so its pointless
+  // The print stylesheet adds the address after links but on the CV the text already is the address so its pointless
   a::after { content: none !important; }
   h2 {
     font-family: var(--font-display);
     font-size: 1.05rem;
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.45rem;
     padding-bottom: 0.2rem;
-    border-bottom: 1px solid #d6cfb8;
+    border-bottom: 1px solid var(--cv-line);
+    break-after: avoid;
   }
-  h3 { font-size: 0.9rem; margin: 0; }
-  p { margin: 0 0 0.4rem; }
+  h3 { font-size: 0.88rem; margin: 0; line-height: 1.3; }
+  p { margin: 0 0 0.3rem; }
+  p:last-child { margin-bottom: 0; }
+
+  @media (max-width: 40rem) {
+    padding: var(--space-5) var(--space-4);
+  }
 }
 
 .cv-head {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 0.6rem 1rem;
+  gap: 1rem;
   align-items: center;
-  border-bottom: 2px solid #33412a;
-  padding-bottom: 0.7rem;
+  border-bottom: 2px solid var(--cv-ink);
+  padding-bottom: 0.8rem;
   margin-bottom: 0.9rem;
 
-  h1 { font-family: var(--font-display); font-size: 1.8rem; margin: 0; line-height: 1.1; }
-  .cv-contact { grid-column: 1 / -1; margin: 0; }
+  h1 { font-family: var(--font-display); font-size: 1.85rem; margin: 0; line-height: 1.1; }
 }
 
-.cv-headline { margin: 0.2rem 0 0; color: #5a6b4d; }
-.cv-mark { width: 3.2rem; height: auto; flex: none; }
+.cv-head--photo {
+  grid-template-columns: auto 1fr auto;
+}
+
+.cv-photo img {
+  display: block;
+  width: 27mm;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.cv-headline { margin: 0.2rem 0 0.45rem; color: var(--cv-soft); }
+.cv-mark { width: 3rem; height: auto; align-self: start; }
 
 .cv-contact {
   list-style: none;
-  margin: 0 0 0.9rem;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1.1rem;
+  gap: 0.15rem 1rem;
 }
 
-.cv-body {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem 1.4rem;
-
-  @media (min-width: 40rem) {
-    grid-template-columns: 2fr 1fr;
-  }
+@media (max-width: 40rem) {
+  .cv-head,
+  .cv-head--photo { grid-template-columns: 1fr; }
+  .cv-mark { display: none; }
+  .cv-photo img { width: 6.5rem; }
 }
 
-.cv-main > section + section,
-.cv-side > section + section { margin-top: 0.9rem; }
+.cv-section + .cv-section { margin-top: 0.85rem; }
 
 .cv-list {
   list-style: none;
   margin: 0;
   padding: 0;
-
-  > li + li { margin-top: 0.55rem; }
 }
 
-.cv-item-head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0 0.6rem;
+// The date column on the left, the entry on the right. On a phone the date goes above
+.cv-item {
+  display: grid;
+  grid-template-columns: 6.6rem 1fr;
+  gap: 0 0.9rem;
+  break-inside: avoid;
+
+  & + & { margin-top: 0.5rem; }
+
+  @media (max-width: 40rem) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.cv-when, .cv-place { color: #5a6b4d; font-size: 0.8rem; }
+.cv-when {
+  color: var(--cv-soft);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  padding-top: 0.08rem;
+}
 
-.cv-tags,
+.cv-place { color: var(--cv-soft); font-family: var(--font-body); font-weight: 400; }
+
+.cv-facts {
+  margin: 0;
+
+  > div {
+    display: grid;
+    grid-template-columns: 6.6rem 1fr;
+    gap: 0 0.9rem;
+    break-inside: avoid;
+  }
+
+  > div + div { margin-top: 0.2rem; }
+  dt { font-weight: 700; hyphens: auto; }
+  dd { margin: 0; }
+
+  @media (max-width: 40rem) {
+    > div { grid-template-columns: 1fr; }
+  }
+}
+
+// Short points under a job or a degree, Stichpunkte instead of sentences
+.cv-points {
+  margin: 0.05rem 0 0;
+  padding-left: 0.95rem;
+
+  li { padding-left: 0.1rem; }
+  li::marker { color: var(--cv-soft); }
+  li + li { margin-top: 0.05rem; }
+}
+
 .cv-plain {
   list-style: none;
   margin: 0;
   padding: 0;
 
-  li + li { margin-top: 0.2rem; }
+  li + li { margin-top: 0.15rem; }
 }
 
-.cv-note { font-size: 0.78rem; color: #5a6b4d; }
+.cv-note { font-size: 0.78rem; color: var(--cv-soft); }
 .cv-availability { font-weight: 700; }
 
 @media print {
-  @page { size: A4; margin: 0; }
+  // Page margins come from @page so a second page gets them too, the sheet itself has none
+  @page { size: A4; margin: 12mm 14mm 11mm; }
 
-  html, body { background: #fffdf7 !important; }
+  html, body { background: #fff !important; }
   .no-print,
   .site-header,
   .site-footer,
-  .skip-link { display: none !important; }
+  .skip-link,
+  .consent { display: none !important; }
   main > .container { padding: 0 !important; max-width: none !important; }
 
   .cv-sheet {
+    background: #fff;
     box-shadow: none;
     border-radius: 0;
     max-width: none;
-    width: 210mm;
-    min-height: 297mm;
+    padding: 0;
     margin: 0;
+    font-size: 9pt;
+    line-height: 1.34;
   }
 
-  .cv-body { grid-template-columns: 2fr 1fr; }
+  .cv-photo img { width: 22mm; }
+  .cv-head { padding-bottom: 0.55rem; margin-bottom: 0.6rem; }
+  .cv-head h1 { font-size: 20pt; }
+  .cv-section + .cv-section { margin-top: 0.55rem; }
+  .cv-sheet h2 { font-size: 11.5pt; margin-bottom: 0.3rem; }
+  .cv-item + .cv-item { margin-top: 0.35rem; }
+  .cv-contact { gap: 0.1rem 0.8rem; font-size: 8.6pt; }
+  .cv-headline { margin: 0.1rem 0 0.3rem; }
+
+  .cv-head--photo { grid-template-columns: auto 1fr auto; }
+  .cv-item,
+  .cv-facts > div { grid-template-columns: 27mm 1fr; }
 }
 
 // References, only shows people who said yes
