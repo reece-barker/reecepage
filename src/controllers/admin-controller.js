@@ -10,6 +10,7 @@ import { AdminError, ContentAdmin } from "../services/content-admin.js";
 import { buildEntry, ContentError } from "../services/content-service.js";
 import { notFound } from "../middleware/errors.js";
 import { HOME_DEFAULTS } from "../services/settings-service.js";
+import { brokenLinks, linksTo } from "../services/link-check.js";
 
 const run = promisify(execFile);
 const PREVIEW_MINUTES = 30;
@@ -169,6 +170,7 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
         const mediaItems = media.available ? await media.list({ publishedOnly: false }).catch(() => null) : null;
         page(res, "dashboard", "dashboard", "Dashboard", {
           cards,
+          broken: brokenLinks(content, { legalLinks: config.navigation.legal.map((l) => l.href) }),
           hasMedia: Boolean(mediaItems),
           mediaCount: mediaItems ? mediaItems.length : 0,
           mediaPublished: mediaItems ? mediaItems.filter((item) => item.published).length : 0,
@@ -194,6 +196,9 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
         const all = await repository.listEntries(type, { status: filter === "trash" ? "trash" : "all", search });
         const now = new Date();
         const items = all.map(present).filter((item) => filter === "all" || filter === "trash" || item.state === filter);
+        // Pages that link here, shown under the title so trashing it never leaves a dead link by surprise
+        for (const item of items) item.linkedFrom = item.state === "published" ? linksTo(content, item.url) : [];
+        const blocked = req.query.notice === "linked" ? items.find((item) => String(item.id) === String(req.query.id)) : null;
         const counts = { all: 0, published: 0, scheduled: 0, draft: 0, trash: 0 };
         for (const entry of await repository.listEntries(type, { status: "all" })) { counts.all += 1; counts[ContentAdmin.state(entry, now)] += 1; }
         counts.trash = (await repository.listEntries(type, { status: "trash" })).length;
@@ -207,7 +212,8 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
           tabs: [["all", "All"], ["published", "Published"], ["scheduled", "Scheduled"], ["draft", "Drafts"], ["trash", "Trash"]]
             .filter(([id]) => !schema.fixed || id === "all")
             .map(([id, label]) => ({ id, label, count: counts[id], current: id === filter, href: `/admin/${type}${id === "all" ? "" : `?status=${id}`}` })),
-          notice: req.query.notice
+          notice: req.query.notice,
+          blocked
         });
       } catch (error) { next(error); }
     },
@@ -274,6 +280,13 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
 
     async trash(req, res, next) {
       try {
+        // Something else still links here: stop once and say which pages, the second press says trash anyway
+        const entry = await repository.getEntry(Number(req.params.id));
+        if (entry && ENTRY_SCHEMAS[entry.type] && req.body?.anyway !== "yes" && ContentAdmin.state(entry) === "published") {
+          if (linksTo(content, ENTRY_SCHEMAS[entry.type].publicPath(entry.slug)).length) {
+            return res.redirect(303, `/admin/${req.params.type}?notice=linked&id=${entry.id}`);
+          }
+        }
         await contentAdmin.trash(req.params.id);
         res.redirect(303, `/admin/${req.params.type}?notice=trashed`);
       } catch (error) {

@@ -111,6 +111,33 @@ test("a post goes from draft to published to updated to the trash and back", asy
   assert.match((await ctx.services.contentRepository.getEntry(id)).body, /## First/);
 });
 
+test("trashing a page other pages link to stops once and names them, and the dashboard lists broken links", async () => {
+  const target = await post("/admin/writing/save", { action: "publish", title: "Linked to from elsewhere", meta: { summary: "A post others point at" }, body: "Words." }).expect(200);
+  await post("/admin/writing/save", { action: "publish", title: "The one with the link", meta: { summary: "Points at the other one" }, body: "See [the other post](/writing/linked-to-from-elsewhere)." }).expect(200);
+  const id = target.body.entry.id;
+
+  const list = await get("/admin/writing").expect(200);
+  assert.match(list.text, /Linked from The one with the link/);
+
+  // The first press doesnt trash it, it says which page still links here
+  await form(`/admin/writing/${id}/trash`).expect(303).expect("Location", `/admin/writing?notice=linked&id=${id}`);
+  assert.equal((await ctx.services.contentRepository.getEntry(id)).status, "published");
+  const warned = await get(`/admin/writing?notice=linked&id=${id}`).expect(200);
+  assert.match(warned.text, /wasn't moved to the trash/);
+  assert.match(warned.text, /Trash it anyway/);
+
+  await form(`/admin/writing/${id}/trash`, { anyway: "yes" }).expect(303).expect("Location", "/admin/writing?notice=trashed");
+  assert.equal((await ctx.services.contentRepository.getEntry(id)).status, "trash");
+  const dash = await get("/admin").expect(200);
+  assert.match(dash.text, /1 link goes nowhere/);
+  assert.match(dash.text, /links to \/writing\/linked-to-from-elsewhere/);
+
+  // Restoring it (and publishing again) clears the warning
+  await form(`/admin/writing/${id}/restore`).expect(303);
+  await post("/admin/writing/save", { id, action: "publish", title: "Linked to from elsewhere", meta: { summary: "A post others point at" }, body: "Words." }).expect(200);
+  assert.doesNotMatch((await get("/admin").expect(200)).text, /goes nowhere|go nowhere/);
+});
+
 test("autosave never changes what the site shows for something published", async () => {
   const saved = await post("/admin/writing/save", { action: "publish", title: "Steady post", meta: { summary: "Stays put" }, body: "The published text." }).expect(200);
   const { id } = saved.body.entry;

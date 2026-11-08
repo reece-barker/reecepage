@@ -22,7 +22,6 @@
     - name: PLCs, SCADA and vision systems
       evidence:
         - lego-bulldozer-production-line
-        - lego-sorting-machine
     - name: Raspberry Pi
       evidence:
         - traffic-sound-profiling
@@ -35,7 +34,7 @@
         - traffic-sound-profiling
     - name: Machine learning
       evidence:
-        - lego-sorting-machine
+        - traffic-sound-profiling
       note: Saxion coursework
     - name: MATLAB
       evidence:
