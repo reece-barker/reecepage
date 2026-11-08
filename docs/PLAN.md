@@ -24,7 +24,7 @@ This is the working plan and requirements checklist. It is updated as the build 
 3. **Distinctive:** the living tree and its three branches. Every project grows from a branch (Code or Earth) and
    carries that branch's colour. Leaves are square pixels because it is a computer science tree. The dove is the mark.
 4. **Decisions already made:** brand, slogan, legal name Reece Norman Barker with "Reece" as the brand name, keep the
-   3D tree, no gaming wording in anything employer facing, startup stays unnamed, MIS role is "on contract,
+   3D tree, no gaming wording in anything employer facing, startup is named Cognitive Atmospherics (public since November 2026), MIS role is "on contract,
    supporting IT and building on the Power Platform" (not IT administrator).
 5. **Now:** portfolio, about, projects, writing, contact with a real form, legal pages, SEO, consent aware analytics
    (off by default), health checks. **Later (feature flags, off):** tools directory, accounts, payments, AI tools,

@@ -12,6 +12,13 @@
 <p class="alert alert--error" role="alert">{{icon "alert"}}<span>The site is showing the files from content/ because the database couldnt be read. Changes saved here wont show until it can, see Status and links.</span></p>
 {{/if}}
 
+{{#if broken.length}}
+<div class="alert alert--error" role="alert">{{icon "alert"}}<div class="alert__body">
+  <p><strong>{{broken.length}} {{plural broken.length "link goes" "links go"}} nowhere on the site.</strong> Usually a page was trashed or unpublished while another one still links to it.</p>
+  <ul>{{#each broken}}<li><a href="{{from.url}}" target="_blank" rel="noopener">{{from.title}}</a> links to {{to}}</li>{{/each}}</ul>
+</div></div>
+{{/if}}
+
 <ul class="admin-stats" role="list" data-stats="{{statCount}}">
   {{#each cards}}
   <li><a class="admin-stat" href="{{href}}">

@@ -73,7 +73,7 @@ After adding a project with a page, run `npm run images:og` for its share pictur
 ## House rules
 
 British English, no em dashes, nothing invented. If something isn't known yet it goes in `todo`, never into the
-text as a guess. The startup stays unnamed until it has a public name. No gaming wording on anything an employer
+text as a guess. The startup is Cognitive Atmospherics (named since November 2026), its prototype is only described in general terms. No gaming wording on anything an employer
 reads.
 
 ## The admin, editing without touching files

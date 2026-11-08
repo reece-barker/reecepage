@@ -132,6 +132,27 @@
   }
 }
 
+// An alert with more than a line in it: a paragraph, a list of what's wrong and maybe a button
+.alert__body {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+
+  p,
+  ul,
+  form {
+    margin: 0;
+  }
+
+  ul {
+    padding-left: 1.2em;
+  }
+
+  .button {
+    justify-self: start;
+  }
+}
+
 .alert--error {
   border-left-color: var(--color-danger);
 

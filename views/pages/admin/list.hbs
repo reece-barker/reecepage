@@ -6,6 +6,14 @@
   {{#unless schema.fixed}}<div class="admin-head__actions"><a class="button" href="/admin/{{type}}/new">{{icon "plus"}}New {{schema.singular}}</a></div>{{/unless}}
 </header>
 
+{{#if blocked}}
+<div class="alert alert--error" role="alert">{{icon "alert"}}<div class="alert__body">
+  <p><strong>{{blocked.title}} wasn't moved to the trash.</strong> These pages still link to it, and the links would go nowhere:</p>
+  <ul>{{#each blocked.linkedFrom}}<li><a href="{{url}}" target="_blank" rel="noopener">{{title}}</a> ({{url}})</li>{{/each}}</ul>
+  <p>Take the links out first, or trash it anyway and fix them after (the dashboard lists broken links).</p>
+  <form method="post" action="/admin/{{type}}/{{blocked.id}}/trash" data-confirm-form><input type="hidden" name="_csrf" value="{{csrfToken}}"><input type="hidden" name="anyway" value="yes"><button class="button button--secondary button--small" type="submit" data-confirm-label="Press again to trash it anyway">{{icon "trash"}}Trash it anyway</button></form>
+</div></div>
+{{/if}}
 {{#if (eq notice "trashed")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Moved to the trash. It's off the site, and you can restore it from the Trash tab.</span></p>{{/if}}
 {{#if (eq notice "restored")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Restored as a draft. Open it and publish when you're ready.</span></p>{{/if}}
 {{#if (eq notice "deleted")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Deleted for good, with its revisions.</span></p>{{/if}}
@@ -36,6 +44,7 @@
         <td>
           {{#if (eq state "trash")}}<span class="admin-table__title">{{title}}</span>{{else}}<a class="admin-table__title" href="/admin/{{type}}/{{id}}">{{title}}</a>{{/if}}
           <span class="admin-table__sub">{{url}}{{#if branch}}, {{branch}}{{/if}}</span>
+          {{#if linkedFrom.length}}<span class="admin-table__sub">Linked from {{#each linkedFrom}}{{title}}{{#unless @last}}, {{/unless}}{{/each}}</span>{{/if}}
         </td>
         <td><span class="pill pill--{{state}}">{{stateLabel}}</span>{{#if (eq state "scheduled")}}<span class="admin-table__sub"><time datetime="{{publishAt}}" data-local-time>{{publishAt}}</time></span>{{/if}}</td>
         <td class="admin-table__when"><time datetime="{{updatedAt}}" data-local-time>{{updatedAt}}</time></td>
