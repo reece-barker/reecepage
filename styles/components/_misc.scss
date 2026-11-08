@@ -130,12 +130,13 @@
     width: 0.8rem;
     height: 0.8rem;
     background: var(--color-bg);
-    border: 2px solid var(--color-leaf);
+    // The diamond says education (outline) or work (filled), so it uses the strong leaf that passes 3:1
+    border: 2px solid var(--color-leaf-strong);
     transform: rotate(45deg);
   }
 
   &.is-work::before {
-    background: var(--color-leaf);
+    background: var(--color-leaf-strong);
   }
 
   &.is-planned::before {
@@ -176,12 +177,12 @@
   i {
     width: 0.7rem;
     height: 0.7rem;
-    border: 2px solid var(--color-leaf);
+    border: 2px solid var(--color-leaf-strong);
     transform: rotate(45deg);
   }
 
   .is-work i {
-    background: var(--color-leaf);
+    background: var(--color-leaf-strong);
   }
 }
 
