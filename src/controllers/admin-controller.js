@@ -2,8 +2,6 @@
 // lists like the timeline, settings, the GitHub sync and the system page with every endpoint. Signing in lives in
 // auth-controller.js and the media library in media-controller.js.
 import { randomBytes } from "node:crypto";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
 import { BRANCH_LABELS, DATA_SCHEMAS, ENTRY_SCHEMAS, PRIVATE_DOCUMENTS } from "../admin/schemas.js";
 import { ENDPOINT_GROUPS, EXTERNAL_LINKS } from "../admin/endpoints.js";
 import { AdminError, ContentAdmin } from "../services/content-admin.js";
@@ -11,8 +9,8 @@ import { buildEntry, ContentError } from "../services/content-service.js";
 import { notFound } from "../middleware/errors.js";
 import { HOME_DEFAULTS } from "../services/settings-service.js";
 import { brokenLinks, linksTo } from "../services/link-check.js";
+import { CV_VERSIONS, CvPdfError, makeCvPdfs } from "../services/cv-pdf.js";
 
-const run = promisify(execFile);
 const PREVIEW_MINUTES = 30;
 
 /** JSON that is safe inside a <script> element: no "</script>" can close it early */
@@ -87,6 +85,8 @@ export function buildAdminNav(config, current) {
 export function createAdminController({ config, seo, content, contentAdmin, repository, media, status, sync, pages, legal }) {
   const meta = (title) => seo.build({ title: `${title} | Admin`, description: "reece.page admin", path: "/admin", noindex: true });
   const previews = new Map();
+  // The CV PDFs being made right now, so two presses dont start two browsers
+  let pdfRun = null;
 
   const nav = (current) => buildAdminNav(config, current);
 
@@ -429,7 +429,7 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
             fixedLength: Boolean(schema.fixedLength),
             value,
             defaults,
-            cvPdf: req.params.name === "cv" && config.isDevelopment
+            cvPdf: req.params.name === "cv"
           }),
           scripts: ["js/admin-fields.js", "js/admin-list.js"]
         });
@@ -492,14 +492,22 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
       } catch (error) { next(error); }
     },
 
-    /** Makes the CV PDF with Playwright. Only where Playwright is installed, which is your computer, not the server */
+    /**
+     * Makes both CV PDFs by printing /cv and /lebenslauf from this running site, so they show whats in the database
+     * right now. Needs Chromium on the machine, see src/services/cv-pdf.js. One at a time, a second press waits
+     */
     async cvPdf(req, res) {
-      if (!config.isDevelopment) return res.status(403).json({ ok: false, error: "Make the PDF on your computer with npm run cv:pdf and deploy it." });
+      if (pdfRun) return res.status(409).json({ ok: false, error: "PDFs are being made already, give it a few seconds." });
       try {
-        await run(process.execPath, ["--disable-warning=ExperimentalWarning", "scripts/make-cv-pdf.js"], { cwd: config.rootDir, timeout: 120000 });
-        res.json({ ok: true });
+        pdfRun = makeCvPdfs({ baseUrl: `http://127.0.0.1:${config.port}`, outDir: config.paths.cvPdfs });
+        const made = await pdfRun;
+        const pages = made.map((pdf) => `${CV_VERSIONS[pdf.lang].label} ${pdf.pages} ${pdf.pages === 1 ? "page" : "pages"}`).join(", ");
+        res.json({ ok: true, message: `New PDFs made: ${pages}. They're on /cv and /lebenslauf now.` });
       } catch (error) {
-        res.status(500).json({ ok: false, error: `The PDF could not be made: ${String(error.stderr || error.message).split("\n")[0]}` });
+        if (!(error instanceof CvPdfError)) req.log?.error({ err: error }, "cv pdf failed");
+        res.status(500).json({ ok: false, error: `The PDFs could not be made: ${error.message}` });
+      } finally {
+        pdfRun = null;
       }
     }
   };

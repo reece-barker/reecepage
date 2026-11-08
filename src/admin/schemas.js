@@ -20,7 +20,15 @@ export const DATA_SCHEMAS = {
       { name: "kind", label: "Kind", type: "select", options: ["education", "work"], required: true },
       { name: "text", label: "What it was", type: "textarea" },
       { name: "planned", label: "Planned, not started yet", type: "checkbox" },
-      { name: "cv", label: "Show on the CV", type: "checkbox", default: true }
+      { name: "cv", label: "Show on the CV", type: "checkbox", default: true },
+      { name: "cv_points", label: "On the CV: one to three short points", type: "strings", help: "Keep each to one line, the CV has to fit on one page. Left empty the text above is used" },
+      { name: "de", label: "German, for the Lebenslauf", type: "object", fields: [
+        { name: "when", label: "Wann", type: "text", help: "Left empty it is made from When: Since becomes Seit, to becomes bis" },
+        { name: "title", label: "Titel", type: "text" },
+        { name: "place", label: "Wo", type: "text" },
+        { name: "text", label: "Was es war", type: "textarea" },
+        { name: "cv_points", label: "Stichpunkte für den Lebenslauf", type: "strings" }
+      ] }
     ] }
   },
   now: {
@@ -61,21 +69,41 @@ export const DATA_SCHEMAS = {
   cv: {
     file: "cv.yml",
     title: "CV",
-    help: "The parts of the one page CV that do not come from elsewhere. Experience comes from the timeline, skills from the skills list, projects from the projects marked for the CV.",
-    comment: "The one page CV at /cv. Experience, skills and projects come from their own files",
+    help: "The parts of the CV that do not come from elsewhere, in English for /cv and German for /lebenslauf. Experience and education come from the timeline (each entry has its German text too), skills from the skills list. After saving, make new PDFs with the button below.",
+    comment: "The CV at /cv in English and /lebenslauf in German. Experience and education come from the timeline, skills from the skills list",
     root: { type: "object", fields: [
       { name: "headline", label: "Headline under your name", type: "text", required: true },
-      { name: "profile", label: "Profile (three or four lines)", type: "textarea", required: true },
+      { name: "profile", label: "Profile (two or three lines)", type: "textarea", required: true },
       { name: "location", label: "Location", type: "text" },
       { name: "availability", label: "Availability", type: "text", help: "For example Internship from September 2027" },
       { name: "show_phone", label: "Show the phone number on the CV", type: "checkbox" },
+      { name: "photo", label: "Show the photo on the CV", type: "checkbox", help: "The headshot in assets/images/cv. Common on German CVs, usually left off for Dutch and UK ones" },
       { name: "languages", label: "Languages", type: "objects", itemLabel: "name", itemMeta: ["level"], singular: "language", fields: [
         { name: "name", label: "Language", type: "text", required: true },
-        { name: "level", label: "Level", type: "text", required: true }
+        { name: "level", label: "Level", type: "text", required: true },
+        { name: "de", label: "German", type: "object", fields: [
+          { name: "name", label: "Sprache", type: "text" },
+          { name: "level", label: "Niveau", type: "text" }
+        ] }
       ] },
-      { name: "projects", label: "Projects on the CV (slugs, best first, three or four)", type: "strings" },
+      { name: "projects", label: "Projects on the CV, best first, three or four", type: "objects", itemLabel: "slug", singular: "project", fields: [
+        { name: "slug", label: "Project (its address, like scan-assistant)", type: "text", required: true },
+        { name: "text", label: "The line on the CV: what it was, your part, what came of it", type: "textarea", help: "Two lines at most. Left empty the project's summary is used" },
+        { name: "de", label: "German", type: "object", fields: [
+          { name: "title", label: "Titel", type: "text", help: "Left empty the English title is used" },
+          { name: "text", label: "Text", type: "textarea" }
+        ] }
+      ] },
       { name: "extras", label: "Other lines (awards, certificates, volunteering)", type: "strings" },
-      { name: "interests", label: "Interests", type: "text" }
+      { name: "interests", label: "Interests", type: "text" },
+      { name: "de", label: "German, for the Lebenslauf", type: "object", fields: [
+        { name: "headline", label: "Zeile unter dem Namen", type: "text" },
+        { name: "profile", label: "Kurzprofil", type: "textarea" },
+        { name: "location", label: "Ort", type: "text" },
+        { name: "availability", label: "Verfügbarkeit", type: "text" },
+        { name: "extras", label: "Weitere Zeilen", type: "strings" },
+        { name: "interests", label: "Interessen", type: "text" }
+      ] }
     ] }
   },
   skills: {
@@ -85,10 +113,13 @@ export const DATA_SCHEMAS = {
     comment: "Skills with the work that shows them. No self ratings or percentage bars, the evidence links do the talking",
     root: { type: "objects", itemLabel: "group", singular: "group", fields: [
       { name: "group", label: "Group", type: "text", required: true },
+      { name: "group_de", label: "Group in German, for the Lebenslauf", type: "text" },
       { name: "items", label: "Skills", type: "objects", itemLabel: "name", singular: "skill", fields: [
         { name: "name", label: "Skill", type: "text", required: true },
+        { name: "name_de", label: "Skill in German", type: "text", help: "Left empty the English name is used" },
         { name: "evidence", label: "Shown in (project slugs)", type: "strings" },
-        { name: "note", label: "Note", type: "text" }
+        { name: "note", label: "Note", type: "text" },
+        { name: "note_de", label: "Note in German", type: "text" }
       ] }
     ] }
   },
@@ -268,7 +299,7 @@ export const ENTRY_SCHEMAS = {
 
 // Addresses a page made in the admin cant have, because something else already lives there
 export const RESERVED_SLUGS = [
-  "admin", "about", "projects", "writing", "tools", "media", "cv", "references", "status", "contact", "impressum", "privacy",
+  "admin", "about", "projects", "writing", "tools", "media", "cv", "lebenslauf", "references", "status", "contact", "impressum", "privacy",
   "terms", "accessibility", "copyright", "cookies", "robots-txt", "sitemap-xml", "llms-txt", "health", "errors", "assets",
   "icons", "well-known", "feed", "search", "login", "logout", "api"
 ];

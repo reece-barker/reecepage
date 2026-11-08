@@ -131,9 +131,20 @@ Text
 
 ## The CV
 
-/cv is built from cv.yml, the timeline (entries with `cv: false` are left off), skills and the projects listed in
-cv.yml. Its one A4 page, keep it that way. After changes run `npm run cv:pdf` (or the button in the admin CV editor)
-to make content/cv/reece-barker-cv.pdf, the download on the site.
+Two versions from the same lists: /cv in English and /lebenslauf in German. cv.yml has the headline, profile,
+projects with their own CV lines, languages and a `de` part with the German text. Every timeline entry has a `de`
+part too (when, title, place, text), and skills have `group_de` and `name_de`. Anything without German falls back
+to the English, so check /lebenslauf after adding something. Dates are MM/YYYY.
+
+It is one column with the dates on the left, the way application systems read it best, and the photo in
+assets/images/cv (switch it off with `photo` in cv.yml). It is one page, keep it that way: each timeline entry has
+`cv_points`, one to three short points (Stichpunkte, not sentences) used on the CV instead of the longer text on the
+about page, and each CV project has a line of its own, two lines at most. The admin says how many pages the PDFs
+came out at, if it says 2, shorten something.
+
+The PDFs: the button "Save, then make new PDFs" in the admin CV editor prints both pages from the live site into
+var/cv (see DEPLOYMENT.md for the one time Chromium setup on the server). `npm run cv:pdf` does the same on your
+computer from the files and saves them in content/cv to commit. The site serves whichever is newer.
 
 ## References
 

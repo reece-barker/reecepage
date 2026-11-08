@@ -7,7 +7,7 @@
 // Bronkhorst is why this exists: the project was deleted in the admin and About kept linking to it for weeks.
 
 // Addresses the site always has, whatever is in the content
-const FIXED = ["/", "/about", "/projects", "/writing", "/tools", "/media", "/cv", "/references", "/contact", "/status",
+const FIXED = ["/", "/about", "/projects", "/writing", "/tools", "/media", "/cv", "/lebenslauf", "/references", "/contact", "/status",
   "/writing/feed.xml", "/sitemap.xml", "/contact/thank-you"];
 // Anything under these is a file or a media item, not content this check knows about
 const PREFIXES = ["/assets/", "/media/", "/cv/", "/admin"];

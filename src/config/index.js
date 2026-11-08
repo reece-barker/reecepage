@@ -201,6 +201,8 @@ export function loadConfig({ env = process.env, yamlFile = path.join(ROOT_DIR, "
       views: path.join(ROOT_DIR, "views"),
       content: path.join(ROOT_DIR, "content"),
       public: path.join(ROOT_DIR, "public"),
+      // CV PDFs made on the server from the admin, the service is only allowed to write in var/
+      cvPdfs: path.join(ROOT_DIR, "var/cv"),
       assetManifest: path.join(ROOT_DIR, "public/assets/manifest.json")
     }
   };

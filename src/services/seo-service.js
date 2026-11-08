@@ -97,7 +97,7 @@ export class SeoService {
       url: canonical,
       name: page.title,
       description,
-      inLanguage: "en-GB",
+      inLanguage: page.lang || "en-GB",
       isPartOf: { "@id": this.absoluteUrl("/#website") },
       ...(page.pageType === "ProfilePage" ? { mainEntity: this.person() } : {}),
       ...(crumbs ? { breadcrumb: this.breadcrumbList(crumbs) } : {})
@@ -118,8 +118,11 @@ export class SeoService {
         image: imageUrl,
         imageAlt,
         siteName: this.site.domain,
-        locale: this.site.locale
+        locale: page.locale || this.site.locale
       },
+      lang: page.lang || "en-GB",
+      // The same page in another language, like /cv and /lebenslauf
+      alternates: (page.alternates || []).map((alt) => ({ lang: alt.lang, href: this.absoluteUrl(alt.path) })),
       article: page.article ? { published: isoDate(page.article.published), modified: isoDate(page.article.modified || page.article.published) } : null,
       breadcrumbs: crumbs,
       jsonLd: { "@context": "https://schema.org", "@graph": graph }

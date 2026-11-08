@@ -16,6 +16,7 @@
   <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
+  {{#each meta.alternates}}<link rel="alternate" hreflang="{{lang}}" href="{{href}}">{{/each}}
   {{#if features.writing}}<link rel="alternate" type="application/atom+xml" title="{{site.name}}, writing" href="/writing/feed.xml">{{/if}}
   <meta name="author" content="{{site.name}}">
   <meta name="tdm-reservation" content="1">
