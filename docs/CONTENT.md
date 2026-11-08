@@ -3,9 +3,21 @@
 Everything a visitor reads is kept in the database and edited in the admin at /admin (see below). The files in
 `content/` are a copy of it: the admin commits every save back to them on GitHub, they fill an empty database on
 the first start (`npm run content:import`, `-- --force` to overwrite), and the site falls back to them if the
-database is down. Editing a file by hand still works but only reaches the site after `npm run content:import --
---force`, so use the admin. Run `npm run content:check` after editing files, it catches broken front matter, em
-dashes and links to pages that don't exist.
+database is down. Run `npm run content:check` after editing files, it catches broken front matter, em dashes and
+links to pages that don't exist.
+
+## Content changes in a pull request
+
+A file in `content/` changed in a pull request goes live with the deploy. The deploy compares three versions of
+every changed file: before the pull, after it, and what the database holds now.
+
+- Database the same as the new file: nothing to do (every mirror commit from the admin is like this).
+- Database the same as the old file: nobody touched it in the admin, the new version goes in.
+- Anything else: it was edited in the admin since, so it is left alone and the deploy log says `CONFLICT` with the
+  file. Make that change in the admin instead.
+
+A file deleted in a pull request is never deleted from the site, the log lists it so you can move it to the trash
+in the admin. Try it on your Mac first with `npm run content:apply -- --since <commit> --dry-run`.
 
 ## A new project
 

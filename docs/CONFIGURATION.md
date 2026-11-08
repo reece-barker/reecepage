@@ -35,7 +35,7 @@ Nothing else reads `process.env`. `src/config/index.js` builds one frozen object
 | `MEDIA_DIR` | var/media | Where uploaded pictures and videos live, back it up |
 | `MEDIA_MAX_IMAGE_MB`, `MEDIA_MAX_VIDEO_MB` | 20, 1024 | Upload limits |
 | `ERROR_DSN` | empty | GlitchTip project DSN, empty switches error reporting off |
-| `RELEASE` | reece-page@version | Shown with every error report |
+| `RELEASE` | reece-page@version | Shown with every error report and on /status, the deploy sets it to the live commit |
 | `ERROR_REPORT_BROWSER` | true | Also forward errors from visitors' browsers |
 | `FEATURE_*` | from YAML | Overrides a feature flag, for example `FEATURE_TOOLS=true` |
 | `ANALYTICS_PROVIDER` | from YAML | none, plausible or umami |
