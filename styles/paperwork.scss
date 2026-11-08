@@ -1,0 +1,293 @@
+// Letters, invoices and the rest from the admin's Paperwork, printed to A4 by Chromium and shown in the live preview.
+// One stylesheet for both, so the preview is the PDF. Measurements are DIN 5008 form B, in mm on purpose.
+@use "base/fonts";
+
+$ink: #2c3824;
+$soft: #56664a;
+$line: #d3cbb2;
+$left: 25mm;
+$right: 20mm;
+
+@page {
+  size: A4;
+  margin: 25mm $right 30mm $left;
+}
+
+// The first page starts at the paper's edge, the letterhead and the window need exact positions from the top
+@page :first {
+  margin-top: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body.paper {
+  margin: 0;
+  color: $ink;
+  background: #fff;
+  font-family: "Nunito Sans", Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.45;
+}
+
+.doc {
+  position: relative;
+}
+
+// The fixed part of page one: 98.46 mm from the top edge down to the subject line
+.din-first {
+  position: relative;
+  height: 105mm;
+}
+
+.din-head {
+  position: absolute;
+  top: 12mm;
+  left: 0;
+  right: 0;
+  height: 30mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.din-logo {
+  height: 15mm;
+  width: auto;
+}
+
+.din-sender {
+  text-align: right;
+  font-size: 8.5pt;
+  line-height: 1.4;
+  color: $soft;
+
+  strong {
+    color: $ink;
+    font-weight: 700;
+  }
+}
+
+// The address window, 45 mm from the top and 85 mm wide: 17.7 mm for the return line and notes, 27.3 mm address
+.din-window {
+  position: absolute;
+  top: 45mm;
+  left: 0;
+  width: 85mm;
+  height: 45mm;
+}
+
+.din-return {
+  position: absolute;
+  top: 12.7mm;
+  left: 0;
+  right: 0;
+  margin: 0;
+  font-size: 6.5pt;
+  line-height: 1.2;
+  color: $soft;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 0.3pt solid $line;
+  padding-bottom: 0.6mm;
+}
+
+.din-address {
+  position: absolute;
+  top: 17.7mm;
+  left: 0;
+  margin: 0;
+  font-size: 10pt;
+  line-height: 1.35;
+}
+
+// The information block from 50 mm, starting 125 mm from the left edge of the paper
+.din-info {
+  position: absolute;
+  top: 50mm;
+  left: calc(125mm - #{$left});
+  width: 65mm;
+  margin: 0;
+  font-size: 8pt;
+  line-height: 1.35;
+
+  div {
+    display: grid;
+    grid-template-columns: 29mm 1fr;
+    gap: 0 2mm;
+  }
+
+  dt { color: $soft; }
+  dd { margin: 0; font-weight: 600; }
+}
+
+.din-subject {
+  position: absolute;
+  top: 98.46mm;
+  left: 0;
+  right: 0;
+  margin: 0;
+  font-family: "Young Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: 12pt;
+  line-height: 1.25;
+}
+
+.din-body {
+  padding-top: 3mm;
+
+  p {
+    margin: 0 0 4.2mm;
+  }
+
+  ul {
+    margin: 0 0 4.2mm;
+    padding-left: 5mm;
+  }
+}
+
+.din-sign {
+  break-inside: avoid;
+  margin-top: 6mm;
+
+  p { margin: 0; }
+}
+
+.din-sign__space {
+  height: 14mm;
+}
+
+.din-enclosures {
+  margin-top: 8mm;
+  font-size: 9pt;
+}
+
+// Invoice lines and totals, numbers right aligned in tabular figures so the columns line up
+.inv-lines,
+.inv-totals {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9pt;
+  font-variant-numeric: tabular-nums;
+}
+
+.inv-lines {
+  margin: 2mm 0 0;
+
+  th {
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 0.8pt solid $ink;
+    padding: 1.2mm 1.5mm;
+  }
+
+  td {
+    padding: 1.6mm 1.5mm;
+    border-bottom: 0.3pt solid $line;
+    vertical-align: top;
+  }
+
+  tr {
+    break-inside: avoid;
+  }
+}
+
+.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+th.num {
+  text-align: right;
+}
+
+.inv-totals {
+  width: 80mm;
+  margin: 2mm 0 5mm auto;
+  break-inside: avoid;
+
+  th {
+    text-align: left;
+    font-weight: 400;
+    padding: 1mm 1.5mm;
+  }
+
+  td {
+    padding: 1mm 1.5mm;
+  }
+
+  .total th,
+  .total td {
+    font-weight: 800;
+    border-top: 0.8pt solid $ink;
+    padding-top: 1.6mm;
+  }
+}
+
+.inv-note {
+  font-size: 9pt;
+}
+
+.inv-account {
+  margin: 0 0 5mm;
+  font-size: 9pt;
+  break-inside: avoid;
+
+  div {
+    display: grid;
+    grid-template-columns: 32mm 1fr;
+  }
+
+  dt { color: $soft; }
+  dd { margin: 0; font-weight: 600; }
+}
+
+// Still to fill in: pink in the preview, plain text in print so a forgotten one is obvious but not loud
+.ph {
+  background: #fadacd;
+  border-radius: 1px;
+  padding: 0 0.6mm;
+}
+
+@media print {
+  .ph { background: none; padding: 0; }
+}
+
+// The preview: the sheet on a grey desk with its margins, and the footer under it
+@media screen {
+  body.paper--preview {
+    background: #e9e6dc;
+    padding: 6mm 0;
+  }
+
+  .paper--preview .doc {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 0 $right 30mm $left;
+    background: #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+  }
+
+  .doc-footer-preview {
+    width: 210mm;
+    margin: 0 auto;
+    padding: 2mm $right 4mm $left;
+    background: #fff;
+    border-top: 1px dashed $line;
+    display: flex;
+    gap: 6mm;
+    font-size: 6.6pt;
+    line-height: 1.35;
+    color: $soft;
+  }
+}

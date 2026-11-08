@@ -46,7 +46,7 @@
       }
       showErrors(null);
       dirty = false;
-      statusLine.textContent = "Saved, it's on the site";
+      statusLine.textContent = config.privateList ? "Saved" : "Saved, it's on the site";
       if (then) then();
     });
   }

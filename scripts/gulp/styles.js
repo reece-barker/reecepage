@@ -1,11 +1,11 @@
-// Sass to CSS. Two stylesheets: main.css for the site and admin.css for the signed in admin, so visitors never
-// download the editor's styles. Source maps only in development, they would expose the Sass sources in production
+// Sass to CSS. main.css for the site, admin.css for the signed in admin (so visitors never download the editor's
+// styles) and paperwork.css for the letters and invoices the admin prints. Source maps only in development, they would expose the Sass sources in production
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import * as sass from "sass";
 import { PATHS, PRODUCTION } from "./settings.js";
 
-const ENTRIES = ["main", "admin"];
+const ENTRIES = ["main", "admin", "paperwork"];
 
 export async function styles() {
   const outDir = path.join(PATHS.out, "css");

@@ -1,3 +1,5 @@
+import { ibanIsValid } from "../documents/format.js";
+
 // What each editable piece of content looks like, so the admin can build a form for it and check what comes back.
 // The browser builds the form from these, the server validates against the same thing, so they can never drift.
 //
@@ -106,6 +108,57 @@ export const DATA_SCHEMAS = {
       ] }
     ] }
   },
+  business: {
+    file: "business.yml",
+    title: "My details",
+    help: "Who letters, invoices and contracts are from. The business type decides what has to be printed: nothing extra for a private person, the register and directors for a GmbH and so on. Private, never on the site or on GitHub. Your personal tax ID (Steuer-IdNr.) has no field on purpose, it never goes on paperwork.",
+    comment: "Who paperwork is from. Private, stays in the database",
+    root: { type: "object", fields: [
+      { name: "entity", label: "Business type", type: "select", options: ["de-private", "de-freelance", "de-gewerbe", "de-ek", "de-ug", "de-gmbh", "uk-sole", "uk-ltd", "nl-eenmanszaak", "nl-bv", "us-sole"], required: true, help: "de-private: a private person in Germany, nothing registered. de-freelance: Freiberufler. de-gewerbe: Gewerbe. Then e.K., UG, GmbH, UK sole trader and Ltd, Dutch eenmanszaak and BV, US sole proprietor" },
+      { name: "full_name", label: "Full legal name", type: "text", required: true },
+      { name: "trading_name", label: "Business name", type: "text", help: "Optional for a sole trader, the firm name for a company" },
+      { name: "legal_form", label: "Legal form", type: "text", help: "GmbH, UG (haftungsbeschränkt), e.K., Ltd, BV. Left empty the usual one for the type is used" },
+      { name: "street", label: "Street and number", type: "text" },
+      { name: "postcode", label: "Postcode", type: "text" },
+      { name: "city", label: "City", type: "text" },
+      { name: "country", label: "Country", type: "text" },
+      { name: "phone", label: "Phone", type: "tel" },
+      { name: "email", label: "Email", type: "email" },
+      { name: "web", label: "Website", type: "text" },
+      { name: "small_business", label: "Small business, no VAT on invoices (Kleinunternehmer § 19 UStG, KOR, not VAT registered)", type: "checkbox" },
+      { name: "prefix", label: "Document number prefix", type: "text", help: "RP gives RP-I-2026-0001 for invoices and RP-L-2026-0001 for letters" },
+      { name: "tax", label: "Tax numbers (only the ones you have)", type: "object", fields: [
+        { name: "tax_number", label: "Steuernummer (from the Finanzamt for the business)", type: "text" },
+        { name: "vat_id", label: "VAT ID (USt-IdNr., VAT number)", type: "text" },
+        { name: "w_id", label: "Wirtschafts-IdNr.", type: "text" },
+        { name: "btw_id", label: "btw-id", type: "text" }
+      ] },
+      { name: "company", label: "Company register (companies only)", type: "object", fields: [
+        { name: "seat", label: "Registered seat", type: "text" },
+        { name: "register_court", label: "Register court", type: "text" },
+        { name: "register_number", label: "Register number (HRA, HRB)", type: "text" },
+        { name: "directors", label: "Managing directors, all, full names", type: "text" },
+        { name: "company_number", label: "Company number (UK)", type: "text" },
+        { name: "registered_office", label: "Registered office address (UK)", type: "text" },
+        { name: "registered_in", label: "Registered in (England and Wales, Scotland, Northern Ireland)", type: "text" },
+        { name: "kvk", label: "KvK number (NL)", type: "text" }
+      ] }
+    ] }
+  },
+  payment_accounts: {
+    file: "payment_accounts.yml",
+    title: "Payment accounts",
+    help: "The bank accounts you can pick on an invoice, a letter footer or a payment plan. Private, never on the site or on GitHub. The IBAN is checked when you save.",
+    comment: "Bank accounts for paperwork. Private, stays in the database",
+    root: { type: "objects", itemLabel: "label", itemMeta: ["bank"], singular: "account", fields: [
+      { name: "label", label: "Name for it", type: "text", required: true, help: "Only you see this, for example Main account or Business" },
+      { name: "holder", label: "Account holder", type: "text", required: true },
+      { name: "bank", label: "Bank", type: "text" },
+      { name: "iban", label: "IBAN", type: "text", required: true, iban: true },
+      { name: "bic", label: "BIC", type: "text" },
+      { name: "default", label: "Use this one unless I pick another", type: "checkbox" }
+    ] }
+  },
   skills: {
     file: "skills.yml",
     title: "Skills",
@@ -202,7 +255,8 @@ Object.assign(DATA_SCHEMAS, {
 
 // Documents that never go to GitHub. references holds people's private email addresses and phone numbers until
 // they agree to them being public, the repository is public, so it stays in the database only
-export const PRIVATE_DOCUMENTS = ["references"];
+// Lists that never leave the database: no GitHub commit, no content file, nothing on the public site
+export const PRIVATE_DOCUMENTS = ["references", "business", "payment_accounts"];
 
 // Posts, pages, projects, tools and the legal pages. title and the body are edited in the main area of the editor,
 // these fields go in the sidebar next to it. editor is "blocks" (the block editor with Markdown) or "template"
@@ -335,6 +389,7 @@ export function cleanValue(field, raw, path = field.label || field.name, { lenie
   if (value && t === "date" && !/^\d{4}-\d{2}-\d{2}$/.test(value)) errors.push(`${path}: must be a date like 2026-10-12`);
   if (value && t === "url" && !/^(https?:\/\/|\/)[^\s]*$/.test(value)) errors.push(`${path}: must start with https:// or /`);
   if (value && t === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) errors.push(`${path}: is not an email address`);
+  if (value && field.iban && !ibanIsValid(value)) errors.push(`${path}: isnt a valid IBAN, check for a typo`);
   if (field.number && value) {
     if (!/^-?\d+$/.test(value)) errors.push(`${path}: must be a whole number`);
     else value = Number(value);

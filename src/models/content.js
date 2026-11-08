@@ -76,5 +76,26 @@ export function defineContentModels(sequelize) {
     expiresAt: { type: DataTypes.DATE, allowNull: false }
   }, { sequelize, modelName: "SignInAttempt", tableName: "sign_in_attempts", updatedAt: false });
 
-  return { Entry, EntryRevision, Document, DocumentRevision, AdminSession, AdminPasskey, SignInAttempt };
+  // Letters, invoices and contracts from the admin's Paperwork, see the 20261108 migration
+  class Paperwork extends Model {}
+  Paperwork.init({
+    id: { type: idType, autoIncrement: true, primaryKey: true },
+    kind: { type: DataTypes.STRING(20), allowNull: false },
+    number: { type: DataTypes.STRING(40), allowNull: false, unique: true },
+    title: { type: DataTypes.STRING(200), allowNull: false },
+    lang: { type: DataTypes.STRING(5), allowNull: false },
+    status: { type: DataTypes.STRING(12), allowNull: false, defaultValue: "draft" },
+    data: { type: longText, allowNull: false }
+  }, { sequelize, modelName: "Paperwork", tableName: "paperwork" });
+
+  class PaperworkRevision extends Model {}
+  PaperworkRevision.init({
+    id: { type: idType, autoIncrement: true, primaryKey: true },
+    paperworkId: { type: idType, allowNull: false },
+    status: { type: DataTypes.STRING(12), allowNull: false },
+    data: { type: longText, allowNull: false },
+    reason: { type: DataTypes.STRING(20), allowNull: false }
+  }, { sequelize, modelName: "PaperworkRevision", tableName: "paperwork_revisions", updatedAt: false });
+
+  return { Entry, EntryRevision, Document, DocumentRevision, AdminSession, AdminPasskey, SignInAttempt, Paperwork, PaperworkRevision };
 }

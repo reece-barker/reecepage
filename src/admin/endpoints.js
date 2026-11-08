@@ -103,7 +103,18 @@ export const ENDPOINT_GROUPS = [
       { method: "POST", path: "/admin/:type/:id/trash", what: "Moves to the trash (off the site)" },
       { method: "POST", path: "/admin/:type/:id/restore", what: "Out of the trash as a draft" },
       { method: "POST", path: "/admin/:type/:id/delete", what: "Deletes for good, only from the trash" },
-      { method: "POST", path: "/admin/cv-pdf", what: "Makes new CV PDFs in English and German from what's on the site" }
+      { method: "POST", path: "/admin/cv-pdf", what: "Makes new CV PDFs in English and German from what's on the site" },
+      { method: "GET", path: "/admin/paperwork", what: "Documents: letters and invoices, numbered, with drafts, sent and the trash" },
+      { method: "POST", path: "/admin/paperwork/new/:kind", what: "Starts a new letter or invoice with the next number" },
+      { method: "POST", path: "/admin/paperwork/preview", what: "Draws the live A4 preview from the form, nothing is saved" },
+      { method: "GET", path: "/admin/paperwork/preview/:key", what: "The live preview itself" },
+      { method: "GET", path: "/admin/paperwork/print/:key", what: "The page Chromium prints for a PDF, with a key that works once for a minute" },
+      { method: "GET", path: "/admin/paperwork/:id", what: "The form with the live preview" },
+      { method: "POST", path: "/admin/paperwork/:id", what: "Saves a document (it also saves on its own while you type)" },
+      { method: "GET", path: "/admin/paperwork/:id/pdf", what: "The document as a PDF, printed by Chromium from the same page as the preview" },
+      { method: "GET", path: "/admin/paperwork/:id/docx", what: "The document as a plain Word file" },
+      { method: "POST", path: "/admin/paperwork/:id/duplicate", what: "A copy with a new number" },
+      { method: "POST", path: "/admin/paperwork/:id/status", what: "Draft, sent or the trash" }
     ]
   }
 ];

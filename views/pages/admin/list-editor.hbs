@@ -8,7 +8,7 @@
     <a class="button button--secondary button--small" href="/admin/lists/{{name}}/revisions">{{icon "clock"}}Revisions</a>
   </div>
 </header>
-{{#if privateList}}<p class="alert alert--note">{{icon "info"}}<span>This list stays in the database and is never copied to GitHub, because it holds people's private contact details.</span></p>{{/if}}
+{{#if privateList}}<p class="alert alert--note">{{icon "info"}}<span>This list stays in the database. It is never copied to GitHub and never shown on the site.</span></p>{{/if}}
 <noscript><p class="alert alert--error">The editor needs JavaScript.</p></noscript>
 <form class="admin-editor" data-admin-editor novalidate>
   <script type="application/json" data-editor-config nonce="{{cspNonce}}">{{{editorJson}}}</script>
