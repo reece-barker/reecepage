@@ -16,7 +16,7 @@ import { recordForPath } from "../src/services/content-records.js";
 const args = process.argv.slice(2);
 const since = args[args.indexOf("--since") + 1];
 const dryRun = args.includes("--dry-run");
-const git = (...gitArgs) => execFileSync("git", gitArgs, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+const git = (...gitArgs) => execFileSync("git", gitArgs, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"] });
 
 if (!args.includes("--since") || !since || since.startsWith("--")) {
   console.error("Say which commit to compare with: npm run content:apply -- --since <commit>");
