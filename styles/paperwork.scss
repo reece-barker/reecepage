@@ -74,8 +74,8 @@ body.paper {
 // Round, cropped from the top so the face stays in, same crop as the email photo
 .din-photo {
   flex: none;
-  width: 16mm;
-  height: 16mm;
+  width: 21mm;
+  height: 21mm;
   border-radius: 50%;
   object-fit: cover;
   object-position: 50% 0;
@@ -571,15 +571,15 @@ th.num {
 // a little smaller when the back gets full so it doesnt push the contact lines down
 .card__photo {
   flex: none;
-  width: 13mm;
-  height: 13mm;
+  width: 16mm;
+  height: 16mm;
   border-radius: 50%;
   object-fit: cover;
   object-position: 50% 0;
 }
 
-.card__back--compact .card__photo { width: 11mm; height: 11mm; }
-.card__back--tight .card__photo { width: 9.5mm; height: 9.5mm; }
+.card__back--compact .card__photo { width: 13mm; height: 13mm; }
+.card__back--tight .card__photo { width: 11mm; height: 11mm; }
 
 // Contact lines, each on its own row, with a small icon in the accent colour lined up in a column of its own
 .card__contact {
@@ -703,8 +703,8 @@ th.num {
 
 .slip__photo {
   flex: none;
-  width: 16mm;
-  height: 16mm;
+  width: 21mm;
+  height: 21mm;
   border-radius: 50%;
   object-fit: cover;
   object-position: 50% 0;
