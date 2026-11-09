@@ -385,15 +385,19 @@ th.num {
 // Business cards: one side per page, the page is the card plus its bleed. Each size has its own named page, the
 // rest of paperwork stays on A4
 @page card-eu { size: 85mm 55mm; margin: 0; }
-@page card-eu-bleed { size: 91mm 61mm; margin: 0; }
+@page card-eu-b2 { size: 89mm 59mm; margin: 0; }
+@page card-eu-b3 { size: 91mm 61mm; margin: 0; }
 @page card-us { size: 88.9mm 50.8mm; margin: 0; }
-@page card-us-bleed { size: 95.25mm 57.15mm; margin: 0; }
+@page card-us-b2 { size: 92.9mm 54.8mm; margin: 0; }
+@page card-us-b3 { size: 94.9mm 56.8mm; margin: 0; }
 @page slip { size: 210mm 99mm; margin: 0; }
 
 .cards--eu .card { page: card-eu; }
-.cards--eu.cards--bleed .card { page: card-eu-bleed; }
+.cards--eu.cards--bleed2 .card { page: card-eu-b2; }
+.cards--eu.cards--bleed3 .card { page: card-eu-b3; }
 .cards--us .card { page: card-us; }
-.cards--us.cards--bleed .card { page: card-us-bleed; }
+.cards--us.cards--bleed2 .card { page: card-us-b2; }
+.cards--us.cards--bleed3 .card { page: card-us-b3; }
 
 .card {
   position: relative;
@@ -450,6 +454,30 @@ th.num {
   padding: 0 9mm;
 }
 
+// A small note in the bottom left corner of the front, like Printed on recycled paper. Print shops want 6 pt at least
+// and everything that matters 4 mm inside the cut, so its 6 pt at 4.5 mm
+.card__corner {
+  position: absolute;
+  left: 4.5mm;
+  bottom: 4.5mm;
+  z-index: 1;
+  margin: 0;
+  max-width: 40mm;
+  font-size: 6pt;
+  line-height: 1.2;
+  opacity: 0.85;
+}
+
+// clear of the leaf border on that design
+.card__corner--border {
+  left: 7mm;
+  bottom: 6.5mm;
+}
+
+.card__corner-line {
+  font-style: italic;
+}
+
 .card__quote {
   margin: 0;
   max-width: 64mm;
@@ -464,7 +492,7 @@ th.num {
 
   figcaption {
     margin-top: 1.4mm;
-    font-size: 5.8pt;
+    font-size: 6pt;
     font-weight: 700;
     letter-spacing: 0.02em;
 
@@ -569,16 +597,18 @@ th.num {
   .card__message { font-size: 6pt; margin-top: 1.4mm; }
 }
 
+// Print shops want 6 pt at the least, so the tightest step stops there and squeezes the spacing instead
 .card__back--tight {
-  font-size: 5.9pt;
+  font-size: 6pt;
+  line-height: 1.25;
 
   .card__name { font-size: 9.2pt; }
   .card__role { font-size: 6pt; }
   .card__contact { margin-top: 1.4mm; }
   .card__contact li { min-height: 2.6mm; }
   .card__icon { width: 2.1mm; height: 2.1mm; }
-  .card__message { font-size: 5.6pt; margin-top: 1.1mm; }
-  .card__fine { font-size: 5.2pt; }
+  .card__message { font-size: 6pt; margin-top: 1mm; line-height: 1.2; }
+  .card__fine { font-size: 6pt; line-height: 1.2; }
 }
 
 .card__foot {
@@ -591,7 +621,7 @@ th.num {
 
 .card__fine {
   margin: 0;
-  font-size: 5.8pt;
+  font-size: 6pt;
   line-height: 1.3;
   padding-top: 1mm;
 

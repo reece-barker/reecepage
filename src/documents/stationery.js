@@ -55,7 +55,20 @@ const DESIGNS = {
     front: { bg: "#FFFFFF", logo: "reece-dove-long-horizontal-colour", slogan: C.olive80, wide: true },
     back: { bg: "#FFFFFF", ink: C.olive, sub: C.olive80, sym: null, qrDark: C.olive, qrLight: "#FFFFFF", rule: C.sage } }
 };
-const SIZES = { eu: { w: 85, h: 55, bleed: 3 }, us: { w: 88.9, h: 50.8, bleed: 3.175 } };
+const SIZES = { eu: { w: 85, h: 55 }, us: { w: 88.9, h: 50.8 } };
+// How the card gets printed: the bleed is the colour running past the cut so a slightly off cut never shows a white
+// edge. Onlineprinters wants 2 mm (data 8.9 x 5.9 cm for an 8.5 x 5.5 cm card), most other shops 3 mm, at home none
+const PRINT = {
+  shop2: { bleed: 2, label: "Print shop with 2 mm bleed (Onlineprinters: 89 x 59 mm file, cut to 85 x 55)" },
+  shop3: { bleed: 3, label: "Print shop with 3 mm bleed" },
+  home: { bleed: 0, label: "Printing at home, cut size, no bleed" }
+};
+/** The print setting of a card, older cards had a bleed tick box (3 mm) instead */
+export function cardPrint(data) {
+  if (Object.hasOwn(PRINT, data.print)) return { id: data.print, ...PRINT[data.print] };
+  const id = data.bleed === false ? "home" : "shop3";
+  return { id, ...PRINT[id] };
+}
 
 // One leaf is a lens between two points made of two equal circle arcs, the same shape as the pattern tile
 function leafPath(cx, cy, len, angle, fat = 0.8) {
@@ -152,7 +165,7 @@ export const card = {
   kind: "card",
   label: "Business card",
   code: "B",
-  help: "Business cards in four designs, front and back, at their real size with bleed for a print shop.",
+  help: "Business cards in four designs, front and back, ready for a print shop: bleed, trim box, CMYK and nothing under 6 pt.",
   pdfFooter: false,
   fields: [
     LANG_FIELD,
@@ -171,27 +184,31 @@ export const card = {
     { name: "linkedin", label: "LinkedIn", type: "checkbox", help: "From the site settings" },
     { name: "github", label: "GitHub", type: "checkbox", help: "From the site settings" },
     { name: "icons", label: "Icons in front of the phone number, email, website and the rest", type: "checkbox", default: true },
+    { name: "corner_note", label: "Small note in a corner", type: "text", max: 40, help: "Something like Printed on recycled paper. 6 pt, kept 4 mm inside the cut" },
+    { name: "corner_side", label: "Which side the corner note goes on", type: "select", required: true, options: ["front", "back"], labels: { front: "Front, bottom left", back: "Back, under the fine print" } },
     { name: "message", label: "A line on the back", type: "textarea", max: 160, help: "Something like Looking for an internship from September 2027. Short reads best, the back gets tighter as it fills up" },
     { name: "fine", label: "The details your business type has to give", type: "checkbox", default: true, help: "Register, seat and directors for a company. A private person or freelancer has none" },
     { name: "tax", label: "Tax number or VAT ID", type: "checkbox" },
-    { name: "bleed", label: "3 mm bleed round the edge, for a print shop", type: "checkbox", default: true, help: "Off gives the card at its cut size, for printing at home" }
+    { name: "print", label: "Printed by", type: "select", required: true, options: Object.keys(PRINT), labels: Object.fromEntries(Object.entries(PRINT).map(([k, v]) => [k, v.label])), help: "For a print shop the PDF has the bleed, a trim box and comes out in CMYK (FOGRA52, for uncoated paper). Page 1 is the front, page 2 the back, both the same way up" }
   ],
 
   defaults(details, lang = "de") {
-    return { lang, design: "olive", format: businessType(details.entity).country === "US" ? "us" : "eu", name: details.full_name || "", role: words(lang).role, front_text: "slogan", slogan: SLOGAN, quote: { text: "", author: "" }, qr: "url", address: false, linkedin: false, github: false, icons: true, message: "", fine: true, tax: false, bleed: true };
+    return { lang, design: "olive", format: businessType(details.entity).country === "US" ? "us" : "eu", name: details.full_name || "", role: words(lang).role, front_text: "slogan", slogan: SLOGAN, quote: { text: "", author: "" }, qr: "url", address: false, linkedin: false, github: false, icons: true, message: "", corner_note: "", corner_side: "front", fine: true, tax: false, print: "shop2" };
   },
 
   title(data) {
     return `${data.name || "Business card"}, ${DESIGNS[data.design]?.label.toLowerCase() || "card"}`;
   },
 
-  render(data, { details, asset, profiles = {} }) {
+  render(data, { details, asset, profiles = {}, cmyk = null }) {
     const lang = data.lang || "de";
     const d = DESIGNS[data.design] || DESIGNS.olive;
     const notes = [];
     const size = SIZES[data.format] || SIZES.eu;
-    const { w, h, bleed: b } = size;
-    const bleed = data.bleed !== false;
+    const { w, h } = size;
+    const print = cardPrint(data);
+    const b = print.bleed;
+    const bleed = b > 0;
     const F = d.front, B = d.back;
 
     // Front: the logo in the middle, under it the slogan, a quote or both. Older cards have no front_text yet and
@@ -207,7 +224,10 @@ export const card = {
     const logoStyle = F.wide ? `width:${(w * (quote ? 0.4 : 0.56)).toFixed(2)}mm` : `height:${(h * logoScale).toFixed(2)}mm`;
     const [open, close] = QUOTES[lang] || QUOTES.en;
     const quoteHtml = quote ? `<figure class="card__quote ${quoteSize(clean(quote.text))}"><blockquote>${esc(open)}${txt(clean(quote.text))}${esc(close)}</blockquote>${clean(quote.author) ? `<figcaption>${txt(quote.author)}</figcaption>` : ""}</figure>` : "";
-    const frontInner = `<div class="card__front${quote ? " card__front--quote" : ""}${F.border ? " card__front--border" : ""}" style="color:${F.slogan}"><img src="${esc(asset(`images/brand/${F.logo}.svg`))}" alt="reece" style="${logoStyle}">${quoteHtml}${slogan ? `<p class="card__slogan">${txt(slogan)}</p>` : ""}</div>`;
+    const corner = clean(data.corner_note);
+    const cornerOnBack = corner && data.corner_side === "back";
+    const cornerFront = corner && !cornerOnBack ? `<p class="card__corner${F.border ? " card__corner--border" : ""}" style="color:${F.slogan}">${txt(corner)}</p>` : "";
+    const frontInner = `${cornerFront}<div class="card__front${quote ? " card__front--quote" : ""}${F.border ? " card__front--border" : ""}" style="color:${F.slogan}"><img src="${esc(asset(`images/brand/${F.logo}.svg`))}" alt="reece" style="${logoStyle}">${quoteHtml}${slogan ? `<p class="card__slogan">${txt(slogan)}</p>` : ""}</div>`;
     const front = cardSide(frontInner, F.border ? leafBorder(w, h) : "", { w, h, b, bleed, bg: F.bg, side: "front" });
 
     // Back: name and role at the top, contact in the middle, fine print and the QR code at the bottom
@@ -220,7 +240,7 @@ export const card = {
     const icons = data.icons !== false;
     const message = clean(data.message);
     const fine = data.fine === false ? [] : fineLines(details, lang, { tax: data.tax === true });
-    const density = backDensity({ contact: rows.length, message, fine: fine.length, hasRole: Boolean(clean(data.role)) });
+    const density = backDensity({ contact: rows.length, message, fine: fine.length + (clean(data.corner_note) && data.corner_side === "back" ? 1 : 0), hasRole: Boolean(clean(data.role)) });
     if (density.tooMuch) notes.push("The back is very full, it is set as small as it goes. Untick something or shorten the line on the back.");
     const qrText = data.qr === "vcard" ? vcard(details, data.name || details.full_name) : data.qr === "url" ? webUrl(details) : "";
     const qr = qrText ? `<div class="card__qr${B.qrBox ? " card__qr--box" : ""}">${qrSvg(qrText, { size: 14, dark: B.qrDark, light: B.qrLight, label: data.qr === "vcard" ? "QR code with my contact details" : `QR code for ${clean(details.web)}` })}</div>` : "";
@@ -234,16 +254,17 @@ export const card = {
       <ul class="card__contact${icons ? " card__contact--icons" : ""}">${rows.map(([kind, value]) => `<li>${icons ? icon(kind) : ""}<span>${txt(value)}</span></li>`).join("")}</ul>
       ${message ? `<p class="card__message">${txt(message)}</p>` : ""}
       <div class="card__foot">
-        <p class="card__fine" style="color:${B.sub}${B.rule ? `;border-top:0.3pt solid ${B.rule}` : ""}">${fine.map(txt).join("<br>")}</p>
+        <p class="card__fine" style="color:${B.sub}${B.rule ? `;border-top:0.3pt solid ${B.rule}` : ""}">${fine.map(txt).join("<br>")}${cornerOnBack ? `${fine.length ? "<br>" : ""}<span class="card__corner-line">${txt(corner)}</span>` : ""}</p>
         ${qr}
       </div>
     </div>`;
     const back = cardSide(backInner, bar + band, { w, h, b, bleed, bg: B.bg, side: "back" });
 
-    const body = `<div class="cards cards--${data.format === "us" ? "us" : "eu"}${bleed ? " cards--bleed" : ""}">${front}${back}</div>`;
+    const body = `<div class="cards cards--${data.format === "us" ? "us" : "eu"}${bleed ? ` cards--bleed cards--bleed${b}` : ""}">${front}${back}</div>`;
+    if (b > 0 && cmyk && !cmyk.ready) notes.push(`The PDF comes out in RGB on this server because ${cmyk.reason}. The next deploy installs both, or the print shop converts it.`);
     if (fine.length > 5) notes.push("The fine print is long for a card, check it is still readable at this size.");
     const notesHtml = notes.length ? `<aside class="doc-notes" aria-label="Notes for you, not printed"><strong>Notes for you, not printed</strong><ul>${notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></aside>` : "";
-    return { body: notesHtml + body, footer: "", title: `${senderName(details)}, business card`, notes };
+    return { body: notesHtml + body, footer: "", title: `${senderName(details)}, business card`, notes, print: { w, h, bleed: b, cmyk: print.id !== "home" } };
   }
 };
 
@@ -384,6 +405,8 @@ export const signature = {
     { name: "linkedin", label: "LinkedIn", type: "checkbox", help: "From the site settings" },
     { name: "github", label: "GitHub", type: "checkbox", help: "From the site settings" },
     { name: "icons", label: "Icons in front of the phone number, email, website and the rest", type: "checkbox", default: true },
+    { name: "corner_note", label: "Small note in a corner", type: "text", max: 40, help: "Something like Printed on recycled paper. 6 pt, kept 4 mm inside the cut" },
+    { name: "corner_side", label: "Which side the corner note goes on", type: "select", required: true, options: ["front", "back"], labels: { front: "Front, bottom left", back: "Back, under the fine print" } },
     { name: "message", label: "A line on the back", type: "textarea", max: 160, help: "Something like Looking for an internship from September 2027. Short reads best, the back gets tighter as it fills up" },
     { name: "links", label: "Links to the legal notice and privacy pages", type: "checkbox", default: true },
     { name: "slogan", label: "Slogan", type: "text", max: 60, help: "Empty for none" },

@@ -11,6 +11,7 @@ import { makeDocx } from "../documents/docx.js";
 import { writeOut } from "../documents/contract.js";
 import { signatureParts } from "../documents/stationery.js";
 import { CvPdfError, printUrl } from "../services/cv-pdf.js";
+import { cmykStatus, printReadyPdf } from "../services/print-pdf.js";
 
 const PREVIEW_MINUTES = 20;
 const STATUS_LABELS = { draft: "Draft", final: "Sent", trash: "In the trash" };
@@ -40,6 +41,8 @@ export function createPaperworkController({ config, paperwork, repository, asset
   async function context() {
     const [business, accounts] = await Promise.all([repository.getDocument("business"), repository.getDocument("payment_accounts")]);
     return {
+      // whether print shop PDFs can be made in CMYK here, the business card says so when they cant
+      cmyk: await cmykStatus(config.paths.printProfile),
       details: businessDetails(business, config.legal.owner),
       accounts: Array.isArray(accounts) ? accounts : [],
       hasDetails: Boolean(business && business.full_name)
@@ -51,7 +54,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
     const def = documentKind(kind);
     const logo = assets.url("images/brand/reece-dove-long-horizontal-colour.svg");
     // profiles: LinkedIn and GitHub from the site settings, the business card can show them
-    const out = def.render(record.data, { ...ctx, number: record.number, logo, preview, asset: (p) => assets.url(p), baseUrl: config.baseUrl, profiles: site()?.profiles || {} });
+    const out = def.render(record.data, { ...ctx, number: record.number, logo, preview, asset: (p) => assets.url(p), baseUrl: config.baseUrl, profiles: site()?.profiles || {}, cmyk: ctx.cmyk });
     const html = pageHtml({ title: out.title, lang: record.data.lang, body: out.body, footer: out.footer, stylesheet: assets.url("css/paperwork.css"), preview });
     return { html, out };
   }
@@ -260,7 +263,13 @@ export function createPaperworkController({ config, paperwork, repository, asset
         // cards and slips have no footer, theyre too small for one and the page size comes from their own @page
         const footerTemplate = def.pdfFooter === false ? "" : pdfFooterTemplate({ lang: record.data.lang, footer: out.footer, number: record.number });
         printing = printUrl({ url: `http://127.0.0.1:${config.port}/admin/paperwork/print/${key}`, footerTemplate });
-        const { pdf } = await printing;
+        let { pdf } = await printing;
+        // A card for a print shop: CMYK with the FOGRA52 profile and the trim and bleed boxes, when the server can
+        if (out.print?.cmyk) {
+          const ready = await printReadyPdf(pdf, { ...out.print, profile: config.paths.printProfile });
+          pdf = ready.pdf;
+          res.set("X-Print-Colour", ready.cmyk ? "CMYK FOGRA52" : `RGB (${ready.reason})`);
+        }
         res.set("Cache-Control", "no-store");
         res.attachment(filename(record, "pdf")).type("application/pdf").send(Buffer.from(pdf));
       } catch (error) {
