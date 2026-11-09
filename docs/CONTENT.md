@@ -227,8 +227,14 @@ They take your name, contact details and business type from My details, so they 
 
 - **Business card:** four designs (olive, leaf border, sage, minimal white), EU or US size. The back has your name,
   the line under it, contact details, the fine print your business type needs and a QR code (your website or a
-  contact card). The PDF has one side per page at the real size with 3 mm bleed for a print shop, or switch the
-  bleed off to print at home. The red dashed line in the preview is where it gets cut.
+  contact card). Under the logo goes the slogan, a quote (with who said it) or both, the back can have a line of its
+  own, icons in front of the contact details, LinkedIn and GitHub, and a small note in a corner like Printed on
+  recycled paper. The red dashed line in the preview is where it gets cut.
+- **Printing business cards:** pick who prints it. For Onlineprinters (2 mm bleed) the PDF is 89 x 59 mm for an
+  85 x 55 mm card, page 1 the front and page 2 the back the same way up, with a trim and bleed box, fonts embedded,
+  vector everything, and converted to CMYK with FOGRA52 (PSO Uncoated v3, for uncoated paper). Nothing is smaller
+  than 6 pt and everything that matters stays at least 4 mm inside the cut. The CMYK step needs Ghostscript and the
+  FOGRA52 profile on the server, the deploy installs both. Without them the PDF stays RGB and the preview says so.
 - **Compliments slip:** DIN lang (210 x 99 mm, a third of A4) with a heading, a short note or writing lines, and
   your details at the bottom.
 - **Email signature:** full, short or minimal. **Copy signature** puts it on the clipboard as formatted text and

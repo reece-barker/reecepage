@@ -10,7 +10,8 @@ import { KINDS } from "../../src/documents/index.js";
 import { buildContract, writeOut } from "../../src/documents/contract.js";
 import { TYPES, paySchedule, repaySchedule } from "../../src/documents/contract-templates.js";
 import { qrMatrix, qrSvg } from "../../src/documents/qr.js";
-import { signatureParts, vcard } from "../../src/documents/stationery.js";
+import { cardPrint, signatureParts, vcard } from "../../src/documents/stationery.js";
+import { cmykStatus, printReadyPdf } from "../../src/services/print-pdf.js";
 
 test("amounts are read the German and the English way, always as whole cents", () => {
   assert.equal(parseMoney("12,50"), 1250);
@@ -207,4 +208,67 @@ test("the slip has writing lines only when there is no note", () => {
   assert.match(draw(""), /slip__lines/);
   assert.doesNotMatch(draw("Here is the book I promised."), /slip__lines/);
   assert.match(draw(""), /With compliments/);
+});
+
+test("a business card can carry a quote, a line on the back, icons and the profile links", () => {
+  const details = businessDetails({ entity: "de-private", full_name: "Reece Barker", phone: "+49 162 000", email: "me@reece.page", web: "reece.page" });
+  const asset = (p) => `/${p}`;
+  const profiles = { linkedin: "https://www.linkedin.com/in/reecenbarker", github: "https://github.com/reece-barker" };
+  const base = KINDS.card.defaults(details, "de");
+  // an older card without front_text keeps its slogan
+  const old = { ...base };
+  delete old.front_text;
+  assert.match(KINDS.card.render(old, { details, asset }).body, /card__slogan/);
+  const quoted = KINDS.card.render({ ...base, front_text: "quote", quote: { text: "Einfachheit ist die Voraussetzung für Verlässlichkeit.", author: "Edsger W. Dijkstra" } }, { details, asset });
+  assert.match(quoted.body, /„Einfachheit ist die Voraussetzung für Verlässlichkeit\.“/);
+  assert.match(quoted.body, /<figcaption>Edsger W\. Dijkstra<\/figcaption>/);
+  assert.match(quoted.body, /card__quote--medium/);
+  assert.doesNotMatch(quoted.body, /card__slogan/);
+  const both = KINDS.card.render({ ...base, front_text: "both", quote: { text: "Kurz.", author: "" } }, { details, asset });
+  assert.match(both.body, /card__quote--short/);
+  assert.match(both.body, /card__slogan/);
+  assert.ok(both.notes.some((n) => /no author/.test(n)));
+  const back = KINDS.card.render({ ...base, linkedin: true, github: true, message: "Auf der Suche nach einem Praktikum ab September 2027." }, { details, asset, profiles });
+  assert.match(back.body, /linkedin\.com\/in\/reecenbarker/);
+  assert.match(back.body, /github\.com\/reece-barker/);
+  assert.equal((back.body.match(/class="card__icon"/g) || []).length, 5);
+  assert.match(back.body, /class="card__message">Auf der Suche/);
+  const plain = KINDS.card.render({ ...base, icons: false }, { details, asset, profiles });
+  assert.doesNotMatch(plain.body, /card__icon/);
+  // a very full back is set tighter and says so
+  const full = KINDS.card.render({ ...base, linkedin: true, github: true, address: true, message: "x".repeat(150) }, { details: { ...details, street: "Teststr. 1", city: "München" }, asset, profiles });
+  assert.match(full.body, /card__back--tight/);
+});
+
+test("a business card follows the print shop: 2 mm bleed by default, older cards keep 3 mm, a corner note", () => {
+  const details = businessDetails({ entity: "de-private", full_name: "Reece Barker", web: "reece.page" });
+  const asset = (p) => `/${p}`;
+  const base = KINDS.card.defaults(details, "en");
+  const shop = KINDS.card.render(base, { details, asset });
+  assert.match(shop.body, /cards--bleed2/);
+  assert.match(shop.body, /width:89mm;height:59mm/);
+  assert.deepEqual(shop.print, { w: 85, h: 55, bleed: 2, cmyk: true });
+  const old = { ...base, bleed: true };
+  delete old.print;
+  assert.equal(cardPrint(old).bleed, 3);
+  delete old.bleed;
+  assert.equal(cardPrint({ bleed: false }).id, "home");
+  const home = KINDS.card.render({ ...base, print: "home" }, { details, asset });
+  assert.equal(home.print.cmyk, false);
+  assert.match(home.body, /width:85mm;height:55mm/);
+  const front = KINDS.card.render({ ...base, corner_note: "Printed on recycled paper" }, { details, asset });
+  assert.match(front.body, /class="card__corner"[^>]*>Printed on recycled paper/);
+  const back = KINDS.card.render({ ...base, corner_note: "Printed on recycled paper", corner_side: "back" }, { details, asset });
+  assert.match(back.body, /card__corner-line">Printed on recycled paper/);
+  assert.doesNotMatch(back.body, /class="card__corner"/);
+  const noGs = KINDS.card.render(base, { details, asset, cmyk: { ready: false, reason: "Ghostscript isnt installed on this server" } });
+  assert.ok(noGs.notes.some((n) => /RGB on this server because Ghostscript/.test(n)));
+});
+
+test("print shop PDFs say why they stay RGB when the profile is missing", async () => {
+  const status = await cmykStatus("/nowhere/PSOuncoated_v3_FOGRA52.icc");
+  assert.equal(status.ready, false);
+  assert.match(status.reason, /Ghostscript|profile/);
+  const out = await printReadyPdf(Buffer.from("%PDF-1.4"), { w: 85, h: 55, bleed: 2, profile: "/nowhere/PSOuncoated_v3_FOGRA52.icc" });
+  assert.equal(out.cmyk, false);
 });

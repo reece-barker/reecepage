@@ -27,6 +27,17 @@ step "Chromium for the PDFs"
 as_app 'npx --no-install playwright-core install chromium' || echo "chromium download failed, the PDF buttons wont work until it does"
 (cd "$REPO" && npx --no-install playwright-core install-deps chromium >/dev/null 2>&1) || echo "chromium system libraries couldnt be installed, run: cd $REPO && sudo npx --no-install playwright-core install-deps chromium"
 
+step "Print shop PDFs"
+# Business cards for a print shop are converted to CMYK by Ghostscript with the FOGRA52 profile. Ghostscript comes
+# from apt, the profile from the ICC registry (ECI lets anyone use it but not pass it on, so it isnt in the repo).
+# Neither stops a deploy, without them the cards come out in RGB and the editor says why
+command -v gs >/dev/null 2>&1 || apt-get install -y -q ghostscript >/dev/null 2>&1 || echo "ghostscript couldnt be installed, run: sudo apt-get install ghostscript"
+PROFILE="var/print/PSOuncoated_v3_FOGRA52.icc"
+if [ ! -s "$REPO/$PROFILE" ]; then
+  as_app "mkdir -p var/print && curl -fsSL --max-time 60 -o '$PROFILE' https://registry.color.org/profile-registry/profiles/PSOuncoated_v3_FOGRA52.icc" \
+    || echo "the FOGRA52 profile couldnt be downloaded, the next deploy tries again"
+fi
+
 step "Database"
 as_app 'npm run db:migrate'
 

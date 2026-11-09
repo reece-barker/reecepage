@@ -203,6 +203,8 @@ export function loadConfig({ env = process.env, yamlFile = path.join(ROOT_DIR, "
       public: path.join(ROOT_DIR, "public"),
       // CV PDFs made on the server from the admin, the service is only allowed to write in var/
       cvPdfs: path.join(ROOT_DIR, "var/cv"),
+      // The colour profile print shop PDFs are converted with, the deploy downloads it (it cant be in the repo)
+      printProfile: env.PRINT_ICC_PROFILE || path.join(ROOT_DIR, "var/print/PSOuncoated_v3_FOGRA52.icc"),
       assetManifest: path.join(ROOT_DIR, "public/assets/manifest.json")
     }
   };
