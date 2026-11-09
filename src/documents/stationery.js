@@ -102,10 +102,15 @@ function leafBand(w, h, b, dark) {
   return out.join("");
 }
 
+// The leaf border sits well inside the cut, 4.2 mm to the middle of the leaves, so their outer tips are about 2 mm from the edge. A cutter is
+// allowed to be a mm out, and a border hugging the edge then looks thick on one side and gone on the other. Further in a mm either way barely shows
+const BORDER_INSET = 4.2;
+
 function leafBorder(w, h) {
   const cols = [C.sage, C.leaf, C.blush];
   const out = [];
   let i = 0;
+  const d = BORDER_INSET;
   const edge = (x0, y0, x1, y1, base) => {
     const n = Math.max(1, Math.round(Math.hypot(x1 - x0, y1 - y0) / 8.6));
     for (let k = 0; k < n; k++, i++) {
@@ -113,7 +118,7 @@ function leafBorder(w, h) {
       out.push(`<path d="${leafPath(x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, i % 3 === 2 ? 5.2 : 6.4, base + (i % 2 ? 28 : -24))}" fill="${cols[i % 3]}"/>`);
     }
   };
-  edge(1, 0.8, w - 1, 0.8, 0); edge(w - 0.8, 4, w - 0.8, h - 4, 90); edge(w - 1, h - 0.8, 1, h - 0.8, 180); edge(0.8, h - 4, 0.8, 4, 270);
+  edge(d + 1, d, w - d - 1, d, 0); edge(w - d, d + 3.2, w - d, h - d - 3.2, 90); edge(w - d - 1, h - d, d + 1, h - d, 180); edge(d, h - d - 3.2, d, d + 3.2, 270);
   return out.join("");
 }
 

@@ -489,8 +489,8 @@ th.num {
 
 // clear of the leaf border on that design
 .card__corner--border {
-  left: 7mm;
-  bottom: 6.5mm;
+  left: 9mm;
+  bottom: 9mm;
 }
 
 .card__corner-line {
@@ -674,7 +674,9 @@ th.num {
 }
 
 // The compliments slip, 1/3 A4. One page is the slip plus its bleed, set in the html, and inside it a box the size of
-// the cut slip. Everything in there sits on a 15 mm side margin, so at least 7 mm from the cut, the shop wants 4
+// the cut slip. Everything in there sits about 12 mm from the cut on all four sides (the logo and the text have a little air
+// in their boxes, so the top is 11 and the bottom 12), the shop only wants 4. It was 12 on top, 15 at the sides and 7 at the bottom before and
+// the print shops check showed it,
 .slip {
   page: slip;
   position: relative;
@@ -692,7 +694,7 @@ th.num {
 
 .slip__trim {
   position: absolute;
-  padding: 12mm 15mm 7mm;
+  padding: 11mm 12mm 12mm;
   display: flex;
   flex-direction: column;
 }
