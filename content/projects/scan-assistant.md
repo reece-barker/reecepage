@@ -1,15 +1,15 @@
 ---
 title: Scan Assistant
 summary: >-
-  A Chrome extension for the IT team at Munich International School. It scans the school's iPads in and out, matches
-  them against class lists and turns the result into a report automatically.
+  A Chrome extension I built for the IT team at Munich International School. It scans the school's iPads in and out,
+  matches them against class lists and turns the result into a report automatically.
 branch: code
 kind: Work
 context: Munich International School, IT
 period: 2026
 sort_date: 2026-09
 status: In use
-role: The idea, the design and the prototype were mine, built largely with AI coding tools
+role: Designed and built it on my own
 featured: true
 order: 4
 stack:
@@ -37,11 +37,6 @@ meant finding each device and typing serial numbers by hand, then comparing the 
   turned up where they should not.
 - **Colour coded Excel reports** at the end of a run.
 - **Name matching that copes with German umlauts,** so names match however they were typed.
-
-## How it was made
-
-The idea and the first prototype were mine: I designed how a scanning run should work and what the team needed
-from it. Most of the code was then written with AI coding tools, with me deciding what it should do.
 
 ## Choices along the way
 

@@ -27,17 +27,17 @@ two interests met: data, and the environment.
 
 At sixteen I went freelance. Over almost three years I built full stack web platforms with secure logins and live
 monitoring. I also built a [support and ticketing system](/projects/support-ticketing-system) for online communities in
-the entertainment space, connected to the APIs they already relied on, and sold it commercially to almost ten
-customers.
+the entertainment space, connected to the APIs they already relied on, and sold it commercially on two marketplaces.
+For the flow meter manufacturer Bronkhorst, I built a [customer configurator](/projects/bronkhorst-configurator) that
+checks real physics constraints as you type. I delivered it in a week.
 
 ## Munich International School
 
-Alongside all that, I spent three summers in the IT department at Munich International School, from 2021 to 2023.
-From June 2024 to July 2026 I was back there on contract, supporting IT and building on Microsoft's Power Platform. I
-rebuilt the finance team's [purchase orders](/projects/mis-purchase-orders) in Power Apps, with automatic totals and
-exchange rates. I also came up with [Scan Assistant](/projects/scan-assistant), a browser extension for the IT team
-that scans the school's iPads in and out, matches them against class lists and turns it all into a report
-automatically. The idea and the prototype were mine, and I built most of it with AI coding tools.
+Alongside all that, I spent three summers in the IT department at Munich International School. Today I am back there
+on contract, supporting IT and building on Microsoft's Power Platform, including the
+[purchase order system](/projects/mis-purchase-orders) the finance team works with. I also built my own browser
+extension for the IT team, [Scan Assistant](/projects/scan-assistant), to scan the school's iPads in and out, match
+them against class lists and turn it all into a report automatically.
 
 ## Saxion
 
@@ -46,19 +46,13 @@ Enschede. My first year ended with my propaedeutic diploma, cum laude. The degre
 time operating systems, signal processing and machine learning. In my first year I helped build an autonomous robot
 that explores a maze and finds the shortest way out on its own.
 
-In one project my two old interests met again. On my own, I built a Raspberry Pi that
+In one project my two old interests met again. I built a Raspberry Pi that
 [listens to passing traffic and profiles it by sound alone](/projects/traffic-sound-profiling), to understand emissions
-without a single camera, and compared three machine learning models to classify what it hears. It scored nine out
-of ten.
+without a single camera. It scored nine out of ten.
 
-At Saxion's International Project Week our team built a customer configurator for the flow meter maker Bronkhorst
-that checks real physics constraints as you type. We delivered it in one week, in close collaboration with AI tools,
-and earned the highest distinction.
-
-Now I am in the Industrial Automation minor, where a team of thirteen is designing a
-[full production line](/projects/lego-bulldozer-production-line) with eight ABB robots, vision systems and PLCs, to
-assemble a LEGO bulldozer every five minutes. I am responsible for the transport system: how parts move between the
-stations, arrive on time and are tracked through the process. I am also software advisor to the team building a
+At Saxion's International Project Week I earned the highest distinction. Now I am in the Industrial Automation minor,
+where a team of thirteen is designing a [full production line](/projects/lego-bulldozer-production-line) with eight ABB
+robots, vision systems and PLCs, to assemble a LEGO bulldozer every five minutes. Alongside it I am helping build a
 [machine that sorts loose LEGO parts](/projects/lego-sorting-machine) by colour, by size and with a camera that
 recognises each piece.
 
@@ -74,9 +68,8 @@ coming back to.
 
 ## The startup
 
-Out of Saxion also came [Cognitive Atmospherics](/projects/microclimate-startup), the startup I co-founded with three
-classmates in June 2026. I look after operations, software and the business side. The idea starts with something
-simple. Every room has a climate: temperature, humidity, air quality and light. Our AI connects to the
+Out of Saxion also came [my startup](/projects/microclimate-startup), co-founded with three classmates. The idea starts
+with something simple. Every room has a climate: temperature, humidity, air quality and light. Our AI connects to the
 systems a building already has and controls them together, adjusting to who is actually there.
 
 At home, that is comfort with less wasted energy. In industry, it is stable conditions for people, products and
@@ -107,7 +100,6 @@ It is simple to say, and harder to do. I want to work on projects that genuinely
 the planet in better shape than I found it. Software, hardware, automation, AI: for me they are all tools for the same
 goal.
 
-Next comes a European Project Semester at TH Augsburg from March to August 2027, then an internship and a graduation
-project in industry. If you
+Next comes a European Project Semester at TH Augsburg, then an internship and a graduation project in industry. If you
 are building something that saves energy, cuts waste or makes people's lives better, [I would like to hear about
 it](/contact).
