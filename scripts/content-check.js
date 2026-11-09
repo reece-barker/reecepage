@@ -10,6 +10,7 @@ import path from "node:path";
 import { ROOT_DIR, loadConfig } from "../src/config/index.js";
 import { ContentService } from "../src/services/content-service.js";
 import { hasEmDash } from "../src/utils/text.js";
+import { brokenLinks } from "../src/services/link-check.js";
 
 const errors = [];
 const warnings = [];
@@ -56,22 +57,8 @@ if (content) {
   const articles = content.listArticles();
 
   // Every internal link has to go somewhere that exists
-  const known = new Set(["/", "/about", "/projects", "/writing", "/contact", "/tools",
-    ...config.navigation.legal.map((l) => l.href),
-    ...projects.filter((p) => p.hasPage).map((p) => p.url),
-    ...articles.map((a) => a.url)]);
-  const docs = [...projects, ...articles, ...Object.values(content.state.pages)];
-  for (const doc of docs) {
-    for (const match of doc.html.matchAll(/href="(\/[^"#?]*)/g)) {
-      const target = match[1].replace(/\/$/, "") || "/";
-      if (!known.has(target) && !target.startsWith("/assets/")) errors.push(`${doc.url || doc.slug} links to ${target}, which does not exist`);
-    }
-  }
-  for (const project of projects) {
-    for (const link of project.links) {
-      const href = link.url || link.href;
-      if (href?.startsWith("/") && !known.has(href)) errors.push(`${project.url} has a link to ${href}, which does not exist`);
-    }
+  for (const link of brokenLinks(content, { legalLinks: config.navigation.legal.map((l) => l.href) })) {
+    errors.push(`${link.from.url} links to ${link.to}, which does not exist`);
   }
 
   for (const group of content.data("skills") || []) {

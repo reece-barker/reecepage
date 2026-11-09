@@ -1,48 +1,65 @@
 # Skills with the work that shows them. No self ratings or percentage bars, the evidence links do the talking
 - group: Software
+  group_de: Software
   items:
-    - name: JavaScript and the web
-      evidence:
-        - scan-assistant
-        - reece-page
-    - name: Node.js, Express and MySQL
-      evidence:
-        - reece-page
-    - name: Browser extensions
-      evidence:
-        - scan-assistant
-    - name: Microsoft Power Platform
-      evidence:
-        - mis-purchase-orders
+  - name: JavaScript and the web
+    name_de: JavaScript und Web
+    evidence:
+    - scan-assistant
+    - reece-page
+  - name: Node.js, Express and MySQL
+    name_de: Node.js, Express und MySQL
+    evidence:
+    - reece-page
+  - name: Browser extensions
+    name_de: Browser-Erweiterungen
+    evidence:
+    - scan-assistant
+  - name: Microsoft Power Platform
+    evidence:
+    - mis-purchase-orders
 - group: Hardware and automation
+  group_de: Automatisierung
   items:
-    - name: ABB robots and RobotStudio
-      evidence:
-        - lego-bulldozer-production-line
-    - name: PLCs, SCADA and vision systems
-      evidence:
-        - lego-bulldozer-production-line
-        - lego-sorting-machine
-    - name: Raspberry Pi
-      evidence:
-        - traffic-sound-profiling
-    - name: Embedded C and C++
-      note: Saxion coursework
+  - name: ABB robots and RobotStudio
+    name_de: ABB-Roboter und RobotStudio
+    evidence:
+    - lego-bulldozer-production-line
+  - name: PLCs, SCADA and vision systems
+    name_de: SPS, SCADA und Bildverarbeitung
+    evidence:
+    - lego-bulldozer-production-line
+  - name: Raspberry Pi
+    evidence:
+    - traffic-sound-profiling
+  - name: Embedded C and C++
+    name_de: Embedded C und C++
+    note: Saxion coursework
+    note_de: Studium an der Saxion
 - group: Data
+  group_de: Daten
   items:
-    - name: Signal processing and change detection
-      evidence:
-        - traffic-sound-profiling
-    - name: Machine learning
-      evidence:
-        - lego-sorting-machine
-      note: Saxion coursework
-    - name: MATLAB
-      evidence:
-        - traffic-sound-profiling
+  - name: Signal processing and change detection
+    name_de: Signalverarbeitung und Änderungserkennung
+    evidence:
+    - traffic-sound-profiling
+  - name: Machine learning
+    name_de: Maschinelles Lernen
+    evidence:
+    - traffic-sound-profiling
+    note: Saxion coursework
+    note_de: Studium an der Saxion
+  - name: MATLAB
+    evidence:
+    - traffic-sound-profiling
 - group: Languages
+  group_de: Sprachen
   items:
-    - name: English
-      note: First language
-    - name: German
-      note: B2, used at work
+  - name: English
+    name_de: Englisch
+    note: First language
+    note_de: Muttersprache
+  - name: German
+    name_de: Deutsch
+    note: B2, used at work
+    note_de: B2, im Beruf genutzt

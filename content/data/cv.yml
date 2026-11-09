@@ -1,21 +1,58 @@
-# The one page CV at /cv. Experience, skills and projects come from their own files
+# The CV at /cv in English and /lebenslauf in German. Experience and education come from the timeline, skills from the skills list
 headline: Applied Computer Science student at Saxion University of Applied Sciences
 profile: >-
-  Raised in Munich, studying Applied Computer Science in Enschede. I write software, build hardware and co-founded a
-  startup whose AI runs the climate of a room. On contract at Munich International School I support IT and build on
-  Microsoft's Power Platform. I want to work on technology that makes people's lives better and wastes less.
+  Applied Computer Science student who builds software and hardware, from Power Platform apps for a school's finance
+  team to the transport system of a robot production line. Co-founder of Cognitive Atmospherics.
 location: Munich, Germany and Enschede, Netherlands
 availability: ''
 show_phone: true
+photo: true
 languages:
   - name: English
     level: First language
+    de:
+      name: Englisch
+      level: Muttersprache
   - name: German
     level: B2
+    de:
+      name: Deutsch
+      level: B2
 projects:
-  - microclimate-startup
-  - lego-bulldozer-production-line
+  - slug: lego-bulldozer-production-line
+    text: >-
+      Eight ABB robots build a LEGO bulldozer every five minutes, team of thirteen. I am responsible for the transport
+      system: pneumatic stops, parts at each station on time, every part tracked.
+    de:
+      title: Fertigungslinie für einen LEGO-Bulldozer
+      text: >-
+        Acht ABB-Roboter bauen alle fünf Minuten einen LEGO-Bulldozer, Team von dreizehn. Ich verantworte den
+        Transport: pneumatische Stopper, pünktliche Teile, Teileverfolgung.
+  - slug: traffic-sound-profiling
+    text: >-
+      Solo. A Raspberry Pi that profiles traffic by sound alone: CUSUM change detection, three classifiers compared in
+      MATLAB (including k-NN and a 1D CNN). Graded 9/10.
+    de:
+      title: Verkehr am Geräusch erkennen
+      text: >-
+        Allein umgesetzt. Raspberry Pi erkennt Verkehr am Geräusch: CUSUM, drei Klassifikatoren in MATLAB verglichen
+        (u. a. k-NN, 1D-CNN). Note 9/10.
+  - slug: scan-assistant
+    text: >-
+      Chrome extension that scans the school's iPads in and out of Snipe-IT against class lists. My idea and
+      prototype, built largely with AI coding tools. In use.
+    de:
+      text: >-
+        Chrome-Erweiterung, die iPads in Snipe-IT ein- und auscheckt und mit Klassenlisten abgleicht. Idee und
+        Prototyp von mir, größtenteils mit KI-Werkzeugen gebaut. Im Einsatz.
 extras:
-  - Saxion Honours Programme, second year
   - Sustainability ambassador
 interests: ''
+de:
+  headline: Student der Angewandten Informatik an der Saxion University of Applied Sciences
+  profile: >-
+    Informatikstudent, der Software und Hardware baut, von Power-Platform-Apps für die Finanzabteilung einer Schule
+    bis zum Transportsystem einer Roboter-Fertigungslinie. Mitgründer von Cognitive Atmospherics.
+  location: München und Enschede, Niederlande
+  extras:
+    - Nachhaltigkeitsbotschafter

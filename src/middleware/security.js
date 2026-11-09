@@ -27,7 +27,7 @@ export function analyticsOrigins(config) {
 // allowed there), the editor shows a picture before it is uploaded (blob: urls), and the live preview is the admin
 // framing its own preview page. The public site keeps the strict policy
 const isAdmin = (req) => req.path === "/admin" || req.path.startsWith("/admin/");
-const isPreview = (req) => req.path.startsWith("/admin/preview/");
+const isPreview = (req) => req.path.startsWith("/admin/preview/") || req.path.startsWith("/admin/paperwork/preview/");
 // The sign in form posts here and gets sent on to SimpleLogin, browsers check form-action for that redirect too, so
 // with only 'self' the button just silently did nothing. Only the sign in pages get the extra address
 const isSignIn = (req) => req.path.startsWith("/admin/login");

@@ -13,7 +13,8 @@ export const ENDPOINT_GROUPS = [
       { method: "GET", path: "/writing/:slug", what: "One article", feature: "writing" },
       { method: "GET", path: "/media", what: "The introduction video and the published pictures and videos", feature: "media" },
       { method: "GET", path: "/media/:slug", what: "One picture or video on its own page", feature: "media" },
-      { method: "GET", path: "/cv", what: "The one page CV, built from the timeline, skills, projects and cv.yml" },
+      { method: "GET", path: "/cv", what: "The CV in English, built from the timeline, skills, projects and cv.yml" },
+      { method: "GET", path: "/lebenslauf", what: "The same CV in German, from the German fields of the same lists" },
       { method: "GET", path: "/references", what: "Quotes from people I worked with, only those with permission ticked" },
       { method: "GET", path: "/contact", what: "Contact form and email address" },
       { method: "POST", path: "/contact", what: "Sends the contact form (CSRF, rate limit, honeypot, saved then emailed)" },
@@ -40,6 +41,7 @@ export const ENDPOINT_GROUPS = [
     title: "Files and feeds",
     items: [
       { method: "GET", path: "/cv/reece-barker-cv.pdf", what: "The CV as a PDF to download (made with npm run cv:pdf or the button in the admin)" },
+      { method: "GET", path: "/cv/reece-barker-lebenslauf.pdf", what: "The German Lebenslauf as a PDF, made the same way" },
       { method: "GET", path: "/media/files/:name", what: "The uploaded files themselves, with byte ranges for video seeking" },
       { method: "GET", path: "/writing/feed.xml", what: "Atom feed of the articles, for feed readers", feature: "writing" },
       { method: "GET", path: "/sitemap.xml", what: "Every public page for search engines" },
@@ -101,7 +103,19 @@ export const ENDPOINT_GROUPS = [
       { method: "POST", path: "/admin/:type/:id/trash", what: "Moves to the trash (off the site)" },
       { method: "POST", path: "/admin/:type/:id/restore", what: "Out of the trash as a draft" },
       { method: "POST", path: "/admin/:type/:id/delete", what: "Deletes for good, only from the trash" },
-      { method: "POST", path: "/admin/cv-pdf", what: "Makes a new CV PDF (on your computer only)" }
+      { method: "POST", path: "/admin/cv-pdf", what: "Makes new CV PDFs in English and German from what's on the site" },
+      { method: "GET", path: "/admin/paperwork", what: "Documents: letters and invoices, numbered, with drafts, sent and the trash" },
+      { method: "POST", path: "/admin/paperwork/new/:kind", what: "Starts a new letter or invoice with the next number" },
+      { method: "POST", path: "/admin/paperwork/preview", what: "Draws the live A4 preview from the form, nothing is saved" },
+      { method: "GET", path: "/admin/paperwork/preview/:key", what: "The live preview itself" },
+      { method: "GET", path: "/admin/paperwork/print/:key", what: "The page Chromium prints for a PDF, with a key that works once for a minute" },
+      { method: "GET", path: "/admin/paperwork/:id", what: "The form with the live preview" },
+      { method: "POST", path: "/admin/paperwork/:id", what: "Saves a document (it also saves on its own while you type)" },
+      { method: "GET", path: "/admin/paperwork/:id/pdf", what: "The document as a PDF, printed by Chromium from the same page as the preview" },
+      { method: "GET", path: "/admin/paperwork/:id/docx", what: "The document as a plain Word file" },
+      { method: "POST", path: "/admin/paperwork/:id/duplicate", what: "A copy with a new number" },
+      { method: "POST", path: "/admin/paperwork/:id/write-out", what: "A contract's clauses as text for the form, nothing saved" },
+      { method: "POST", path: "/admin/paperwork/:id/status", what: "Draft, sent or the trash" }
     ]
   }
 ];

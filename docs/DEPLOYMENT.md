@@ -304,10 +304,23 @@ git pull
 RELEASE=$(git rev-parse --short HEAD) node scripts/env-set.js
 npm ci && npm run check && npm run build && npm prune --omit=dev
 npm run db:migrate
+npx --no-install playwright-core install chromium   # for the CV PDFs, see below
 npm run content:apply -- --since "$BEFORE"     # content changes from the pull, see CONTENT.md
 sudo systemctl restart reece-page
 curl -fsS https://reece.page/health/ready
 ```
+
+### The CV PDFs on the server
+
+The admin CV editor has a button that prints /cv and /lebenslauf to PDF with Chromium, from what's in the
+database, into `var/cv/`. The site serves whichever is newer, that or the one committed in `content/cv/`. The deploy
+downloads Chromium for the deploy user. Chromium also needs some system libraries, install them once:
+
+```bash
+cd /srv/reece-page && sudo npx --no-install playwright-core install-deps chromium
+```
+
+If the button says Chromium wouldnt start, that's the step that's missing.
 
 Then purge the Cloudflare cache for `/` if the home page changed (Caching, Configuration, Purge Everything is fine,
 hashed assets are unaffected).

@@ -27,7 +27,9 @@ export function createRouter(c, m) {
   router.get("/media/:slug", c.media.show);
 
   router.get("/cv", c.profile.cv);
+  router.get("/lebenslauf", c.profile.lebenslauf);
   router.get("/cv/reece-barker-cv.pdf", c.profile.cvPdf);
+  router.get("/cv/reece-barker-lebenslauf.pdf", c.profile.lebenslaufPdf);
   router.get("/references", c.profile.references);
   router.get("/status", c.profile.status);
 
@@ -74,6 +76,22 @@ export function createRouter(c, m) {
   router.get("/admin/lists/:name/revisions", ...page, a.listRevisions);
   router.post("/admin/lists/:name/revisions/:rev/restore", ...form, a.restoreListRevision);
   router.post("/admin/cv-pdf", ...form, a.cvPdf);
+  if (c.paperwork) {
+    const p = c.paperwork;
+    router.get("/admin/paperwork", ...page, p.list);
+    router.post("/admin/paperwork/new/:kind", ...form, p.create);
+    router.post("/admin/paperwork/preview", ...json, p.createPreview);
+    router.get("/admin/paperwork/preview/:key", m.adminHeaders, m.requireAdmin, p.showPreview);
+    // No session here on purpose: Chromium on this server prints the page, the key is single use and lasts a minute
+    router.get("/admin/paperwork/print/:key", m.adminHeaders, p.showPrint);
+    router.get("/admin/paperwork/:id", ...page, p.editor);
+    router.post("/admin/paperwork/:id", ...json, p.save);
+    router.get("/admin/paperwork/:id/pdf", ...admin, p.pdf);
+    router.get("/admin/paperwork/:id/docx", ...admin, p.docx);
+    router.post("/admin/paperwork/:id/duplicate", ...form, p.duplicate);
+    router.post("/admin/paperwork/:id/write-out", ...json, p.writeOut);
+    router.post("/admin/paperwork/:id/status", ...form, p.setStatus);
+  }
   router.get("/admin/sync", ...page, a.syncPage);
   router.post("/admin/sync", ...form, a.syncNow);
   router.get("/admin/system", ...page, a.system);

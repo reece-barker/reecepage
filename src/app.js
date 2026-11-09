@@ -29,6 +29,8 @@ import { createAuthController } from "./controllers/auth-controller.js";
 import { createStatusService } from "./services/status-service.js";
 import { createAdminController } from "./controllers/admin-controller.js";
 import { createProfileController } from "./controllers/profile-controller.js";
+import { createPaperworkController } from "./controllers/paperwork-controller.js";
+import { PaperworkRepository } from "./repositories/paperwork-repository.js";
 import { createHelpers } from "./helpers/handlebars.js";
 import { requestContext } from "./middleware/request-context.js";
 import { securityHeaders, permissionsPolicy } from "./middleware/security.js";
@@ -156,6 +158,8 @@ export function createApp({ config, logger = createLogger(config), database, mai
     : null;
   controllers.auth = createAuthController({ auth, seo, config });
   controllers.admin = createAdminController({ config, seo, content, contentAdmin, repository: contentRepository, media, status, sync, pages: controllers.pages, legal: controllers.legal });
+  // Paperwork needs the database, without one the admin isnt there either
+  controllers.paperwork = db ? createPaperworkController({ config, paperwork: new PaperworkRepository(db), repository: contentRepository, assets, page: controllers.admin.renderPage }) : null;
   app.use(createRouter(controllers, {
     csrf,
     contactLimit: contactRateLimit(config),

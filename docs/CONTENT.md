@@ -73,7 +73,7 @@ After adding a project with a page, run `npm run images:og` for its share pictur
 ## House rules
 
 British English, no em dashes, nothing invented. If something isn't known yet it goes in `todo`, never into the
-text as a guess. The startup stays unnamed until it has a public name. No gaming wording on anything an employer
+text as a guess. The startup is Cognitive Atmospherics (named since November 2026), its prototype is only described in general terms. No gaming wording on anything an employer
 reads.
 
 ## The admin, editing without touching files
@@ -131,9 +131,20 @@ Text
 
 ## The CV
 
-/cv is built from cv.yml, the timeline (entries with `cv: false` are left off), skills and the projects listed in
-cv.yml. Its one A4 page, keep it that way. After changes run `npm run cv:pdf` (or the button in the admin CV editor)
-to make content/cv/reece-barker-cv.pdf, the download on the site.
+Two versions from the same lists: /cv in English and /lebenslauf in German. cv.yml has the headline, profile,
+projects with their own CV lines, languages and a `de` part with the German text. Every timeline entry has a `de`
+part too (when, title, place, text), and skills have `group_de` and `name_de`. Anything without German falls back
+to the English, so check /lebenslauf after adding something. Dates are MM/YYYY.
+
+It is one column with the dates on the left, the way application systems read it best, and the photo in
+assets/images/cv (switch it off with `photo` in cv.yml). It is one page, keep it that way: each timeline entry has
+`cv_points`, one to three short points (Stichpunkte, not sentences) used on the CV instead of the longer text on the
+about page, and each CV project has a line of its own, two lines at most. The admin says how many pages the PDFs
+came out at, if it says 2, shorten something.
+
+The PDFs: the button "Save, then make new PDFs" in the admin CV editor prints both pages from the live site into
+var/cv (see DEPLOYMENT.md for the one time Chromium setup on the server). `npm run cv:pdf` does the same on your
+computer from the files and saves them in content/cv to commit. The site serves whichever is newer.
 
 ## References
 
@@ -169,3 +180,46 @@ file name. SVG and HTML are refused on purpose, a browser would run scripts insi
 `/writing/feed.xml` lists the articles for feed readers (Feedly, NetNewsWire, Thunderbird and so on), so people can
 follow new writing without social media. Nothing to set up, it updates itself when an article is added. It is not an
 upload tool, uploads go through the media library above.
+
+## Paperwork: letters, invoices and contracts
+
+/admin/paperwork. The old Stationery and Contract Builders from the brand pack, moving into the admin one kind at
+a time. Letters, invoices and contracts are here now, cards follow.
+
+1. Once: fill in **My details** (business type, name, address, tax numbers) and **Payment accounts** (the IBAN is
+   checked when you save). Both are private: never on GitHub, never on the site.
+2. New letter, New invoice or New contract gives the next number for that kind and year (RP-L-2026-0001,
+   RP-I-2026-0001, RP-C-2026-0001).
+   Numbers are never reused, not even from the trash.
+3. Type in the form, the A4 page on the right follows. It saves on its own while you type, Ctrl or Cmd + S saves
+   straight away. [Square brackets] are marked as still to fill in.
+4. PDF prints the same page with Chromium on the server (same setup as the CV PDFs, see DEPLOYMENT.md), with the
+   fine print and Page x of y on every page. Word gives a plain Word file to edit.
+5. Mark as sent when it went out. Every save is kept, so a sent invoice can always be looked up as it was.
+
+The business type decides what is printed: nothing extra for a private person, tax number or VAT ID on invoices for
+a freelancer, register court, number and directors on every letter for a GmbH. If something required is missing the
+editor says so. Your personal Steuer-IdNr. has no field anywhere on purpose. Invoices are worked out in whole cents,
+VAT per rate over the net totals. A small business (§ 19 UStG) gets no VAT and the note that says why.
+
+### Contracts
+
+Pick the type next to New contract: payment plan, repayment plan with direct payments to a third party, freelance
+project, NDA, sale of a used item, or an outline for a brand licence, contributor rights or anything custom. The type
+stays with the contract, use Copy as new for another type of the same deal.
+
+- The form asks for your side, the law (German, UK, Dutch or a US state), the other party and the facts of that
+  type. The clauses are written from the facts in German, English or Dutch and change when the facts do. The wording
+  follows the law where it has to: liability limits, rights of use instead of copyright transfer under German law,
+  jurisdiction with consumers and so on.
+- Payment plans take your bank account from Payment accounts when you are owed the money, or the other party's bank
+  when they are. The payment schedule is worked out in whole cents, the last instalment takes the rest.
+- **Write out the clauses** copies the generated text into the form. From then on what you type is what is printed:
+  edit, reorder, remove or add clauses. The payment schedule still follows the facts and goes after the ticked
+  clause. Clear the clauses list to go back to the facts.
+- The yellow notes above the preview are for you and never printed. They point out things like consumer rules or
+  placeholders still in the text. These are templates, not legal advice: get anything big checked before it is signed.
+- Not ported from the old builder: two languages side by side in one contract, and drafting with Claude.
+
+The code is in src/documents/ (one file per kind, the contract wording in contract-templates.js), the layout in
+styles/paperwork.scss.

@@ -994,7 +994,7 @@ body.admin .admin-search .input {
   transform: rotate(45deg);
   background: var(--color-line-strong);
 
-  .admin-check--ok & { background: var(--color-leaf); }
+  .admin-check--ok & { background: var(--color-leaf-strong); }
   .admin-check--degraded & { background: #{tokens.brand(blush)}; }
   .admin-check--down & { background: var(--color-danger); }
 }

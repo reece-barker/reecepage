@@ -1,0 +1,39 @@
+<header class="admin-head">
+  <div class="admin-head__text">
+    <h1>{{doc.kindLabel}} {{doc.number}}</h1>
+    <p class="admin-head__lede">{{help}} The page on the right is the PDF, it follows what you type.</p>
+  </div>
+  <div class="admin-head__actions">
+    <a class="button button--small" href="/admin/paperwork/{{doc.id}}/pdf" data-download>{{icon "arrow"}}PDF</a>
+    <a class="button button--secondary button--small" href="/admin/paperwork/{{doc.id}}/docx" data-download>{{icon "arrow"}}Word</a>
+    <form method="post" action="/admin/paperwork/{{doc.id}}/duplicate"><input type="hidden" name="_csrf" value="{{csrfToken}}"><button class="button button--secondary button--small" type="submit">{{icon "plus"}}Copy as new</button></form>
+  </div>
+</header>
+
+{{#if missing.length}}<p class="alert alert--note">{{icon "info"}}<span>For your business type this still needs {{#each missing}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}. Add it under <a href="/admin/lists/business">My details</a>.</span></p>{{/if}}
+{{#if (eq doc.kind "contract")}}<p class="alert alert--note">{{icon "info"}}<span>A template, not legal advice. The preview lists notes for your contract above the page, they are not printed.</span></p>{{/if}}
+{{#if (eq doc.status "final")}}<p class="alert alert--note">{{icon "info"}}<span>Marked as sent. You can still correct it, every change is kept, but an invoice that went out should get a correction invoice instead.</span></p>{{/if}}
+
+<form class="paperwork" data-paperwork novalidate>
+  <script type="application/json" data-editor-config nonce="{{cspNonce}}">{{{editorJson}}}</script>
+  <div class="paperwork__form">
+    <div class="panel admin-editor__panel" data-editor-root></div>
+  </div>
+  <div class="paperwork__preview">
+    <iframe class="paperwork__frame" title="Preview of the {{lower doc.kindLabel}}" data-preview-frame></iframe>
+  </div>
+  <div class="admin-editor__bar paperwork__bar">
+    <div class="cluster">
+      <button class="button" type="submit" data-save>Save</button>
+      <span class="form-status" role="status" aria-live="polite" data-status>Saved</span>
+      {{#if (eq doc.kind "contract")}}<button class="button button--secondary" type="button" data-write-out>Write out the clauses</button>{{/if}}
+    </div>
+  </div>
+</form>
+
+<div class="paperwork__status">
+  {{#if (eq doc.status "trash")}}<form method="post" action="/admin/paperwork/{{doc.id}}/status"><input type="hidden" name="_csrf" value="{{csrfToken}}"><input type="hidden" name="status" value="draft"><button class="qbutton" type="submit">Restore from the trash</button></form>{{/if}}
+  {{#if (eq doc.status "draft")}}<form method="post" action="/admin/paperwork/{{doc.id}}/status"><input type="hidden" name="_csrf" value="{{csrfToken}}"><input type="hidden" name="status" value="final"><button class="qbutton" type="submit">{{icon "check"}}Mark as sent</button></form>{{/if}}
+  {{#if (eq doc.status "final")}}<form method="post" action="/admin/paperwork/{{doc.id}}/status"><input type="hidden" name="_csrf" value="{{csrfToken}}"><input type="hidden" name="status" value="draft"><button class="qbutton" type="submit">Back to draft</button></form>{{/if}}
+  {{#unless (eq doc.status "trash")}}<form method="post" action="/admin/paperwork/{{doc.id}}/status" data-confirm-form><input type="hidden" name="_csrf" value="{{csrfToken}}"><input type="hidden" name="status" value="trash"><button class="qbutton qbutton--danger" type="submit" data-confirm-label="Press again to move it to the trash">{{icon "trash"}}Trash</button></form>{{/unless}}
+</div>

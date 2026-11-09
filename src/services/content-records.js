@@ -19,7 +19,7 @@ export const DOCUMENT_COMMENTS = {
   timeline: "Education and work, newest first. when is free text on purpose: some things are known by year, some by age",
   now: "What Reece is working on right now. Change the date whenever this list changes, the page shows it",
   references: "References from people Reece worked with. Nothing here is public unless permission is ticked",
-  cv: "The one page CV at /cv. Experience, skills and projects come from their own files",
+  cv: "The CV at /cv in English and /lebenslauf in German. Experience and education come from the timeline, skills from the skills list",
   skills: "Skills with the work that shows them. No self ratings or percentage bars, the evidence links do the talking",
   branches: "The three branches of the tree on the home page. limb is the index the tree script uses to light the right branch",
   settings: "Site settings from the admin. Anything left out falls back to config/application.yml",

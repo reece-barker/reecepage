@@ -111,6 +111,33 @@ test("a post goes from draft to published to updated to the trash and back", asy
   assert.match((await ctx.services.contentRepository.getEntry(id)).body, /## First/);
 });
 
+test("trashing a page other pages link to stops once and names them, and the dashboard lists broken links", async () => {
+  const target = await post("/admin/writing/save", { action: "publish", title: "Linked to from elsewhere", meta: { summary: "A post others point at" }, body: "Words." }).expect(200);
+  await post("/admin/writing/save", { action: "publish", title: "The one with the link", meta: { summary: "Points at the other one" }, body: "See [the other post](/writing/linked-to-from-elsewhere)." }).expect(200);
+  const id = target.body.entry.id;
+
+  const list = await get("/admin/writing").expect(200);
+  assert.match(list.text, /Linked from The one with the link/);
+
+  // The first press doesnt trash it, it says which page still links here
+  await form(`/admin/writing/${id}/trash`).expect(303).expect("Location", `/admin/writing?notice=linked&id=${id}`);
+  assert.equal((await ctx.services.contentRepository.getEntry(id)).status, "published");
+  const warned = await get(`/admin/writing?notice=linked&id=${id}`).expect(200);
+  assert.match(warned.text, /wasn't moved to the trash/);
+  assert.match(warned.text, /Trash it anyway/);
+
+  await form(`/admin/writing/${id}/trash`, { anyway: "yes" }).expect(303).expect("Location", "/admin/writing?notice=trashed");
+  assert.equal((await ctx.services.contentRepository.getEntry(id)).status, "trash");
+  const dash = await get("/admin").expect(200);
+  assert.match(dash.text, /1 link goes nowhere/);
+  assert.match(dash.text, /links to \/writing\/linked-to-from-elsewhere/);
+
+  // Restoring it (and publishing again) clears the warning
+  await form(`/admin/writing/${id}/restore`).expect(303);
+  await post("/admin/writing/save", { id, action: "publish", title: "Linked to from elsewhere", meta: { summary: "A post others point at" }, body: "Words." }).expect(200);
+  assert.doesNotMatch((await get("/admin").expect(200)).text, /goes nowhere|go nowhere/);
+});
+
 test("autosave never changes what the site shows for something published", async () => {
   const saved = await post("/admin/writing/save", { action: "publish", title: "Steady post", meta: { summary: "Stays put" }, body: "The published text." }).expect(200);
   const { id } = saved.body.entry;
@@ -194,6 +221,21 @@ test("legal pages are edited as templates, a broken one is refused", async () =>
 test("cv, references and status pages render", async () => {
   const cv = await request(ctx.app).get("/cv").expect(200);
   assert.match(cv.text, /cv-sheet/);
+  assert.match(cv.text, /hreflang="de" href="[^"]*\/lebenslauf"/);
+  assert.match(cv.text, /<h2 id="cv-education">Education<\/h2>/);
+  // One column in the order a reader and an application system expect: profile, education, projects, experience
+  const order = ["cv-profile", "cv-education", "cv-projects", "cv-experience", "cv-skills"].map((id) => cv.text.indexOf(`id="${id}"`));
+  assert.deepEqual([...order].sort((x, y) => x - y), order);
+
+  // The German one uses the German fields, and falls back to English where theres nothing in German
+  const de = await request(ctx.app).get("/lebenslauf").expect(200);
+  assert.match(de.text, /<article class="cv-sheet"[^>]*lang="de"/);
+  assert.match(de.text, /Kurzprofil/);
+  assert.match(de.text, /Berufserfahrung/);
+  assert.match(de.text, /Seit 09\/2024/);
+  assert.doesNotMatch(de.text, /Since 09\/2024/);
+  assert.match(de.text, /Microsoft Power Platform/);
+  assert.match(de.text, /Auf Deutsch|In English/);
   await request(ctx.app).get("/references").expect(200);
   const status = await request(ctx.app).get("/status");
   assert.ok([200, 503].includes(status.status));

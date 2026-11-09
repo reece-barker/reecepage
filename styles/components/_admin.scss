@@ -281,3 +281,62 @@
 
 .editor-delete { color: var(--color-danger); }
 .editor-errors { color: var(--color-danger); font-weight: 700; }
+
+// Paperwork: the form on the left, the A4 page on the right. The page is drawn at its real size inside the frame
+// and the frame is as wide as the column, so on a laptop you see most of a page and scroll for the rest
+.paperwork {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+
+  @media (min-width: 72rem) {
+    grid-template-columns: minmax(22rem, 0.85fr) minmax(0, 1.15fr);
+  }
+}
+
+.paperwork__preview {
+  position: sticky;
+  top: var(--space-4);
+}
+
+.paperwork__frame {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 9rem);
+  min-height: 32rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-2);
+  background: #e9e6dc;
+}
+
+// the shared bar pulls itself out with negative margins, inside this grid that pokes past the screen on a phone
+.paperwork__bar {
+  grid-column: 1 / -1;
+  margin-inline: 0;
+}
+
+.paperwork-new {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+// the type picker sits next to New contract and shouldnt be wider than the button needs, on a phone it takes the
+// whole line and the button goes under it
+.paperwork-new__type {
+  width: auto;
+  min-width: 0;
+  max-width: 16rem;
+  flex: 1 1 10rem;
+}
+
+.paperwork__status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}

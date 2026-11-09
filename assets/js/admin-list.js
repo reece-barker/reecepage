@@ -46,7 +46,7 @@
       }
       showErrors(null);
       dirty = false;
-      statusLine.textContent = "Saved, it's on the site";
+      statusLine.textContent = config.privateList ? "Saved" : "Saved, it's on the site";
       if (then) then();
     });
   }
@@ -55,12 +55,16 @@
   if (new URLSearchParams(window.location.search).get("restored")) statusLine.textContent = "Restored, it's on the site";
 
   if (config.cvPdf) {
-    var pdfButton = F.smallButton("Save, then make a new PDF", function () {
+    // Saves first so the PDFs show what you just typed, then prints /cv and /lebenslauf on the server
+    var pdfButton = F.smallButton("Save, then make new PDFs", function () {
       save(function () {
-        statusLine.textContent = "Making the PDF...";
+        pdfButton.disabled = true;
+        statusLine.textContent = "Making the English and German PDFs, this takes a few seconds...";
         fetch("/admin/cv-pdf", { method: "POST", headers: { "X-CSRF-Token": window.RP.csrf }, credentials: "same-origin" })
           .then(function (r) { return r.json(); })
-          .then(function (data) { statusLine.textContent = data.ok ? "PDF made, open /cv to download it." : data.error; });
+          .then(function (data) { statusLine.textContent = data.ok ? data.message : data.error; })
+          .catch(function () { statusLine.textContent = "The PDFs could not be made, the server didnt answer. Try again in a moment."; })
+          .then(function () { pdfButton.disabled = false; });
       });
     });
     form.querySelector(".admin-editor__bar .cluster").appendChild(pdfButton);

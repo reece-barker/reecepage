@@ -53,7 +53,7 @@ test("write, switch to Markdown and back, publish, and see it on the site", asyn
   expect(errors).toEqual([]);
 });
 
-for (const path of ["/admin", "/admin/writing", "/admin/writing/new", "/admin/lists/timeline", "/admin/lists/settings", "/admin/account", "/admin/library", "/admin/system"]) {
+for (const path of ["/admin", "/admin/writing", "/admin/writing/new", "/admin/lists/timeline", "/admin/lists/settings", "/admin/account", "/admin/library", "/admin/system", "/admin/paperwork", "/admin/lists/business"]) {
   test(`${path} is accessible and clean`, async ({ page }) => {
     const errors = watchConsole(page);
     await signIn(page);
@@ -66,3 +66,37 @@ for (const path of ["/admin", "/admin/writing", "/admin/writing/new", "/admin/li
     expect(errors, errors.join("\n")).toEqual([]);
   });
 }
+
+test("a contract: the facts change the page, the clauses write out and stay editable", async ({ page }) => {
+  test.skip(test.info().project.name !== "desktop", "once is enough");
+  const errors = watchConsole(page);
+  await signIn(page);
+  await page.goto("/admin/paperwork");
+  await page.getByLabel("Type of contract").selectOption("sale");
+  await page.getByRole("button", { name: "New contract" }).click();
+  await expect(page).toHaveURL(/\/admin\/paperwork\/\d+$/);
+  await page.getByLabel("Item").fill("A bike from the end to end test");
+  const frame = page.frameLocator("[data-preview-frame]");
+  await expect(frame.locator(".doc--contract")).toContainText("A bike from the end to end test");
+  await expect(page.locator("[data-status]")).toHaveText("Saved", { timeout: 8000 });
+  await page.getByRole("button", { name: "Write out the clauses" }).click();
+  await expect(page.locator("[data-status]")).toHaveText("Saved", { timeout: 8000 });
+  await expect(page.locator(".editor-item").first()).toBeVisible();
+  expect(await axe(page)).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test("a letter: type, the preview follows, and the editor page is accessible", async ({ page }) => {
+  test.skip(test.info().project.name !== "desktop", "once is enough");
+  const errors = watchConsole(page);
+  await signIn(page);
+  await page.goto("/admin/paperwork");
+  await page.getByRole("button", { name: "New letter" }).click();
+  await expect(page).toHaveURL(/\/admin\/paperwork\/\d+$/);
+  await page.getByLabel("Subject").fill("A letter from the end to end test");
+  const frame = page.frameLocator("[data-preview-frame]");
+  await expect(frame.locator(".din-subject")).toHaveText("A letter from the end to end test");
+  await expect(page.locator("[data-status]")).toHaveText("Saved", { timeout: 8000 });
+  expect(await axe(page)).toEqual([]);
+  expect(errors).toEqual([]);
+});
