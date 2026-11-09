@@ -4,8 +4,9 @@
 
 // The home page as it was before any of it was editable. An empty field in the admin means this text
 export const HOME_DEFAULTS = Object.freeze({
-  hero_lede: "I grew up in Munich and study Applied Computer Science at Saxion in Enschede. I write software, build hardware and co-founded a startup whose AI runs the climate of a room, so it stays comfortable and wastes less energy.",
+  hero_lede: "Applied Computer Science student at Saxion. I build software and hardware, and co-founded Cognitive Atmospherics, an AI that runs the climate of a room with less wasted energy. Looking for an internship from September 2027.",
   hero_button: "See my projects",
+  hero_cv: "My CV",
   hero_link: "Get in touch",
   branches_heading: "One tree, three branches",
   branches_intro: "Everything I do grows from one of these.",

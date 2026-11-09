@@ -63,7 +63,6 @@ export function createPagesController({ content, seo, config, media, settings })
         meta: seo.build({ isHome: true, title: siteSettings().name, description: siteSettings().description, path: "/" }),
         home: settings?.home() || {},
         bodyClass: "page-home",
-        branches: content.data("branches"),
         featured: content.featuredProjects(4),
         now: content.data("now"),
         latest,
@@ -77,6 +76,9 @@ export function createPagesController({ content, seo, config, media, settings })
       const page = content.page("about");
       if (!page) return next(notFound());
       res.render("pages/about", {
+        // The three branches used to sit on the home page between the intro and the work, here they explain him
+        branches: content.data("branches"),
+        home: settings?.home() || {},
         meta: seo.build({
           title: "About",
           description: page.description || pageDescription("about", "About Reece Barker: raised in Munich, studying Applied Computer Science at Saxion, co-founder of an AI climate control startup and sustainability ambassador."),

@@ -204,7 +204,7 @@ test("settings, menus and the home page texts change the site", async () => {
   await post("/admin/lists/home", { value: {} }).expect(200);
   const back = await request(ctx.app).get("/").expect(200);
   assert.match(back.text, /<title>Reece Barker<\/title>/);
-  assert.match(back.text, /I grew up in Munich/);
+  assert.match(back.text, /Looking for an internship from September 2027/);
 });
 
 test("legal pages are edited as templates, a broken one is refused", async () => {

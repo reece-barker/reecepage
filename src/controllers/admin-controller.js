@@ -51,7 +51,7 @@ export const ADMIN_NAV = [
 ];
 
 // Where each list shows on the site, for the "See it on the site" link
-const LIST_PUBLIC = { timeline: "/about#experience", now: "/#now-title", references: "/references", cv: "/cv", skills: "/about#skills", branches: "/", home: "/", menus: "/", settings: "/" };
+const LIST_PUBLIC = { timeline: "/about#experience", now: "/#now-title", references: "/references", cv: "/cv", skills: "/about#skills", branches: "/about#branches", home: "/", menus: "/", settings: "/" };
 
 const TYPE_ICONS = { writing: "pen", pages: "page", projects: "grid", tools: "tool", legal: "scale" };
 

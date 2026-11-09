@@ -4,6 +4,7 @@
     <p class="hero-lede load-fade load-fade--2">{{home.hero_lede}}</p>
     <div class="hero-actions load-fade load-fade--3">
       <a class="button" href="/projects" data-track="Home: see projects">{{home.hero_button}} {{icon "arrow"}}</a>
+      <a class="link-action" href="/cv" data-track="Home: CV">{{home.hero_cv}}</a>
       <a class="link-action" href="/contact" data-track="Home: get in touch">{{home.hero_link}}</a>
     </div>
   </div>
@@ -13,22 +14,20 @@
     <img class="grove__poster theme-dark-only" src="{{asset "images/tree/tree-poster-dark.webp"}}" alt="" width="900" height="900" fetchpriority="low">
     <canvas data-tree-canvas></canvas>
   </div>
+</section>
 
-  <div class="grove__branches">
-    <h2>{{home.branches_heading}}</h2>
-    <p class="section-intro">{{home.branches_intro}} <span class="grove__hint" aria-hidden="true">Point at a branch and it lights up on the tree.</span></p>
-    <ul class="branch-list" role="list">
-      {{#each branches}}
-      <li class="branch-row branch-{{id}}" data-limb="{{limb}}">
-        <h3><span class="pip" aria-hidden="true"></span>{{title}}</h3>
-        <p>{{text}}</p>
-        {{#if (eq id "faith")}}
-        <a class="link-action" href="/about#people">More about me {{icon "arrow"}}</a>
-        {{else}}
-        <a class="link-action" href="/projects?branch={{id}}">{{title}} projects {{icon "arrow"}}</a>
-        {{/if}}
-      </li>
-      {{/each}}
+
+<section class="section section--sunken" aria-labelledby="work-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <h2 id="work-title">{{home.work_heading}}</h2>
+        <p class="section-intro">{{home.work_intro}}</p>
+      </div>
+      <a class="link-action" href="/projects">All projects {{icon "arrow"}}</a>
+    </div>
+    <ul class="project-list" role="list">
+      {{#each featured}}{{> project-row}}{{/each}}
     </ul>
   </div>
 </section>
@@ -47,20 +46,6 @@
 </section>
 
 {{/if}}
-<section class="section section--sunken" aria-labelledby="work-title">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <h2 id="work-title">{{home.work_heading}}</h2>
-        <p class="section-intro">{{home.work_intro}}</p>
-      </div>
-      <a class="link-action" href="/projects">All projects {{icon "arrow"}}</a>
-    </div>
-    <ul class="project-list" role="list">
-      {{#each featured}}{{> project-row}}{{/each}}
-    </ul>
-  </div>
-</section>
 
 {{#if now}}
 <section class="section" aria-labelledby="now-title">

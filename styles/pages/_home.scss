@@ -1,18 +1,18 @@
 @use "../abstracts/mixins" as *;
 
-// The grove: the opening of the home page. Words on the left, the tree on the right, and the tree stays in view
-// while the three branches scroll past so pointing at one can light it up. On small screens the tree sits between
-// the introduction and the branches instead.
+// The grove: the opening of the home page. Words on the left, the tree on the right, then straight into the work.
+// It stops short of the full screen on purpose so the top of Selected work shows, a recruiter should see theres
+// proof below without having to guess. On small screens the tree sits under the intro, kept small.
 .grove {
   position: relative;
   display: grid;
-  grid-template-areas: "intro" "stage" "branches";
+  grid-template-areas: "intro" "stage";
   width: min(100% - 2 * var(--gutter), var(--width-page));
   margin-inline: auto;
 
   @include up(lg) {
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-    grid-template-areas: "intro stage" "branches stage";
+    grid-template-areas: "intro stage";
     column-gap: var(--space-6);
   }
 }
@@ -25,8 +25,8 @@
   padding-block: var(--space-7) var(--space-6);
 
   @include up(lg) {
-    min-height: calc(100svh - var(--header-height));
-    padding-block: var(--space-8);
+    min-height: min(calc(100svh - var(--header-height) - 7rem), 44rem);
+    padding-block: var(--space-7);
   }
 }
 
@@ -56,16 +56,16 @@
   grid-area: stage;
   position: relative;
   aspect-ratio: 1 / 1;
-  max-height: 72vh;
+  max-height: 30vh;
   width: 100%;
   margin-inline: auto;
+  margin-bottom: var(--space-6);
 
   @include up(lg) {
-    position: sticky;
-    top: var(--header-height);
-    height: calc(100svh - var(--header-height));
+    height: 100%;
     max-height: none;
     aspect-ratio: auto;
+    margin-bottom: 0;
   }
 
   canvas,
@@ -96,16 +96,24 @@
   }
 }
 
-.grove__branches {
-  grid-area: branches;
-  padding-bottom: var(--section-space);
-
-  @include up(lg) {
-    padding-top: var(--space-6);
-  }
+// The three branches, on the About page now, under the intro and before the story
+.about-branches {
+  margin-bottom: var(--space-7);
 
   > h2 {
     margin-bottom: var(--space-3);
+  }
+}
+
+.branch-list--compact {
+  @include up(md) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: var(--space-6);
+  }
+
+  .branch-row h3 {
+    font-size: var(--step-3);
   }
 }
 
@@ -146,23 +154,6 @@
   &.is-lit .pip,
   &:focus-within .pip {
     transform: rotate(45deg) scale(1.2);
-  }
-}
-
-.grove__hint {
-  font-size: var(--step--1);
-  color: var(--color-text-muted);
-  // The hint only makes sense once the live tree is there, so it fades in then. Fading instead of hiding means the
-  // paragraph doesnt jump when it shows up
-  opacity: 0;
-  transition: opacity var(--duration-3) ease;
-
-  html[data-tree-ready] & {
-    opacity: 1;
-  }
-
-  @media (hover: none) {
-    display: none;
   }
 }
 
