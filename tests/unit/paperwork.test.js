@@ -352,6 +352,19 @@ test("the signature has LinkedIn and GitHub as links when they are ticked and se
   assert.doesNotMatch(signatureParts({ ...data, linkedin: true }, me, { baseUrl: "https://reece.page" }).html, /LinkedIn/);
 });
 
+test("the signature reads on a dark background: no dark olive text, and a dark mode style for the mail apps that follow it", () => {
+  const me = businessDetails({ entity: "de-private", full_name: "Reece Barker", city: "München", email: "me@reece.page" });
+  const data = { ...KINDS.signature.defaults(me, "en"), address: true, photo: true };
+  const sent = signatureParts(data, me, { baseUrl: "https://reece.page" }).html;
+  // the dark olive of the paper is 1.5:1 on a dark grey, none of it may be left in the text colours
+  assert.doesNotMatch(sent, /color:#33412A|color:#5A6652|color:#4C5E3E/i);
+  assert.match(sent, /prefers-color-scheme:dark/);
+  assert.match(sent, /class="sg-ink"/);
+  assert.match(sent, /class="sg-link"/);
+  // the editor preview follows the checkbox, not the browsers own dark mode, so it has no style block
+  assert.doesNotMatch(signatureParts(data, me, { baseUrl: "https://reece.page", preview: true }).html, /prefers-color-scheme/);
+});
+
 test("the compliments slip is made for the print shop: the bleed round it, an empty back page, CMYK", () => {
   const details = businessDetails({ entity: "de-private", full_name: "Reece Barker", street: "Teststr. 1", postcode: "81247", city: "München", email: "me@reece.page" });
   const asset = (p) => `/${p}`;
