@@ -136,7 +136,6 @@ export function createPaperworkController({ config, paperwork, repository, asset
         const def = documentKind(record.kind);
         const missing = missingRequired(ctx.details, record.kind).map((key) => MISSING_LABELS[key] || key);
         page(res, "paperwork-editor", "paperwork", `${def.label} ${record.number}`, {
-          bodyClass: "admin-editor-page",
           doc: present(record),
           help: def.help,
           missing,

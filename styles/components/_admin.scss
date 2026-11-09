@@ -283,15 +283,42 @@
 .editor-errors { color: var(--color-danger); font-weight: 700; }
 
 // Paperwork: the form on the left, the A4 page on the right. The page is drawn at its real size inside the frame
-// and the frame is as wide as the column, so on a laptop you see most of a page and scroll for the rest
+// and the frame is as wide as the column, so on a laptop you see most of a page and scroll for the rest.
+// Two columns only when theres room next to the sidebar (it takes 14.5rem from 60rem up), before that the preview
+// goes under the form
 .paperwork {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
 
-  @media (min-width: 72rem) {
-    grid-template-columns: minmax(22rem, 0.85fr) minmax(0, 1.15fr);
+  @media (min-width: 78rem) {
+    grid-template-columns: minmax(24rem, 0.9fr) minmax(0, 1.1fr);
+  }
+}
+
+// the page head and the two columns get the same room as every other admin page, a bit wider than the 72rem
+// default so the preview isnt squashed on a big screen
+.admin-main:has(> .paperwork) > * {
+  max-width: 96rem;
+}
+
+// A tick box and its hint are one thing, so the hint sits right under the label lined up with the text instead of
+// floating a whole row away, and the rows of tick boxes are closer together
+.admin-editor__panel .field:has(> .check) {
+  gap: 0.1rem;
+
+  .check {
+    min-height: 0;
+    align-items: center;
+  }
+
+  .check input {
+    margin-top: 0;
+  }
+
+  .hint {
+    margin: 0 0 0 calc(1.35rem + var(--space-3));
   }
 }
 

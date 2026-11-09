@@ -15,10 +15,13 @@ const SLOGAN = "Code for a living world.";
 
 const W = {
   de: { role: "Software und Green Tech", slip: "Mit besten Grüßen", details: "Angaben zum Unternehmen", detailsLaw: "Pflichtangaben", legal: "Impressum", privacy: "Datenschutz",
+    paper: "Bitte nur drucken, wenn es wirklich nötig ist. Das spart Papier.",
     disclaimer: "Diese E-Mail und ihre Anhänge können vertrauliche Informationen enthalten und sind nur für den genannten Empfänger bestimmt. Wenn Sie nicht der richtige Empfänger sind, informieren Sie mich bitte und löschen Sie die Nachricht." },
   en: { role: "Software and green tech", slip: "With compliments", details: "Business details", detailsLaw: "Company details", legal: "Legal notice", privacy: "Privacy",
+    paper: "Please only print this email if you really need to. It saves paper.",
     disclaimer: "This email and its attachments may contain confidential information and are intended only for the named recipient. If you are not the intended recipient, please tell me and delete the message." },
   nl: { role: "Software en groene technologie", slip: "Met vriendelijke groet", details: "Bedrijfsgegevens", detailsLaw: "Bedrijfsgegevens", legal: "Juridische informatie", privacy: "Privacy",
+    paper: "Print deze e-mail alleen als het echt nodig is. Dat bespaart papier.",
     disclaimer: "Dit bericht en de bijlagen kunnen vertrouwelijke informatie bevatten en zijn alleen bestemd voor de genoemde ontvanger. Bent u niet de bedoelde ontvanger, laat het mij dan weten en verwijder het bericht." }
 };
 const words = (lang) => W[lang] || W.de;
@@ -59,7 +62,7 @@ const SIZES = { eu: { w: 85, h: 55 }, us: { w: 88.9, h: 50.8 } };
 // How the card gets printed: the bleed is the colour running past the cut so a slightly off cut never shows a white
 // edge. Onlineprinters wants 2 mm (data 8.9 x 5.9 cm for an 8.5 x 5.5 cm card), most other shops 3 mm, at home none
 const PRINT = {
-  shop2: { bleed: 2, label: "Print shop with 2 mm bleed (Onlineprinters: 89 x 59 mm file, cut to 85 x 55)" },
+  shop2: { bleed: 2, label: "Print shop, 2 mm bleed (Onlineprinters)" },
   shop3: { bleed: 3, label: "Print shop with 3 mm bleed" },
   home: { bleed: 0, label: "Printing at home, cut size, no bleed" }
 };
@@ -349,6 +352,9 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
   const small = (inner, extra = "") => `<tr><td colspan="2" style="font-family:${SANS};font-size:11px;line-height:16px;color:${C.olive80};${extra}">${inner}</td></tr>`;
   const table = (inner) => `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${SANS};font-size:13px;line-height:19px;color:${C.olive}">${inner}</table>`;
   const nameStyle = `font-family:${SERIF};font-weight:normal`;
+  // The save paper line at the very bottom. Not in the minimal variant (its for replies in a thread, as short as it
+  // gets) and an emptied field means none. Signatures from before the field existed get the default line
+  const note = style === "minimal" ? "" : data.note === undefined ? w.paper : clean(data.note);
 
   let html;
   if (style === "minimal") {
@@ -368,6 +374,11 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
     else if (style === "short" && required) inner += small(mark(detail.join(" · ")), "padding-top:10px");
     if (linkHtml) inner += small(linkHtml, "padding-top:8px");
     if (style === "full" && data.disclaimer) inner += small(esc(w.disclaimer), "padding-top:10px;font-size:10px;line-height:14px");
+    // A small leaf and the line next to it, in its own little table so the leaf lines up with the text in Outlook too
+    if (note) {
+      const leaf = preview ? asset("images/brand/leaf-mark.svg") : `${baseUrl}/email/leaf-32.png`;
+      inner += small(`<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td valign="middle" style="width:22px;padding:0 6px 0 0;vertical-align:middle"><img src="${esc(leaf)}" width="16" height="16" alt="" style="display:block;border:0;width:16px;height:16px"></td><td valign="middle" style="font-family:${SANS};font-size:11px;line-height:16px;color:${C.deep};vertical-align:middle">${mark(note)}</td></tr></table>`, "padding-top:14px");
+    }
     html = table(inner);
   }
 
@@ -385,6 +396,7 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
     else if (style === "short" && required) lines.push("", detail.join(" · "));
     if (links.length) lines.push("", ...links.map(([t, u]) => `${t}: ${u}`));
     if (style === "full" && data.disclaimer) lines.push("", w.disclaimer);
+    if (note) lines.push("", note);
     text = lines.join("\n");
   }
   return { html, text, required, placeholders: /\[[^\]]+\]/.test(text) };
@@ -404,18 +416,15 @@ export const signature = {
     { name: "address", label: "Postal address", type: "checkbox" },
     { name: "linkedin", label: "LinkedIn", type: "checkbox", help: "From the site settings" },
     { name: "github", label: "GitHub", type: "checkbox", help: "From the site settings" },
-    { name: "icons", label: "Icons in front of the phone number, email, website and the rest", type: "checkbox", default: true },
-    { name: "corner_note", label: "Small note in a corner", type: "text", max: 40, help: "Something like Printed on recycled paper. 6 pt, kept 4 mm inside the cut" },
-    { name: "corner_side", label: "Which side the corner note goes on", type: "select", required: true, options: ["front", "back"], labels: { front: "Front, bottom left", back: "Back, under the fine print" } },
-    { name: "message", label: "A line on the back", type: "textarea", max: 160, help: "Something like Looking for an internship from September 2027. Short reads best, the back gets tighter as it fills up" },
     { name: "links", label: "Links to the legal notice and privacy pages", type: "checkbox", default: true },
     { name: "slogan", label: "Slogan", type: "text", max: 60, help: "Empty for none" },
+    { name: "note", label: "Save paper note", type: "text", max: 100, help: "The last line, with a small leaf in front of it. Empty for none, the minimal variant never has it" },
     { name: "disclaimer", label: "Confidentiality note (full variant only)", type: "checkbox" },
     { name: "dark", label: "Show the preview on a dark background", type: "checkbox", help: "To check it still reads in dark mode, nothing changes in the signature" }
   ],
 
   defaults(details, lang = "de") {
-    return { lang, style: "full", name: details.full_name || "", role: words(lang).role, address: false, links: true, slogan: SLOGAN, disclaimer: false, dark: false };
+    return { lang, style: "full", name: details.full_name || "", role: words(lang).role, address: false, links: true, slogan: SLOGAN, note: words(lang).paper, disclaimer: false, dark: false };
   },
 
   title(data) {

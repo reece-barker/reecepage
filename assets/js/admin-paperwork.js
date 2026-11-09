@@ -46,6 +46,21 @@
     });
   }
 
+  // The sheet is a fixed 210 mm wide, in a narrow column that would cut it off on the right, so shrink the preview
+  // page until it fits. Measured at normal size first, cards and slips are narrower than a sheet so they stay as they
+  // are. Setting zoom from here is fine with the CSP, its not an inline style attribute
+  function fit() {
+    try {
+      var doc = frame.contentDocument.documentElement;
+      doc.style.zoom = "1";
+      var wide = doc.scrollWidth, room = frame.clientWidth;
+      if (wide > room && room > 0) doc.style.zoom = String(Math.floor((room / wide) * 100) / 100);
+    } catch (e) { /* the preview isnt there yet, it fits when it loads */ }
+  }
+  frame.addEventListener("load", fit);
+  var fitTimer = null;
+  window.addEventListener("resize", function () { clearTimeout(fitTimer); fitTimer = setTimeout(fit, 150); });
+
   function save(then) {
     if (saving) return;
     saving = true;
