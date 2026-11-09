@@ -351,6 +351,13 @@ export const slip = {
 
 const SANS = "Arial,Helvetica,sans-serif", SERIF = "Georgia,'Times New Roman',serif";
 
+// The signature colours. A mail app can show the signature on white or on near black and a copied signature only keeps its inline
+// styles, so the text is a mid green that reads on both (about 4:1 on white and on a dark grey) and not the dark olive of the
+// paper, which was 1.5:1 on a dark background. The few mail apps that follow dark mode (Apple Mail, Outlook, Thunderbird) get the
+// light colours on top of that, from the style block, which is lost when a mail app strips it and then the mid green still reads
+const INK = "#678550", SUB = "#6F8A5C";
+const DARK_CSS = `<style>@media (prefers-color-scheme:dark){.sg-ink{color:${C.cream} !important}.sg-sub{color:${C.sage50} !important}}[data-ogsc] .sg-ink{color:${C.cream} !important}[data-ogsc] .sg-sub{color:${C.sage50} !important}</style>`;
+
 // Companies (and Dutch sole traders, and UK sole traders with a trading name) have to put their details in every
 // business email, so even the minimal signature keeps them for those
 function detailsRequired(details) {
@@ -375,18 +382,18 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
   const name = clean(data.name) || clean(details.full_name) || "[Name]";
   const web = clean(details.web), url = webUrl(details);
   const sep = `<span style="color:${C.sage}">&nbsp;&nbsp;|&nbsp;&nbsp;</span>`;
-  const a = (href, text, col = C.olive) => `<a href="${esc(href)}" style="color:${col};text-decoration:none">${mark(text)}</a>`;
+  const a = (href, text) => `<a class="sg-ink" href="${esc(href)}" style="color:${INK};text-decoration:none">${mark(text)}</a>`;
   const contact = [clean(details.phone) ? a(`tel:${clean(details.phone).replace(/[^\d+]/g, "")}`, details.phone) : "", clean(details.email) ? a(`mailto:${clean(details.email)}`, details.email) : "", web ? a(url, web) : ""].filter(Boolean).join(sep);
   // LinkedIn and GitHub from the site settings, as links with their names (the ticks on the form did nothing before)
   const social = [data.linkedin && profiles.linkedin ? ["LinkedIn", profiles.linkedin] : null, data.github && profiles.github ? ["GitHub", profiles.github] : null].filter(Boolean);
   const links = data.links !== false && baseUrl ? [[w.legal, `${baseUrl}/impressum`], [w.privacy, `${baseUrl}/privacy`]] : [];
-  const linkHtml = links.map(([t, u]) => `<a href="${esc(u)}" style="color:${C.olive80};text-decoration:underline">${esc(t)}</a>`).join(sep);
+  const linkHtml = links.map(([t, u]) => `<a class="sg-sub" href="${esc(u)}" style="color:${SUB};text-decoration:underline">${esc(t)}</a>`).join(sep);
   const required = detailsRequired(details);
   const detail = detailLines(details, lang);
   const showBlock = (businessType(details.entity).letter || []).length > 0;
-  const td = (inner, extra = "") => `<td style="font-family:${SANS};font-size:13px;line-height:19px;color:${C.olive};${extra}">${inner}</td>`;
-  const small = (inner, extra = "") => `<tr><td colspan="2" style="font-family:${SANS};font-size:11px;line-height:16px;color:${C.olive80};${extra}">${inner}</td></tr>`;
-  const table = (inner) => `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${SANS};font-size:13px;line-height:19px;color:${C.olive}">${inner}</table>`;
+  const td = (inner, extra = "") => `<td class="sg-ink" style="font-family:${SANS};font-size:13px;line-height:19px;color:${INK};${extra}">${inner}</td>`;
+  const small = (inner, extra = "") => `<tr><td class="sg-sub" colspan="2" style="font-family:${SANS};font-size:11px;line-height:16px;color:${SUB};${extra}">${inner}</td></tr>`;
+  const table = (inner) => `${preview ? "" : DARK_CSS}<table class="sg-ink" role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:${SANS};font-size:13px;line-height:19px;color:${INK}">${inner}</table>`;
   const nameStyle = `font-family:${SERIF};font-weight:normal`;
   // The save paper line at the very bottom. Not in the minimal variant (its for replies in a thread, as short as it
   // gets) and an emptied field means none. Signatures from before the field existed get the default line
@@ -394,29 +401,29 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
 
   let html;
   if (style === "minimal") {
-    let inner = `<tr>${td(`<span style="${nameStyle};font-size:15px;color:${C.olive}">${mark(name)}</span>${web ? sep + a(url, web) : ""}`)}</tr>`;
-    if (required) inner += `<tr>${td(mark(detail.join(" · ")), `font-size:11px;line-height:16px;color:${C.olive80};padding-top:4px`)}</tr>`;
+    let inner = `<tr>${td(`<span class="sg-ink" style="${nameStyle};font-size:15px;color:${INK}">${mark(name)}</span>${web ? sep + a(url, web) : ""}`)}</tr>`;
+    if (required) inner += `<tr>${td(mark(detail.join(" · ")), `font-size:11px;line-height:16px;color:${SUB};padding-top:4px`)}</tr>`;
     html = table(inner);
   } else {
     // The photo takes the dovess place when its ticked: round, clearly bigger than the dove is wide so the face reads
     const withPhoto = data.photo === true;
     const symbol = withPhoto ? (style === "full" ? 88 : 68) : style === "full" ? 64 : 48, symbolH = withPhoto ? symbol : Math.round(symbol * 202 / 249);
     const src = withPhoto ? (preview ? `/${PHOTO_EMAIL}` : `${baseUrl}/${PHOTO_EMAIL}`) : preview ? asset("images/brand/reece-dove-symbol-colour.svg") : `${baseUrl}/email/reece-dove-symbol-144.png`;
-    let right = `<div style="${nameStyle};font-size:${style === "full" ? 19 : 17}px;line-height:24px;color:${C.olive}">${mark(name)}</div>`;
-    if (clean(data.role)) right += `<div style="font-family:${SANS};font-size:13px;line-height:19px;color:${C.olive80}">${mark(data.role)}</div>`;
+    let right = `<div class="sg-ink" style="${nameStyle};font-size:${style === "full" ? 19 : 17}px;line-height:24px;color:${INK}">${mark(name)}</div>`;
+    if (clean(data.role)) right += `<div class="sg-sub" style="font-family:${SANS};font-size:13px;line-height:19px;color:${SUB}">${mark(data.role)}</div>`;
     right += `<div style="font-family:${SANS};font-size:13px;line-height:19px;padding-top:6px">${contact}</div>`;
     if (social.length) right += `<div style="font-family:${SANS};font-size:13px;line-height:19px">${social.map(([label, href]) => a(href, label)).join(sep)}</div>`;
-    if (data.address && addressLine(details)) right += `<div style="font-family:${SANS};font-size:12px;line-height:18px;color:${C.olive80}">${mark(addressLine(details))}</div>`;
-    if (clean(data.slogan)) right += `<div style="font-family:${SERIF};font-size:12px;line-height:18px;color:${C.olive80};padding-top:4px">${mark(data.slogan)}</div>`;
+    if (data.address && addressLine(details)) right += `<div class="sg-sub" style="font-family:${SANS};font-size:12px;line-height:18px;color:${SUB}">${mark(addressLine(details))}</div>`;
+    if (clean(data.slogan)) right += `<div class="sg-sub" style="font-family:${SERIF};font-size:12px;line-height:18px;color:${SUB};padding-top:4px">${mark(data.slogan)}</div>`;
     let inner = `<tr><td valign="top" style="width:${symbol + 16}px;padding:2px 16px 0 0;vertical-align:top"><img src="${esc(src)}" width="${symbol}" height="${symbolH}" alt="${withPhoto ? "" : "reece"}" style="display:block;border:0;width:${symbol}px;height:${symbolH}px"></td><td valign="top" style="padding:0 0 0 16px;border-left:2px solid ${C.sage};vertical-align:top">${right}</td></tr>`;
-    if (style === "full" && showBlock) inner += small(`<div style="font-weight:bold;color:${C.olive}">${esc(isCompany(details) ? w.detailsLaw : w.details)}</div><div>${mark(detail.join(" · "))}</div>`, "padding-top:14px");
+    if (style === "full" && showBlock) inner += small(`<div class="sg-ink" style="font-weight:bold;color:${INK}">${esc(isCompany(details) ? w.detailsLaw : w.details)}</div><div>${mark(detail.join(" · "))}</div>`, "padding-top:14px");
     else if (style === "short" && required) inner += small(mark(detail.join(" · ")), "padding-top:10px");
     if (linkHtml) inner += small(linkHtml, "padding-top:8px");
     if (style === "full" && data.disclaimer) inner += small(esc(w.disclaimer), "padding-top:10px;font-size:10px;line-height:14px");
     // A small leaf and the line next to it, in its own little table so the leaf lines up with the text in Outlook too
     if (note) {
       const leaf = preview ? asset("images/brand/leaf-mark.svg") : `${baseUrl}/email/leaf-32.png`;
-      inner += small(`<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td valign="middle" style="width:22px;padding:0 6px 0 0;vertical-align:middle"><img src="${esc(leaf)}" width="16" height="16" alt="" style="display:block;border:0;width:16px;height:16px"></td><td valign="middle" style="font-family:${SANS};font-size:11px;line-height:16px;color:${C.deep};vertical-align:middle">${mark(note)}</td></tr></table>`, "padding-top:14px");
+      inner += small(`<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td valign="middle" style="width:22px;padding:0 6px 0 0;vertical-align:middle"><img src="${esc(leaf)}" width="16" height="16" alt="" style="display:block;border:0;width:16px;height:16px"></td><td class="sg-sub" valign="middle" style="font-family:${SANS};font-size:11px;line-height:16px;color:${SUB};vertical-align:middle">${mark(note)}</td></tr></table>`, "padding-top:14px");
     }
     html = table(inner);
   }
@@ -461,7 +468,7 @@ export const signature = {
     { name: "slogan", label: "Slogan", type: "text", max: 60, help: "Empty for none" },
     { name: "note", label: "Save paper note", type: "text", max: 100, help: "The last line, with a small leaf in front of it. Empty for none, the minimal variant never has it" },
     { name: "disclaimer", label: "Confidentiality note (full variant only)", type: "checkbox" },
-    { name: "dark", label: "Show the preview on a dark background", type: "checkbox", help: "To check it still reads in dark mode, nothing changes in the signature" }
+    { name: "dark", label: "Show the preview on a dark background", type: "checkbox", help: "To check it still reads when a mail app puts it on a dark background without changing its colours. Nothing changes in the signature" }
   ],
 
   defaults(details, lang = "de") {
