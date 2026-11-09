@@ -10,8 +10,9 @@
   </div>
 
   <div class="grove__stage" aria-hidden="true" data-tree-stage>
-    <img class="grove__poster theme-light-only" src="{{asset "images/tree/tree-poster-light.webp"}}" alt="" width="900" height="900" fetchpriority="low">
-    <img class="grove__poster theme-dark-only" src="{{asset "images/tree/tree-poster-dark.webp"}}" alt="" width="900" height="900" fetchpriority="low">
+    {{!-- The poster is the biggest thing on the first screen, so it loads first, not last --}}
+    <img class="grove__poster theme-light-only" src="{{asset "images/tree/tree-poster-light.webp"}}" alt="" width="900" height="900" fetchpriority="high">
+    <img class="grove__poster theme-dark-only" src="{{asset "images/tree/tree-poster-dark.webp"}}" alt="" width="900" height="900">
     <canvas data-tree-canvas></canvas>
   </div>
 </section>
@@ -75,14 +76,20 @@
 </section>
 {{/if}}
 
-<section class="section" aria-labelledby="hi-title">
+{{!-- The close of the page on the olive band, so it reads as its own thing after Right now instead of carrying on in
+the same cream --}}
+<section class="section home-contact-band" aria-labelledby="hi-title">
   <div class="container home-contact">
-    <h2 id="hi-title">{{home.contact_heading}}</h2>
-    <p class="lead">{{home.contact_lead}}</p>
-    <a class="email-link" href="mailto:{{site.email}}" data-track="Email link">{{site.email}}</a>
-    <div class="cluster">
-      <a class="button button--secondary" href="/contact" data-track="Home: send a message">{{home.contact_button}} {{icon "arrow"}}</a>
-      {{#if latest}}<a class="link-action" href="{{latest.url}}">Latest writing: {{latest.title}}</a>{{/if}}
+    <div>
+      <h2 id="hi-title">{{home.contact_heading}}</h2>
+      <p class="lead">{{home.contact_lead}}</p>
+    </div>
+    <div class="home-contact__ways">
+      <a class="email-link" href="mailto:{{site.email}}" data-track="Email link">{{site.email}}</a>
+      <div class="cluster">
+        <a class="button" href="/contact" data-track="Home: send a message">{{home.contact_button}} {{icon "arrow"}}</a>
+        <a class="link-action" href="/cv" data-track="Home: CV from contact">{{home.hero_cv}}</a>
+      </div>
     </div>
   </div>
 </section>

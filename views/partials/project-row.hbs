@@ -8,6 +8,8 @@
   <div>
     <h3 class="project-row__title"><a href="{{url}}" data-match-cut="{{slug}}" data-track="Project opened">{{title}}</a></h3>
     <p class="project-row__summary">{{summary}}</p>
+    {{!-- His own part, the first thing a hiring manager asks about a team project --}}
+    {{#if role}}<p class="project-row__role"><span>My part:</span> {{role}}</p>{{/if}}
   </div>
   <span class="project-row__arrow" aria-hidden="true">{{icon "arrow"}}</span>
 </li>

@@ -96,7 +96,17 @@
   }
 
   &:hover .project-row__arrow,
-  &:focus-within .project-row__arrow {
+  &:focus-within .project-row__role {
+  margin-top: var(--space-2);
+  max-width: 38em;
+  font-size: var(--step--1);
+
+  span {
+    font-weight: 800;
+  }
+}
+
+.project-row__arrow {
     transform: translateX(4px);
     opacity: 1;
   }
@@ -150,7 +160,18 @@
 
 .project-row__summary {
   color: var(--color-text-muted);
-  max-width: 46em;
+  // about 70 characters a line, longer lines are hard to follow back to the start of the next one
+  max-width: 38em;
+}
+
+.project-row__role {
+  margin-top: var(--space-2);
+  max-width: 38em;
+  font-size: var(--step--1);
+
+  span {
+    font-weight: 800;
+  }
 }
 
 .project-row__arrow {

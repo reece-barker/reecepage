@@ -7,7 +7,7 @@
 const stage = document.querySelector("[data-tree-stage]");
 const canvas = stage && stage.querySelector("[data-tree-canvas]");
 const grove = document.querySelector("[data-grove]");
-const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const saveData = Boolean(navigator.connection && navigator.connection.saveData);
 
 function hasWebGL() {
@@ -56,6 +56,17 @@ async function plant(THREE) {
     return; // no WebGL after all, the poster stays
   }
   renderer.setClearColor(0x000000, 0);
+  // No graphics card (a cheap laptop, a remote desktop, the browser Google uses to measure the page) means every frame
+  // is drawn by the processor and the growing animation blocks the page for seconds. Then it draws the finished tree
+  // once, same as with reduced motion, and leaves it there
+  try {
+    const gl = renderer.getContext();
+    const info = gl.getExtension("WEBGL_debug_renderer_info");
+    const name = String(info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+    if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(name)) calm = true;
+  } catch {
+    // cant tell, keep the animation
+  }
   // Declared first because fit() and the listeners below can call wake() straight away
   let visible = true;
   let running = false;
@@ -246,12 +257,16 @@ async function plant(THREE) {
   let spinNow = 0;
   let camDist = 20;
 
-  // Progress through the grove section, 0 at the top and 1 when its scrolled past. That walks the camera round
-  function readScroll() {
-    const rect = grove.getBoundingClientRect();
-    const room = rect.height - innerHeight * 0.4;
-    spinAim = room > 0 ? clamp01(-rect.top / room) : 0;
-    wake();
+  // The camera used to walk round the tree as you scrolled, but the intro isnt tall enough for that anymore so it
+  // just looked like the tree was sliding about. Now pointing at the tree turns it a little towards the pointer,
+  // only on a real mouse, and it eases back when the pointer leaves
+  if (matchMedia("(hover: hover) and (pointer: fine)").matches && !calm) {
+    stage.addEventListener("pointermove", (event) => {
+      const rect = stage.getBoundingClientRect();
+      spinAim = ((event.clientX - rect.left) / rect.width - 0.5) * 0.5;
+      wake();
+    });
+    stage.addEventListener("pointerleave", () => { spinAim = 0; wake(); });
   }
 
   function fit() {
@@ -262,7 +277,7 @@ async function plant(THREE) {
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     // Back off until the whole tree fits the narrower way of the frame. The sphere round it is generous, so three quarters of it
-    // still keeps every leaf in shot from every angle the scroll can turn to
+    // still keeps every leaf in shot from every angle the pointer can turn it to
     const vertical = THREE.MathUtils.degToRad(camera.fov);
     const horizontal = 2 * Math.atan(Math.tan(vertical / 2) * camera.aspect);
     camDist = (reach.radius * 0.75) / Math.sin(Math.min(vertical, horizontal) / 2);
@@ -271,11 +286,9 @@ async function plant(THREE) {
   }
 
   new ResizeObserver(fit).observe(stage);
-  addEventListener("scroll", readScroll, { passive: true });
   document.addEventListener("themechange", applyColours);
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyColours);
   fit();
-  readScroll();
 
   let finished = calm;
   paintGrowth(calm ? 999 : -5);
@@ -323,7 +336,7 @@ async function plant(THREE) {
     const dist = camDist * (0.42 + 0.58 * intro);
     const lookY = middleY + (1 - intro) * 2.2;
     const angle = 0.5 + spinNow * Math.PI * 1.2 - (1 - intro) * 0.6;
-    const height = middleY + 0.3 + spinNow * 1.4 + (1 - intro) * 2.4;
+    const height = middleY + 0.3 + (1 - intro) * 2.4;
     camera.position.set(Math.sin(angle) * dist, height, Math.cos(angle) * dist);
     camera.lookAt(0, lookY, 0);
     camera.updateMatrixWorld();
@@ -344,7 +357,7 @@ async function plant(THREE) {
 
 
     // The gentle sway never really stops, but there is no reason to keep the GPU busy for it: after a few seconds of
-    // nothing happening the loop stops and waits for scroll, mouse, focus or a theme change to wake it
+    // nothing happening the loop stops and waits for the mouse, focus or a theme change to wake it
     if (busy) lastActive = t;
     if (t - lastActive > (calm ? 0 : 4)) sleep();
   }
