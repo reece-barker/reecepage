@@ -295,3 +295,38 @@ test("the email signature ends with a save paper note: a leaf and a line, editab
   // the preview uses the svg, the copied one the hosted png
   assert.match(signatureParts(data, me, { baseUrl: "https://reece.page", preview: true }).html, /leaf-mark\.svg/);
 });
+
+test("my photo is an option on the card back, the slip, the letterhead and the signature, and off unless ticked", () => {
+  const me = businessDetails({ entity: "de-private", full_name: "Reece Barker", street: "Teststr. 1", postcode: "81247", city: "München", email: "me@reece.page", phone: "+49 1" });
+  const asset = (p) => `/assets/${p}`;
+  // off by default everywhere
+  const card = KINDS.card.defaults(me, "de");
+  assert.equal(card.photo, false);
+  assert.doesNotMatch(KINDS.card.render(card, { details: me, asset }).body, /card__photo/);
+  const withCard = KINDS.card.render({ ...card, photo: true }, { details: me, asset }).body;
+  assert.match(withCard, /class="card__photo" src="\/assets\/images\/cv\/reece-barker\.jpg"/);
+  // the photo is on the back only, in place of the little dove
+  const [frontSide, backSide] = withCard.split(/(?=<div class="card card--back|class="card__back)/);
+  assert.doesNotMatch(frontSide, /card__photo/);
+  assert.match(backSide, /card__photo/);
+  assert.doesNotMatch(backSide, /card__sym/);
+
+  const slip = KINDS.slip.defaults(me, "de");
+  assert.doesNotMatch(KINDS.slip.render(slip, { details: me, asset }).body, /slip__photo/);
+  assert.match(KINDS.slip.render({ ...slip, photo: true }, { details: me, asset }).body, /slip__photo/);
+
+  const letter = { ...KINDS.letter.defaults(me, "de"), subject: "Hallo" };
+  assert.doesNotMatch(KINDS.letter.render(letter, { details: me, asset, number: "1" }).body, /din-photo/);
+  assert.match(KINDS.letter.render({ ...letter, photo: true }, { details: me, asset, number: "1" }).body, /din-photo/);
+  // the Word file stays plain, no photo there
+  assert.doesNotMatch(JSON.stringify(KINDS.letter.plain({ ...letter, photo: true }, { details: me, number: "1" })), /photo/i);
+
+  // the signature uses the ready made round png (Outlook ignores border-radius), not in the minimal variant
+  const sig = KINDS.signature.defaults(me, "en");
+  assert.match(signatureParts(sig, me, { baseUrl: "https://reece.page" }).html, /reece-dove-symbol-144\.png/);
+  const photoSig = signatureParts({ ...sig, photo: true }, me, { baseUrl: "https://reece.page" }).html;
+  assert.match(photoSig, /https:\/\/reece\.page\/email\/reece-barker-round-192\.png/);
+  assert.doesNotMatch(photoSig, /reece-dove-symbol/);
+  assert.doesNotMatch(signatureParts({ ...sig, photo: true, style: "minimal" }, me, { baseUrl: "https://reece.page" }).html, /round-192/);
+  assert.match(signatureParts({ ...sig, photo: true }, me, { baseUrl: "https://reece.page", preview: true }).html, /src="\/email\/reece-barker-round-192\.png"/);
+});

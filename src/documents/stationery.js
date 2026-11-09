@@ -8,6 +8,7 @@ import { esc, withPlaceholders } from "./format.js";
 import { LANG_FIELD } from "./letter.js";
 import { businessType, cityLine, legalLines, senderName, taxLines } from "./business.js";
 import { qrSvg } from "./qr.js";
+import { PHOTO_EMAIL, photoTag } from "./photo.js";
 
 // The brand colours, same as the brand pack
 const C = { olive: "#33412A", olive80: "#5A6652", olive90: "#41532F", sage: "#9FB98F", sage50: "#C9D8BF", sage25: "#E4ECDF", blush: "#EFB9A4", cream: "#F9F4E8", leaf: "#C3D1B3", deep: "#4C5E3E" };
@@ -187,6 +188,7 @@ export const card = {
     { name: "linkedin", label: "LinkedIn", type: "checkbox", help: "From the site settings" },
     { name: "github", label: "GitHub", type: "checkbox", help: "From the site settings" },
     { name: "icons", label: "Icons in front of the phone number, email, website and the rest", type: "checkbox", default: true },
+    { name: "photo", label: "My photo on the back", type: "checkbox", help: "A small round photo top right, in place of the little dove. The front stays the logo" },
     { name: "corner_note", label: "Small note in a corner", type: "text", max: 40, help: "Something like Printed on recycled paper. 6 pt, kept 4 mm inside the cut" },
     { name: "corner_side", label: "Which side the corner note goes on", type: "select", required: true, options: ["front", "back"], labels: { front: "Front, bottom left", back: "Back, under the fine print" } },
     { name: "message", label: "A line on the back", type: "textarea", max: 160, help: "Something like Looking for an internship from September 2027. Short reads best, the back gets tighter as it fills up" },
@@ -196,7 +198,7 @@ export const card = {
   ],
 
   defaults(details, lang = "de") {
-    return { lang, design: "olive", format: businessType(details.entity).country === "US" ? "us" : "eu", name: details.full_name || "", role: words(lang).role, front_text: "slogan", slogan: SLOGAN, quote: { text: "", author: "" }, qr: "url", address: false, linkedin: false, github: false, icons: true, message: "", corner_note: "", corner_side: "front", fine: true, tax: false, print: "shop2" };
+    return { lang, design: "olive", format: businessType(details.entity).country === "US" ? "us" : "eu", name: details.full_name || "", role: words(lang).role, front_text: "slogan", slogan: SLOGAN, quote: { text: "", author: "" }, qr: "url", address: false, linkedin: false, github: false, icons: true, photo: false, message: "", corner_note: "", corner_side: "front", fine: true, tax: false, print: "shop2" };
   },
 
   title(data) {
@@ -252,7 +254,7 @@ export const card = {
     const backInner = `<div class="card__back${B.band ? " card__back--band" : ""}${B.bar ? " card__back--bar" : ""}${density.cls}" style="color:${B.ink};--card-sub:${B.sub}">
       <div class="card__head">
         <div><p class="card__name">${txt(data.name || details.full_name || "[Name]")}</p>${clean(data.role) ? `<p class="card__role" style="color:${B.sub}">${txt(data.role)}</p>` : ""}</div>
-        ${B.sym ? `<img class="card__sym" src="${esc(asset(`images/brand/${B.sym}.svg`))}" alt="">` : ""}
+        ${data.photo === true ? photoTag(asset, "card__photo") : B.sym ? `<img class="card__sym" src="${esc(asset(`images/brand/${B.sym}.svg`))}" alt="">` : ""}
       </div>
       <ul class="card__contact${icons ? " card__contact--icons" : ""}">${rows.map(([kind, value]) => `<li>${icons ? icon(kind) : ""}<span>${txt(value)}</span></li>`).join("")}</ul>
       ${message ? `<p class="card__message">${txt(message)}</p>` : ""}
@@ -284,11 +286,12 @@ export const slip = {
     { name: "heading", label: "Heading", type: "text", max: 60 },
     { name: "message", label: "Short note", type: "textarea", max: 600, help: "Leave it empty to write by hand" },
     { name: "lines", label: "Writing lines when there is no note", type: "checkbox", default: true },
+    { name: "photo", label: "My photo in the corner", type: "checkbox", help: "A small round photo next to your contact details" },
     { name: "slogan", label: "Slogan", type: "text", max: 60, help: "Empty for none" }
   ],
 
   defaults(details, lang = "de") {
-    return { lang, heading: words(lang).slip, message: "", lines: true, slogan: SLOGAN };
+    return { lang, heading: words(lang).slip, message: "", lines: true, photo: false, slogan: SLOGAN };
   },
 
   title(data) {
@@ -303,7 +306,7 @@ export const slip = {
     const body = `<article class="slip">
   <header class="slip__head">
     <img class="slip__logo" src="${esc(asset("images/brand/reece-dove-long-horizontal-colour.svg"))}" alt="reece">
-    <div class="slip__contact"><p class="slip__name">${txt(details.full_name || "[Name]")}</p><p>${contact.map(txt).join("<br>")}</p></div>
+    <div class="slip__id"><div class="slip__contact"><p class="slip__name">${txt(details.full_name || "[Name]")}</p><p>${contact.map(txt).join("<br>")}</p></div>${data.photo === true ? photoTag(asset, "slip__photo") : ""}</div>
   </header>
   <h1 class="slip__heading">${txt(data.heading || words(lang).slip)}</h1>
   ${clean(data.message) ? `<p class="slip__message">${txt(data.message).replace(/\n/g, "<br>")}</p>` : lines}
@@ -362,14 +365,16 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
     if (required) inner += `<tr>${td(mark(detail.join(" · ")), `font-size:11px;line-height:16px;color:${C.olive80};padding-top:4px`)}</tr>`;
     html = table(inner);
   } else {
-    const symbol = style === "full" ? 64 : 48, symbolH = Math.round(symbol * 202 / 249);
-    const src = preview ? asset("images/brand/reece-dove-symbol-colour.svg") : `${baseUrl}/email/reece-dove-symbol-144.png`;
+    // The photo takes the dovess place when its ticked: round, a bit bigger than the dove is wide so the face reads
+    const withPhoto = data.photo === true;
+    const symbol = withPhoto ? (style === "full" ? 72 : 56) : style === "full" ? 64 : 48, symbolH = withPhoto ? symbol : Math.round(symbol * 202 / 249);
+    const src = withPhoto ? (preview ? `/${PHOTO_EMAIL}` : `${baseUrl}/${PHOTO_EMAIL}`) : preview ? asset("images/brand/reece-dove-symbol-colour.svg") : `${baseUrl}/email/reece-dove-symbol-144.png`;
     let right = `<div style="${nameStyle};font-size:${style === "full" ? 19 : 17}px;line-height:24px;color:${C.olive}">${mark(name)}</div>`;
     if (clean(data.role)) right += `<div style="font-family:${SANS};font-size:13px;line-height:19px;color:${C.olive80}">${mark(data.role)}</div>`;
     right += `<div style="font-family:${SANS};font-size:13px;line-height:19px;padding-top:6px">${contact}</div>`;
     if (data.address && addressLine(details)) right += `<div style="font-family:${SANS};font-size:12px;line-height:18px;color:${C.olive80}">${mark(addressLine(details))}</div>`;
     if (clean(data.slogan)) right += `<div style="font-family:${SERIF};font-size:12px;line-height:18px;color:${C.olive80};padding-top:4px">${mark(data.slogan)}</div>`;
-    let inner = `<tr><td valign="top" style="width:${symbol + 16}px;padding:2px 16px 0 0;vertical-align:top"><img src="${esc(src)}" width="${symbol}" height="${symbolH}" alt="reece" style="display:block;border:0;width:${symbol}px;height:${symbolH}px"></td><td valign="top" style="padding:0 0 0 16px;border-left:2px solid ${C.sage};vertical-align:top">${right}</td></tr>`;
+    let inner = `<tr><td valign="top" style="width:${symbol + 16}px;padding:2px 16px 0 0;vertical-align:top"><img src="${esc(src)}" width="${symbol}" height="${symbolH}" alt="${withPhoto ? "" : "reece"}" style="display:block;border:0;width:${symbol}px;height:${symbolH}px"></td><td valign="top" style="padding:0 0 0 16px;border-left:2px solid ${C.sage};vertical-align:top">${right}</td></tr>`;
     if (style === "full" && showBlock) inner += small(`<div style="font-weight:bold;color:${C.olive}">${esc(isCompany(details) ? w.detailsLaw : w.details)}</div><div>${mark(detail.join(" · "))}</div>`, "padding-top:14px");
     else if (style === "short" && required) inner += small(mark(detail.join(" · ")), "padding-top:10px");
     if (linkHtml) inner += small(linkHtml, "padding-top:8px");
@@ -416,6 +421,7 @@ export const signature = {
     { name: "address", label: "Postal address", type: "checkbox" },
     { name: "linkedin", label: "LinkedIn", type: "checkbox", help: "From the site settings" },
     { name: "github", label: "GitHub", type: "checkbox", help: "From the site settings" },
+    { name: "photo", label: "My photo instead of the dove", type: "checkbox", help: "A round photo next to your name. Not in the minimal variant" },
     { name: "links", label: "Links to the legal notice and privacy pages", type: "checkbox", default: true },
     { name: "slogan", label: "Slogan", type: "text", max: 60, help: "Empty for none" },
     { name: "note", label: "Save paper note", type: "text", max: 100, help: "The last line, with a small leaf in front of it. Empty for none, the minimal variant never has it" },
@@ -424,7 +430,7 @@ export const signature = {
   ],
 
   defaults(details, lang = "de") {
-    return { lang, style: "full", name: details.full_name || "", role: words(lang).role, address: false, links: true, slogan: SLOGAN, note: words(lang).paper, disclaimer: false, dark: false };
+    return { lang, style: "full", name: details.full_name || "", role: words(lang).role, address: false, links: true, slogan: SLOGAN, photo: false, note: words(lang).paper, disclaimer: false, dark: false };
   },
 
   title(data) {
