@@ -408,6 +408,8 @@ th.num {
 @page card-us-b2 { size: 92.9mm 54.8mm; margin: 0; }
 @page card-us-b3 { size: 94.9mm 56.8mm; margin: 0; }
 @page slip { size: 210mm 99mm; margin: 0; }
+@page slip-b2 { size: 214mm 103mm; margin: 0; }
+@page slip-b3 { size: 216mm 105mm; margin: 0; }
 
 .cards--eu .card { page: card-eu; }
 .cards--eu.cards--bleed2 .card { page: card-eu-b2; }
@@ -672,16 +674,28 @@ th.num {
   border-radius: 0.8mm;
 }
 
-// The compliments slip, DIN lang. Everything sits on a 15 mm side margin
+// The compliments slip, 1/3 A4. One page is the slip plus its bleed, set in the html, and inside it a box the size of
+// the cut slip. Everything in there sits on a 15 mm side margin, so at least 7 mm from the cut, the shop wants 4
 .slip {
   page: slip;
   position: relative;
-  width: 210mm;
-  height: 99mm;
+  overflow: hidden;
+  background: #fff;
+  break-after: page;
+}
+
+.slip:last-child {
+  break-after: auto;
+}
+
+.slip--bleed2 { page: slip-b2; }
+.slip--bleed3 { page: slip-b3; }
+
+.slip__trim {
+  position: absolute;
   padding: 12mm 15mm 7mm;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .slip__head {
@@ -856,10 +870,19 @@ th.num {
     outline: 0.2mm dashed rgb(200 40 40 / 0.6);
   }
 
+  // the dashed line is where it gets cut, and the empty back is marked so its not mistaken for a blank preview
+  .paper--preview .slip--bleed .slip__trim {
+    outline: 0.2mm dashed rgb(200 40 40 / 0.6);
+  }
+
   .paper--preview .slip {
     margin: 0 auto;
     background: #fff;
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+  }
+
+  .paper--preview .slip--back {
+    margin-top: 6mm;
   }
 
   // notes for whoever is filling it in, above the sheet and never printed
