@@ -5,6 +5,7 @@ import { esc, formatDate, formatIban, lines, paragraphs, today, withPlaceholders
 import { words } from "./words.js";
 import { footerColumns } from "./page.js";
 import { legalLines, returnLine, senderLines, senderName, taxLines } from "./business.js";
+import { photoTag } from "./photo.js";
 
 const GREETING = { de: "Sehr geehrte Damen und Herren,", en: "Dear Sir or Madam,", nl: "Geachte heer, mevrouw," };
 const CLOSING = { de: "Mit freundlichen Grüßen", en: "Kind regards", nl: "Met vriendelijke groet" };
@@ -32,6 +33,7 @@ export const letter = {
       { name: "our_ref", label: "Our reference", type: "text" },
       { name: "customer_no", label: "Customer or project number", type: "text" }
     ] },
+    { name: "photo", label: "My photo in the letterhead", type: "checkbox", help: "A small round photo at the top right, next to your address. Not in the Word file" },
     { name: "account", label: "Bank account in the footer", type: "select", options: [], help: "From Payment accounts. Leave empty for none" }
   ],
 
@@ -47,6 +49,7 @@ export const letter = {
       signature: details.full_name || "",
       enclosures: [],
       refs: {},
+      photo: false,
       account: ""
     };
   },
@@ -55,7 +58,7 @@ export const letter = {
     return data.subject || "Letter";
   },
 
-  render(data, { details, accounts = [], number, logo }) {
+  render(data, { details, accounts = [], number, logo, asset = (p) => `/${p}` }) {
     const lang = data.lang || "de";
     const w = words(lang);
     const refs = data.refs || {};
@@ -76,7 +79,7 @@ export const letter = {
   <div class="din-first">
     <header class="din-head">
       ${logo ? `<img class="din-logo" src="${esc(logo)}" alt="">` : ""}
-      <div class="din-sender">${sender.map((l, i) => i === 0 ? `<strong>${esc(l)}</strong>` : esc(l)).join("<br>")}${details.web ? `<br>${esc(details.web)}` : ""}</div>
+      <div class="din-id"><div class="din-sender">${sender.map((l, i) => i === 0 ? `<strong>${esc(l)}</strong>` : esc(l)).join("<br>")}${details.web ? `<br>${esc(details.web)}` : ""}</div>${data.photo === true ? photoTag(asset, "din-photo") : ""}</div>
     </header>
     <div class="din-window">
       <p class="din-return">${esc(returnLine(details))}</p>

@@ -112,6 +112,10 @@ test("a business card and the email signature: the preview follows and the signa
   await page.getByLabel("Line under the name").fill("End to end tester");
   const frame = page.frameLocator("[data-preview-frame]");
   await expect(frame.locator(".card__role")).toHaveText("End to end tester");
+  // the photo is an option on the back, it has to load (a broken image would print as a blank circle)
+  await page.getByLabel("My photo on the back").check();
+  await expect(frame.locator(".card__photo")).toBeVisible();
+  expect(await frame.locator(".card__photo").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
   await page.getByLabel("Design").selectOption("white");
   await expect(frame.locator(".card--front img")).toHaveAttribute("src", /long-horizontal-colour/);
   await expect(page.locator("[data-status]")).toHaveText("Saved", { timeout: 8000 });
