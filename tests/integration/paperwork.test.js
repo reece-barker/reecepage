@@ -119,6 +119,48 @@ test("a contract keeps its type, follows the facts and its clauses can be writte
   await post("/admin/paperwork/999999/write-out", { value }).expect(404);
 });
 
+test("a business card and a slip print to their own size, the signature copies and downloads", async () => {
+  const year = new Date().getFullYear();
+  const cardMade = await form("/admin/paperwork/new/card").expect(303);
+  const cardId = Number(cardMade.headers.location.split("/").pop());
+  const cardEditor = await get(`/admin/paperwork/${cardId}`).expect(200);
+  assert.match(cardEditor.text, new RegExp(`RP-B-${year}-0001`));
+  assert.doesNotMatch(cardEditor.text, /\/docx"/);
+  const cardValue = { lang: "en", design: "leaf", format: "eu", name: "Reece Norman Barker", role: "Software and green tech", qr: "vcard", fine: true, bleed: true };
+  await post(`/admin/paperwork/${cardId}`, { value: cardValue }).expect(200);
+  const cardPreview = await post("/admin/paperwork/preview", { id: cardId, value: cardValue }).expect(200);
+  const cardPage = (await get(cardPreview.body.url).expect(200)).text;
+  assert.match(cardPage, /cards--eu cards--bleed/);
+  assert.match(cardPage, /class="qr"/);
+  assert.match(cardPage, /reece-dove-long-stacked-colour/);
+  await get(`/admin/paperwork/${cardId}/docx`).expect(404);
+
+  const slipMade = await form("/admin/paperwork/new/slip").expect(303);
+  const slipId = Number(slipMade.headers.location.split("/").pop());
+  const slipValue = { lang: "en", heading: "With compliments", message: "Here is the book.", slogan: "Code for a living world." };
+  const slipPreview = await post("/admin/paperwork/preview", { id: slipId, value: slipValue }).expect(200);
+  assert.match((await get(slipPreview.body.url).expect(200)).text, /Here is the book\./);
+
+  const sigMade = await form("/admin/paperwork/new/signature").expect(303);
+  const sigId = Number(sigMade.headers.location.split("/").pop());
+  const sigEditor = await get(`/admin/paperwork/${sigId}`).expect(200);
+  assert.match(sigEditor.text, /data-copy-signature/);
+  assert.doesNotMatch(sigEditor.text, /\/pdf"/);
+  await post(`/admin/paperwork/${sigId}`, { value: { lang: "en", style: "short", name: "Reece Norman Barker", links: true } }).expect(200);
+  const parts = await get(`/admin/paperwork/${sigId}/signature`).expect(200);
+  assert.equal(parts.body.ok, true);
+  assert.match(parts.body.html, /<table role="presentation"/);
+  assert.match(parts.body.html, /\/email\/reece-dove-symbol-144\.png/);
+  assert.match(parts.body.text, /^-- \nReece Norman Barker/);
+  const file = await get(`/admin/paperwork/${sigId}/signature?download=1`).expect(200);
+  assert.match(file.headers["content-disposition"], /\.html/);
+  assert.match(file.text, /^<!doctype html>/);
+  await get(`/admin/paperwork/${sigId}/pdf`).expect(404);
+  await get(`/admin/paperwork/${cardId}/signature`).expect(404);
+  // the png the signatures point at is really there and not behind the admin
+  await request(ctx.app).get("/email/reece-dove-symbol-144.png").expect(200).expect("Content-Type", /png/);
+});
+
 test("my details and payment accounts never go to GitHub", async () => {
   await post("/admin/lists/business", { value: { entity: "de-private", full_name: "Reece Norman Barker" } }).expect(200);
   const { entries, documents } = await ctx.services.contentRepository.readAll();

@@ -382,6 +382,254 @@ th.num {
   line-height: 1.4;
 }
 
+// Business cards: one side per page, the page is the card plus its bleed. Each size has its own named page, the
+// rest of paperwork stays on A4
+@page card-eu { size: 85mm 55mm; margin: 0; }
+@page card-eu-bleed { size: 91mm 61mm; margin: 0; }
+@page card-us { size: 88.9mm 50.8mm; margin: 0; }
+@page card-us-bleed { size: 95.25mm 57.15mm; margin: 0; }
+@page slip { size: 210mm 99mm; margin: 0; }
+
+.cards--eu .card { page: card-eu; }
+.cards--eu.cards--bleed .card { page: card-eu-bleed; }
+.cards--us .card { page: card-us; }
+.cards--us.cards--bleed .card { page: card-us-bleed; }
+
+.card {
+  position: relative;
+  overflow: hidden;
+  break-after: page;
+}
+
+.card:last-child {
+  break-after: auto;
+}
+
+.card__deco {
+  position: absolute;
+  inset: 0;
+}
+
+.card__trim {
+  position: absolute;
+}
+
+// The front: logo and slogan in the middle of the cut card
+.card__front {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4.5mm;
+
+  img { display: block; }
+}
+
+.card__slogan {
+  margin: 0;
+  font-family: "Young Serif", Georgia, serif;
+  font-size: 7.8pt;
+  line-height: 1;
+}
+
+// The back keeps 5 mm from every cut edge, so a slightly off cut never takes a letter with it
+.card__back {
+  position: absolute;
+  inset: 5mm;
+  display: flex;
+  flex-direction: column;
+  font-size: 7pt;
+  line-height: 1.35;
+}
+
+.card__back--band { bottom: 7mm; }
+.card__back--bar { left: 7mm; }
+
+.card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 3mm;
+}
+
+.card__name {
+  margin: 0;
+  font-family: "Young Serif", Georgia, serif;
+  font-size: 11pt;
+  line-height: 1.15;
+}
+
+.card__role {
+  margin: 0.6mm 0 0;
+  font-size: 6.8pt;
+}
+
+.card__sym {
+  width: 8mm;
+  height: auto;
+  flex: none;
+}
+
+.card__contact {
+  margin: 2.6mm 0 0;
+  font-weight: 600;
+}
+
+.card__foot {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 3mm;
+}
+
+.card__fine {
+  margin: 0;
+  font-size: 5.8pt;
+  line-height: 1.3;
+  padding-top: 1mm;
+
+  &:empty { border: 0 !important; }
+}
+
+.card__qr {
+  flex: none;
+  line-height: 0;
+
+  svg { display: block; }
+}
+
+.card__qr--box {
+  padding: 0.8mm;
+  background: #f9f4e8;
+  border-radius: 0.8mm;
+}
+
+// The compliments slip, DIN lang. Everything sits on a 15 mm side margin
+.slip {
+  page: slip;
+  position: relative;
+  width: 210mm;
+  height: 99mm;
+  padding: 12mm 15mm 7mm;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.slip__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.slip__logo {
+  width: 44mm;
+  height: auto;
+}
+
+.slip__contact {
+  text-align: right;
+  font-size: 8pt;
+  font-weight: 600;
+  line-height: 1.45;
+
+  p { margin: 0; }
+}
+
+.slip__name {
+  font-family: "Young Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: 11pt;
+  margin-bottom: 1mm !important;
+}
+
+.slip__heading {
+  margin: 8mm 0 0;
+  font-family: "Young Serif", Georgia, serif;
+  font-weight: 400;
+  font-size: 17pt;
+  line-height: 1.2;
+}
+
+.slip__message {
+  margin: 3mm 0 0;
+  max-width: 150mm;
+}
+
+.slip__lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin: 2mm 0;
+
+  span { border-top: 0.3pt solid #c9d8bf; }
+}
+
+.slip__foot {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 6mm;
+  border-top: 0.3pt solid #9fb98f;
+  padding-top: 2mm;
+  font-size: 6.8pt;
+  line-height: 1.35;
+  color: $soft;
+
+  p { margin: 0; flex: 1; }
+}
+
+.slip__slogan {
+  flex: none !important;
+  font-family: "Young Serif", Georgia, serif;
+  font-size: 8.5pt;
+  white-space: nowrap;
+}
+
+// The email signature preview: a bit of an email with the signature in it, and the plain text version under it
+.sig {
+  max-width: 180mm;
+  margin: 0 auto;
+}
+
+.sig__mail,
+.sig__plain {
+  background: #fff;
+  border-radius: 2mm;
+  padding: 8mm;
+  margin-bottom: 5mm;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+}
+
+.sig__fake {
+  margin: 0 0 5mm;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+}
+
+.sig--dark .sig__mail {
+  background: #1f1f1f;
+  color: #e8e8e8;
+}
+
+.sig__plain {
+  h2 {
+    margin: 0 0 3mm;
+    font-size: 9pt;
+    color: $soft;
+  }
+
+  pre {
+    margin: 0;
+    font-size: 9pt;
+    white-space: pre-wrap;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+  }
+}
+
 // Still to fill in: pink in the preview, plain text in print so a forgotten one is obvious but not loud
 .ph {
   background: #fadacd;
@@ -406,6 +654,29 @@ th.num {
     min-height: 297mm;
     margin: 0 auto;
     padding: 0 $right 30mm $left;
+    background: #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+  }
+
+  // cards are tiny, on screen theyre shown bigger with the cut line dashed over the bleed
+  .paper--preview .cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8mm;
+    zoom: 1.7;
+  }
+
+  .paper--preview .card {
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.2);
+  }
+
+  .paper--preview .card--bleed .card__trim {
+    outline: 0.2mm dashed rgb(200 40 40 / 0.6);
+  }
+
+  .paper--preview .slip {
+    margin: 0 auto;
     background: #fff;
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
   }
