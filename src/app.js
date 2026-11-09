@@ -159,7 +159,7 @@ export function createApp({ config, logger = createLogger(config), database, mai
   controllers.auth = createAuthController({ auth, seo, config });
   controllers.admin = createAdminController({ config, seo, content, contentAdmin, repository: contentRepository, media, status, sync, pages: controllers.pages, legal: controllers.legal });
   // Paperwork needs the database, without one the admin isnt there either
-  controllers.paperwork = db ? createPaperworkController({ config, paperwork: new PaperworkRepository(db), repository: contentRepository, assets, page: controllers.admin.renderPage }) : null;
+  controllers.paperwork = db ? createPaperworkController({ config, paperwork: new PaperworkRepository(db), repository: contentRepository, assets, page: controllers.admin.renderPage, site: () => settings.site() }) : null;
   app.use(createRouter(controllers, {
     csrf,
     contactLimit: contactRateLimit(config),

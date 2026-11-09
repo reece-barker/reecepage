@@ -22,6 +22,8 @@ const W = {
     disclaimer: "Dit bericht en de bijlagen kunnen vertrouwelijke informatie bevatten en zijn alleen bestemd voor de genoemde ontvanger. Bent u niet de bedoelde ontvanger, laat het mij dan weten en verwijder het bericht." }
 };
 const words = (lang) => W[lang] || W.de;
+// Quotation marks the way each language writes them
+const QUOTES = { de: ["„", "“"], en: ["“", "”"], nl: ["“", "”"] };
 
 const clean = (v) => String(v ?? "").trim();
 const txt = (s) => withPlaceholders(s);
@@ -101,6 +103,43 @@ export function vcard(details, name) {
   return out.join("\r\n");
 }
 
+/* ------------------------------------------------------------------ the little icons on the back */
+
+// Drawn here on a 24 unit grid with round strokes, plain shapes that print sharp at 2.4 mm. No brand logos, a
+// person and a pair of code brackets say LinkedIn and GitHub well enough next to the address
+const ICONS = {
+  phone: '<rect x="7" y="2.5" width="10" height="19" rx="2.2"/><path d="M11 18.2h2"/>',
+  email: '<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/>',
+  web: '<circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="3.8" ry="9"/><path d="M3 12h18"/>',
+  address: '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+  linkedin: '<circle cx="12" cy="8" r="3.6"/><path d="M5 20.5c.8-4 3.6-6.2 7-6.2s6.2 2.2 7 6.2"/>',
+  github: '<path d="m8.5 7.5-5 4.5 5 4.5M15.5 7.5l5 4.5-5 4.5"/>'
+};
+const icon = (name) => `<svg class="card__icon" viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`;
+// linkedin.com/in/someone instead of the whole https://www. address, thats what fits on a card
+const shortUrl = (url) => String(url || "").replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/$/, "");
+
+/**
+ * How much is on the back, roughly in lines, and from that how tight to set it. A card cant scroll, so instead of
+ * cutting anything off the type gets a little smaller step by step, and past that the editor says its too much
+ */
+function backDensity({ contact, message, fine, hasRole }) {
+  const messageLines = message ? Math.ceil(message.length / 46) : 0;
+  const load = 2 + (hasRole ? 1 : 0) + contact + messageLines + fine * 0.8;
+  if (load <= 7.5) return { cls: "", tooMuch: false };
+  if (load <= 9) return { cls: " card__back--compact", tooMuch: false };
+  return { cls: " card__back--tight", tooMuch: load > 10.5 };
+}
+
+// The quote's size from its length, so a short one is big and a long one still fits in a few balanced lines
+function quoteSize(text) {
+  const n = text.length;
+  if (n <= 50) return "card__quote--short";
+  if (n <= 100) return "card__quote--medium";
+  if (n <= 150) return "card__quote--long";
+  return "card__quote--longest";
+}
+
 function cardSide(inner, deco, { w, h, b, bleed, bg, side }) {
   const sw = bleed ? w + 2 * b : w, sh = bleed ? h + 2 * b : h, off = bleed ? b : 0;
   return `<section class="card card--${side}${bleed ? " card--bleed" : ""}" style="width:${sw}mm;height:${sh}mm;background:${bg}" aria-label="${side === "front" ? "Front" : "Back"}">
@@ -121,49 +160,79 @@ export const card = {
     { name: "format", label: "Size", type: "select", required: true, options: ["eu", "us"], labels: { eu: "EU, 85 x 55 mm", us: "US, 3.5 x 2 in" } },
     { name: "name", label: "Name", type: "text", max: 80 },
     { name: "role", label: "Line under the name", type: "text", max: 80 },
-    { name: "slogan", label: "Slogan on the front", type: "text", max: 60, help: "Empty for none" },
+    { name: "front_text", label: "Under the logo", type: "select", required: true, options: ["slogan", "quote", "both", "none"], labels: { slogan: "The slogan", quote: "A quote", both: "A quote and the slogan", none: "Nothing, just the logo" } },
+    { name: "slogan", label: "Slogan", type: "text", max: 60 },
+    { name: "quote", label: "Quote", type: "object", help: "Wraps into balanced lines and gets smaller the longer it is. Up to about 150 characters reads well on a card", fields: [
+      { name: "text", label: "The quote", type: "textarea", max: 220 },
+      { name: "author", label: "Who said it", type: "text", max: 60 }
+    ] },
     { name: "qr", label: "QR code on the back", type: "select", required: true, options: ["url", "vcard", "none"], labels: { url: "Your website", vcard: "Contact card (name, phone, email, web)", none: "No QR code" } },
     { name: "address", label: "Postal address", type: "checkbox" },
+    { name: "linkedin", label: "LinkedIn", type: "checkbox", help: "From the site settings" },
+    { name: "github", label: "GitHub", type: "checkbox", help: "From the site settings" },
+    { name: "icons", label: "Icons in front of the phone number, email, website and the rest", type: "checkbox", default: true },
+    { name: "message", label: "A line on the back", type: "textarea", max: 160, help: "Something like Looking for an internship from September 2027. Short reads best, the back gets tighter as it fills up" },
     { name: "fine", label: "The details your business type has to give", type: "checkbox", default: true, help: "Register, seat and directors for a company. A private person or freelancer has none" },
     { name: "tax", label: "Tax number or VAT ID", type: "checkbox" },
     { name: "bleed", label: "3 mm bleed round the edge, for a print shop", type: "checkbox", default: true, help: "Off gives the card at its cut size, for printing at home" }
   ],
 
   defaults(details, lang = "de") {
-    return { lang, design: "olive", format: businessType(details.entity).country === "US" ? "us" : "eu", name: details.full_name || "", role: words(lang).role, slogan: SLOGAN, qr: "url", address: false, fine: true, tax: false, bleed: true };
+    return { lang, design: "olive", format: businessType(details.entity).country === "US" ? "us" : "eu", name: details.full_name || "", role: words(lang).role, front_text: "slogan", slogan: SLOGAN, quote: { text: "", author: "" }, qr: "url", address: false, linkedin: false, github: false, icons: true, message: "", fine: true, tax: false, bleed: true };
   },
 
   title(data) {
     return `${data.name || "Business card"}, ${DESIGNS[data.design]?.label.toLowerCase() || "card"}`;
   },
 
-  render(data, { details, asset }) {
+  render(data, { details, asset, profiles = {} }) {
     const lang = data.lang || "de";
     const d = DESIGNS[data.design] || DESIGNS.olive;
+    const notes = [];
     const size = SIZES[data.format] || SIZES.eu;
     const { w, h, bleed: b } = size;
     const bleed = data.bleed !== false;
     const F = d.front, B = d.back;
 
-    // Front: the logo in the middle with the slogan under it
-    const logoStyle = F.wide ? `width:${(w * 0.56).toFixed(2)}mm` : `height:${(h * (F.border ? 0.44 : 0.5)).toFixed(2)}mm`;
-    const frontInner = `<div class="card__front" style="color:${F.slogan}"><img src="${esc(asset(`images/brand/${F.logo}.svg`))}" alt="reece" style="${logoStyle}">${clean(data.slogan) ? `<p class="card__slogan">${txt(data.slogan)}</p>` : ""}</div>`;
+    // Front: the logo in the middle, under it the slogan, a quote or both. Older cards have no front_text yet and
+    // keep showing their slogan
+    const show = ["slogan", "quote", "both", "none"].includes(data.front_text) ? data.front_text : "slogan";
+    const quote = data.quote && clean(data.quote.text) && (show === "quote" || show === "both") ? data.quote : null;
+    const slogan = clean(data.slogan) && (show === "slogan" || show === "both") ? data.slogan : "";
+    if ((show === "quote" || show === "both") && !quote) notes.push("The front is set to show a quote but there is no quote text yet.");
+    if (quote && !clean(quote.author)) notes.push("The quote has no author yet.");
+    if (quote && clean(quote.text).length > 150) notes.push("The quote is long for a card, it is set small to fit. Under about 150 characters reads better.");
+    // with a quote the logo steps back so the words get the room
+    const logoScale = quote ? (show === "both" ? 0.26 : 0.3) : (F.border ? 0.44 : 0.5);
+    const logoStyle = F.wide ? `width:${(w * (quote ? 0.4 : 0.56)).toFixed(2)}mm` : `height:${(h * logoScale).toFixed(2)}mm`;
+    const [open, close] = QUOTES[lang] || QUOTES.en;
+    const quoteHtml = quote ? `<figure class="card__quote ${quoteSize(clean(quote.text))}"><blockquote>${esc(open)}${txt(clean(quote.text))}${esc(close)}</blockquote>${clean(quote.author) ? `<figcaption>${txt(quote.author)}</figcaption>` : ""}</figure>` : "";
+    const frontInner = `<div class="card__front${quote ? " card__front--quote" : ""}${F.border ? " card__front--border" : ""}" style="color:${F.slogan}"><img src="${esc(asset(`images/brand/${F.logo}.svg`))}" alt="reece" style="${logoStyle}">${quoteHtml}${slogan ? `<p class="card__slogan">${txt(slogan)}</p>` : ""}</div>`;
     const front = cardSide(frontInner, F.border ? leafBorder(w, h) : "", { w, h, b, bleed, bg: F.bg, side: "front" });
 
     // Back: name and role at the top, contact in the middle, fine print and the QR code at the bottom
-    const contact = [clean(details.phone), clean(details.email), clean(details.web)].filter(Boolean);
-    if (data.address && addressLine(details)) contact.push(addressLine(details));
+    // Each contact line with its icon: phone, email, website, then the extras that were ticked
+    const contact = [["phone", clean(details.phone)], ["email", clean(details.email)], ["web", shortUrl(details.web)]];
+    if (data.linkedin && profiles.linkedin) contact.push(["linkedin", shortUrl(profiles.linkedin)]);
+    if (data.github && profiles.github) contact.push(["github", shortUrl(profiles.github)]);
+    if (data.address && addressLine(details)) contact.push(["address", addressLine(details)]);
+    const rows = contact.filter(([, value]) => value);
+    const icons = data.icons !== false;
+    const message = clean(data.message);
     const fine = data.fine === false ? [] : fineLines(details, lang, { tax: data.tax === true });
+    const density = backDensity({ contact: rows.length, message, fine: fine.length, hasRole: Boolean(clean(data.role)) });
+    if (density.tooMuch) notes.push("The back is very full, it is set as small as it goes. Untick something or shorten the line on the back.");
     const qrText = data.qr === "vcard" ? vcard(details, data.name || details.full_name) : data.qr === "url" ? webUrl(details) : "";
     const qr = qrText ? `<div class="card__qr${B.qrBox ? " card__qr--box" : ""}">${qrSvg(qrText, { size: 14, dark: B.qrDark, light: B.qrLight, label: data.qr === "vcard" ? "QR code with my contact details" : `QR code for ${clean(details.web)}` })}</div>` : "";
     const band = B.band ? leafBand(w, h, b, B.band === "dark") : "";
     const bar = B.bar ? `<rect x="${-b}" y="${-b}" width="${b + 2.2}" height="${h + 2 * b}" fill="${B.bar}"/>` : "";
-    const backInner = `<div class="card__back${B.band ? " card__back--band" : ""}${B.bar ? " card__back--bar" : ""}" style="color:${B.ink}">
+    const backInner = `<div class="card__back${B.band ? " card__back--band" : ""}${B.bar ? " card__back--bar" : ""}${density.cls}" style="color:${B.ink};--card-sub:${B.sub}">
       <div class="card__head">
         <div><p class="card__name">${txt(data.name || details.full_name || "[Name]")}</p>${clean(data.role) ? `<p class="card__role" style="color:${B.sub}">${txt(data.role)}</p>` : ""}</div>
         ${B.sym ? `<img class="card__sym" src="${esc(asset(`images/brand/${B.sym}.svg`))}" alt="">` : ""}
       </div>
-      <p class="card__contact">${contact.map(txt).join("<br>")}</p>
+      <ul class="card__contact${icons ? " card__contact--icons" : ""}">${rows.map(([kind, value]) => `<li>${icons ? icon(kind) : ""}<span>${txt(value)}</span></li>`).join("")}</ul>
+      ${message ? `<p class="card__message">${txt(message)}</p>` : ""}
       <div class="card__foot">
         <p class="card__fine" style="color:${B.sub}${B.rule ? `;border-top:0.3pt solid ${B.rule}` : ""}">${fine.map(txt).join("<br>")}</p>
         ${qr}
@@ -172,7 +241,9 @@ export const card = {
     const back = cardSide(backInner, bar + band, { w, h, b, bleed, bg: B.bg, side: "back" });
 
     const body = `<div class="cards cards--${data.format === "us" ? "us" : "eu"}${bleed ? " cards--bleed" : ""}">${front}${back}</div>`;
-    return { body, footer: "", title: `${senderName(details)}, business card`, notes: fine.length > 5 ? ["The fine print is long for a card, check it is still readable at this size."] : [] };
+    if (fine.length > 5) notes.push("The fine print is long for a card, check it is still readable at this size.");
+    const notesHtml = notes.length ? `<aside class="doc-notes" aria-label="Notes for you, not printed"><strong>Notes for you, not printed</strong><ul>${notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></aside>` : "";
+    return { body: notesHtml + body, footer: "", title: `${senderName(details)}, business card`, notes };
   }
 };
 
@@ -310,6 +381,10 @@ export const signature = {
     { name: "name", label: "Name", type: "text", max: 80 },
     { name: "role", label: "Line under the name", type: "text", max: 80 },
     { name: "address", label: "Postal address", type: "checkbox" },
+    { name: "linkedin", label: "LinkedIn", type: "checkbox", help: "From the site settings" },
+    { name: "github", label: "GitHub", type: "checkbox", help: "From the site settings" },
+    { name: "icons", label: "Icons in front of the phone number, email, website and the rest", type: "checkbox", default: true },
+    { name: "message", label: "A line on the back", type: "textarea", max: 160, help: "Something like Looking for an internship from September 2027. Short reads best, the back gets tighter as it fills up" },
     { name: "links", label: "Links to the legal notice and privacy pages", type: "checkbox", default: true },
     { name: "slogan", label: "Slogan", type: "text", max: 60, help: "Empty for none" },
     { name: "disclaimer", label: "Confidentiality note (full variant only)", type: "checkbox" },

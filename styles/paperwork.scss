@@ -433,6 +433,57 @@ th.num {
   line-height: 1;
 }
 
+// A quote under the logo: balanced lines so it never ends on one lonely word, sized by its length (set in
+// stationery.js), the author on their own line after a short rule instead of a dash
+.card__front--quote {
+  gap: 2.6mm;
+  padding: 0 7mm;
+  text-align: center;
+
+  .card__slogan {
+    font-size: 6.4pt;
+    opacity: 0.85;
+  }
+}
+
+.card__front--border.card__front--quote {
+  padding: 0 9mm;
+}
+
+.card__quote {
+  margin: 0;
+  max-width: 64mm;
+
+  blockquote {
+    margin: 0;
+    font-family: "Young Serif", Georgia, serif;
+    line-height: 1.25;
+    text-wrap: balance;
+    hyphens: manual;
+  }
+
+  figcaption {
+    margin-top: 1.4mm;
+    font-size: 5.8pt;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+
+    &::before {
+      content: "";
+      display: inline-block;
+      width: 3.5mm;
+      margin-right: 1.4mm;
+      vertical-align: middle;
+      border-top: 0.4pt solid currentColor;
+    }
+  }
+}
+
+.card__quote--short blockquote { font-size: 10pt; }
+.card__quote--medium blockquote { font-size: 8.4pt; }
+.card__quote--long blockquote { font-size: 7.2pt; }
+.card__quote--longest blockquote { font-size: 6.3pt; }
+
 // The back keeps 5 mm from every cut edge, so a slightly off cut never takes a letter with it
 .card__back {
   position: absolute;
@@ -471,9 +522,63 @@ th.num {
   flex: none;
 }
 
+// Contact lines, each on its own row, with a small icon in the accent colour lined up in a column of its own
 .card__contact {
-  margin: 2.6mm 0 0;
+  margin: 2.4mm 0 0;
+  padding: 0;
+  list-style: none;
   font-weight: 600;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 1.5mm;
+    min-height: 3.3mm;
+  }
+}
+
+.card__icon {
+  flex: none;
+  width: 2.4mm;
+  height: 2.4mm;
+  fill: none;
+  stroke: var(--card-sub);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+// The line on the back, set apart in the serif and balanced like the quote
+.card__message {
+  margin: 1.8mm 0 0;
+  max-width: 52mm;
+  font-family: "Young Serif", Georgia, serif;
+  font-size: 6.6pt;
+  line-height: 1.3;
+  color: var(--card-sub);
+  text-wrap: balance;
+}
+
+// A fuller back gets a step smaller instead of running off the card
+.card__back--compact {
+  font-size: 6.4pt;
+
+  .card__name { font-size: 10pt; }
+  .card__contact { margin-top: 1.8mm; }
+  .card__contact li { min-height: 2.9mm; }
+  .card__message { font-size: 6pt; margin-top: 1.4mm; }
+}
+
+.card__back--tight {
+  font-size: 5.9pt;
+
+  .card__name { font-size: 9.2pt; }
+  .card__role { font-size: 6pt; }
+  .card__contact { margin-top: 1.4mm; }
+  .card__contact li { min-height: 2.6mm; }
+  .card__icon { width: 2.1mm; height: 2.1mm; }
+  .card__message { font-size: 5.6pt; margin-top: 1.1mm; }
+  .card__fine { font-size: 5.2pt; }
 }
 
 .card__foot {

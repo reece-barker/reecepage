@@ -30,7 +30,7 @@ const safeJson = (value) => JSON.stringify(value).replace(/</g, "\\u003c");
  * @param {object} deps.assets the asset manifest, for the stylesheet and logo addresses
  * @param {(res: object, view: string, section: string, title: string, data?: object) => void} deps.page renders an admin page
  */
-export function createPaperworkController({ config, paperwork, repository, assets, page }) {
+export function createPaperworkController({ config, paperwork, repository, assets, page, site = () => config.site }) {
   const previews = new Map();
   // Pages waiting to be printed by Chromium: an unguessable key, used once, gone after a minute. Chromium has no
   // admin session, so this is how it gets to see the page
@@ -50,7 +50,8 @@ export function createPaperworkController({ config, paperwork, repository, asset
   function renderPage(kind, record, ctx, { preview = false } = {}) {
     const def = documentKind(kind);
     const logo = assets.url("images/brand/reece-dove-long-horizontal-colour.svg");
-    const out = def.render(record.data, { ...ctx, number: record.number, logo, preview, asset: (p) => assets.url(p), baseUrl: config.baseUrl });
+    // profiles: LinkedIn and GitHub from the site settings, the business card can show them
+    const out = def.render(record.data, { ...ctx, number: record.number, logo, preview, asset: (p) => assets.url(p), baseUrl: config.baseUrl, profiles: site()?.profiles || {} });
     const html = pageHtml({ title: out.title, lang: record.data.lang, body: out.body, footer: out.footer, stylesheet: assets.url("css/paperwork.css"), preview });
     return { html, out };
   }

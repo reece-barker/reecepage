@@ -208,3 +208,33 @@ test("the slip has writing lines only when there is no note", () => {
   assert.doesNotMatch(draw("Here is the book I promised."), /slip__lines/);
   assert.match(draw(""), /With compliments/);
 });
+
+test("a business card can carry a quote, a line on the back, icons and the profile links", () => {
+  const details = businessDetails({ entity: "de-private", full_name: "Reece Barker", phone: "+49 162 000", email: "me@reece.page", web: "reece.page" });
+  const asset = (p) => `/${p}`;
+  const profiles = { linkedin: "https://www.linkedin.com/in/reecenbarker", github: "https://github.com/reece-barker" };
+  const base = KINDS.card.defaults(details, "de");
+  // an older card without front_text keeps its slogan
+  const old = { ...base };
+  delete old.front_text;
+  assert.match(KINDS.card.render(old, { details, asset }).body, /card__slogan/);
+  const quoted = KINDS.card.render({ ...base, front_text: "quote", quote: { text: "Einfachheit ist die Voraussetzung für Verlässlichkeit.", author: "Edsger W. Dijkstra" } }, { details, asset });
+  assert.match(quoted.body, /„Einfachheit ist die Voraussetzung für Verlässlichkeit\.“/);
+  assert.match(quoted.body, /<figcaption>Edsger W\. Dijkstra<\/figcaption>/);
+  assert.match(quoted.body, /card__quote--medium/);
+  assert.doesNotMatch(quoted.body, /card__slogan/);
+  const both = KINDS.card.render({ ...base, front_text: "both", quote: { text: "Kurz.", author: "" } }, { details, asset });
+  assert.match(both.body, /card__quote--short/);
+  assert.match(both.body, /card__slogan/);
+  assert.ok(both.notes.some((n) => /no author/.test(n)));
+  const back = KINDS.card.render({ ...base, linkedin: true, github: true, message: "Auf der Suche nach einem Praktikum ab September 2027." }, { details, asset, profiles });
+  assert.match(back.body, /linkedin\.com\/in\/reecenbarker/);
+  assert.match(back.body, /github\.com\/reece-barker/);
+  assert.equal((back.body.match(/class="card__icon"/g) || []).length, 5);
+  assert.match(back.body, /class="card__message">Auf der Suche/);
+  const plain = KINDS.card.render({ ...base, icons: false }, { details, asset, profiles });
+  assert.doesNotMatch(plain.body, /card__icon/);
+  // a very full back is set tighter and says so
+  const full = KINDS.card.render({ ...base, linkedin: true, github: true, address: true, message: "x".repeat(150) }, { details: { ...details, street: "Teststr. 1", city: "München" }, asset, profiles });
+  assert.match(full.body, /card__back--tight/);
+});
