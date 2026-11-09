@@ -1,8 +1,19 @@
+{{!-- The sign in page: the brand on the left (a band on top on a phone), the ways in on the right. Only Reece has
+an account, so it says that up front and gives everyone else a way back to the site --}}
 <div class="signin">
-  <div class="signin__panel">
-    <img class="signin__mark theme-light-only" src="{{asset "images/brand/reece-dove-symbol-colour.svg"}}" alt="" width="56" height="45">
-    <img class="signin__mark theme-dark-only" src="{{asset "images/brand/reece-dove-symbol-colour-on-dark.svg"}}" alt="" width="56" height="45">
-    <h1>Sign in to reece.page</h1>
+  <aside class="signin__brand" aria-label="reece.page">
+    <a class="signin__home" href="/">
+      <img src="{{asset "images/brand/reece-dove-symbol-colour-on-dark.svg"}}" alt="" width="40" height="32">
+      <span>reece.page</span>
+    </a>
+    <p class="signin__slogan">Code for a living world.</p>
+    <p class="signin__about">The admin behind the site: writing, projects, the CV and paperwork.</p>
+    <img class="signin__leaves" src="{{asset "images/brand/leaf-band.svg"}}" alt="" width="240" height="16">
+  </aside>
+
+  <section class="signin__panel" aria-labelledby="signin-title">
+    <h1 id="signin-title">Sign in</h1>
+    <p class="signin__lede">This part of the site is only for Reece. Looking for his work? <a href="/projects">See the projects</a>.</p>
 
     {{#if error}}<p class="alert alert--error" role="alert">{{icon "alert"}}<span>{{error}}</span></p>{{/if}}
     {{#if noDatabase}}
@@ -14,31 +25,32 @@
 
     <div class="signin__options">
       {{#if simplelogin}}
-      <form method="post" action="/admin/login/simplelogin">
+      <form class="signin__option" method="post" action="/admin/login/simplelogin">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <input type="hidden" name="next" value="{{next}}">
-        <button class="button signin__primary" type="submit">Sign in with SimpleLogin</button>
-        <p class="hint">SimpleLogin has a Log in with Proton button, so your Proton account works too.</p>
+        <button class="button signin__button" type="submit" aria-describedby="signin-simplelogin-hint">{{icon "key"}}Sign in with SimpleLogin</button>
+        <p class="signin__hint" id="signin-simplelogin-hint">Log in with Proton works there too.</p>
       </form>
       {{/if}}
 
       {{#if passkeys}}
-      <div class="signin__passkey" data-passkey-signin data-next="{{next}}" hidden>
-        <button class="button button--secondary" type="button" data-passkey-button>Use a passkey</button>
-        <p class="form-status" role="status" aria-live="polite" data-passkey-status></p>
+      <div class="signin__option signin__passkey" data-passkey-signin data-next="{{next}}" hidden>
+        <button class="button button--secondary signin__button" type="button" data-passkey-button aria-describedby="signin-passkey-status">{{icon "check"}}Use a passkey</button>
+        <p class="signin__hint form-status" id="signin-passkey-status" role="status" aria-live="polite" data-passkey-status>Face ID, Touch ID, Windows Hello or a security key.</p>
       </div>
       {{/if}}
 
       {{#if dev}}
-      <form method="post" action="/admin/login/dev" class="signin__dev">
+      <form class="signin__option" method="post" action="/admin/login/dev">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <input type="hidden" name="next" value="{{next}}">
-        <button class="button button--secondary" type="submit">Development sign in</button>
-        <p class="hint">Only here on your own computer, never on the server.</p>
+        <button class="button button--secondary signin__button" type="submit" aria-describedby="signin-dev-hint">Development sign in</button>
+        <p class="signin__hint" id="signin-dev-hint">Only here on your own computer, never on the server.</p>
       </form>
       {{/if}}
     </div>
     {{/if}}
+
     <p class="signin__back"><a class="link-action" href="/">Back to the site</a></p>
-  </div>
+  </section>
 </div>

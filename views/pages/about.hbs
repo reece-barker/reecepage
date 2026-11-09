@@ -11,6 +11,27 @@
     </div>
   </header>
 
+  {{#if branches.length}}
+  {{!-- The three branches of the tree on the home page, what everything below grows from --}}
+  <section class="about-branches" aria-labelledby="branches">
+    <h2 id="branches">{{home.branches_heading}}</h2>
+    <p class="section-intro">{{home.branches_intro}}</p>
+    <ul class="branch-list branch-list--compact" role="list">
+      {{#each branches}}
+      <li class="branch-row branch-{{id}}">
+        <h3><span class="pip" aria-hidden="true"></span>{{title}}</h3>
+        <p>{{text}}</p>
+        {{#if (eq id "faith")}}
+        <a class="link-action" href="#people">More on this below {{icon "arrow"}}</a>
+        {{else}}
+        <a class="link-action" href="/projects?branch={{id}}">{{title}} projects {{icon "arrow"}}</a>
+        {{/if}}
+      </li>
+      {{/each}}
+    </ul>
+  </section>
+  {{/if}}
+
   <div class="with-aside about-section">
     <article class="prose" aria-label="My story">
       {{{page.html}}}

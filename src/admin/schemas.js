@@ -235,13 +235,14 @@ Object.assign(DATA_SCHEMAS, {
   },
   home: {
     title: "Home page",
-    help: "The texts on the home page, the grey text in an empty field is what shows until you change it. The tree branches, the selected projects (tick On the home page on a project) and Right now have their own editors.",
+    help: "The texts on the home page, the grey text in an empty field is what shows until you change it. The tree branches (shown on the About page), the selected projects (tick On the home page on a project) and Right now have their own editors.",
     root: { type: "object", fields: [
       { name: "hero_lede", label: "Intro under your name", type: "textarea", max: 400 },
       { name: "hero_button", label: "Main button", type: "text", max: 40 },
-      { name: "hero_link", label: "Second link", type: "text", max: 40 },
-      { name: "branches_heading", label: "Tree heading", type: "text", max: 80 },
-      { name: "branches_intro", label: "Tree intro", type: "textarea", max: 300 },
+      { name: "hero_cv", label: "CV link", type: "text", max: 40 },
+      { name: "hero_link", label: "Contact link", type: "text", max: 40 },
+      { name: "branches_heading", label: "Tree branches heading (on the About page)", type: "text", max: 80 },
+      { name: "branches_intro", label: "Tree branches intro (on the About page)", type: "textarea", max: 300 },
       { name: "intro_heading", label: "Video heading", type: "text", max: 80 },
       { name: "intro_text", label: "Video text (when the video has no caption)", type: "textarea", max: 300 },
       { name: "work_heading", label: "Selected work heading", type: "text", max: 80 },

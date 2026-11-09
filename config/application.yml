@@ -36,16 +36,16 @@ site:
         url: https://www.mis-munich.de
 
 navigation:
+  # Four links, what a recruiter looks for: the work, who he is, the CV and how to reach him. The logo already goes
+  # home, Writing and Media live in the footer until theres more than one post and the video is back
   primary:
-    - { label: Home, href: / }
     - { label: Projects, href: /projects }
-    - { label: Writing, href: /writing, feature: writing }
     - { label: About, href: /about }
-    - { label: Media, href: /media, feature: media }
     - { label: CV, href: /cv }
     - { label: Contact, href: /contact }
   # Extra links in the footer's Site list
   more:
+    - { label: Writing, href: /writing, feature: writing }
     - { label: References, href: /references }
     - { label: Status, href: /status, feature: status_page }
   legal:

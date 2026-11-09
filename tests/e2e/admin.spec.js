@@ -53,6 +53,17 @@ test("write, switch to Markdown and back, publish, and see it on the site", asyn
   expect(errors).toEqual([]);
 });
 
+test("the sign in page is accessible, fits the screen and the footer links to it", async ({ page }) => {
+  const errors = watchConsole(page);
+  await page.goto("/");
+  await page.getByRole("link", { name: "Admin sign in" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "Sign in" })).toBeVisible();
+  expect(await axe(page)).toEqual([]);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow, "no sideways scrolling").toBeLessThanOrEqual(0);
+  expect(errors).toEqual([]);
+});
+
 for (const path of ["/admin", "/admin/writing", "/admin/writing/new", "/admin/lists/timeline", "/admin/lists/settings", "/admin/account", "/admin/library", "/admin/system", "/admin/paperwork", "/admin/lists/business"]) {
   test(`${path} is accessible and clean`, async ({ page }) => {
     const errors = watchConsole(page);
