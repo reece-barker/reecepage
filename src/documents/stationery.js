@@ -352,11 +352,13 @@ export const slip = {
 const SANS = "Arial,Helvetica,sans-serif", SERIF = "Georgia,'Times New Roman',serif";
 
 // The signature colours. A mail app can show the signature on white or on near black and a copied signature only keeps its inline
-// styles, so the text is a mid green that reads on both (about 4:1 on white and on a dark grey) and not the dark olive of the
-// paper, which was 1.5:1 on a dark background. The few mail apps that follow dark mode (Apple Mail, Outlook, Thunderbird) get the
-// light colours on top of that, from the style block, which is lost when a mail app strips it and then the mid green still reads
-const INK = "#678550", SUB = "#6F8A5C";
-const DARK_CSS = `<style>@media (prefers-color-scheme:dark){.sg-ink{color:${C.cream} !important}.sg-sub{color:${C.sage50} !important}}[data-ogsc] .sg-ink{color:${C.cream} !important}[data-ogsc] .sg-sub{color:${C.sage50} !important}</style>`;
+// styles, so every colour is a mid tone that reads on both (about 4:1 on white and on a dark grey) and not the dark olive of the
+// paper, which was 1.5:1 on a dark background. Three jobs so it isnt one flat green: leaf green for the name, clay (the blush of
+// the brand, darkened) for the links, a warm grey for the small print. The mail apps that follow dark mode (Apple Mail, Outlook,
+// Thunderbird) get the light brand colours on top of that from the style block, which is lost when a mail app strips it and
+// then the mid tones still read
+const INK = "#5E8A48", LINK = "#C4694F", SUB = "#857F73";
+const DARK_CSS = `<style>@media (prefers-color-scheme:dark){.sg-ink{color:${C.cream} !important}.sg-link{color:${C.blush} !important}.sg-sub{color:${C.sage50} !important}}[data-ogsc] .sg-ink{color:${C.cream} !important}[data-ogsc] .sg-link{color:${C.blush} !important}[data-ogsc] .sg-sub{color:${C.sage50} !important}</style>`;
 
 // Companies (and Dutch sole traders, and UK sole traders with a trading name) have to put their details in every
 // business email, so even the minimal signature keeps them for those
@@ -381,8 +383,8 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
   const mark = (s) => preview ? txt(s) : esc(s);
   const name = clean(data.name) || clean(details.full_name) || "[Name]";
   const web = clean(details.web), url = webUrl(details);
-  const sep = `<span style="color:${C.sage}">&nbsp;&nbsp;|&nbsp;&nbsp;</span>`;
-  const a = (href, text) => `<a class="sg-ink" href="${esc(href)}" style="color:${INK};text-decoration:none">${mark(text)}</a>`;
+  const sep = `<span style="color:${C.blush}">&nbsp;&nbsp;|&nbsp;&nbsp;</span>`;
+  const a = (href, text) => `<a class="sg-link" href="${esc(href)}" style="color:${LINK};text-decoration:none">${mark(text)}</a>`;
   const contact = [clean(details.phone) ? a(`tel:${clean(details.phone).replace(/[^\d+]/g, "")}`, details.phone) : "", clean(details.email) ? a(`mailto:${clean(details.email)}`, details.email) : "", web ? a(url, web) : ""].filter(Boolean).join(sep);
   // LinkedIn and GitHub from the site settings, as links with their names (the ticks on the form did nothing before)
   const social = [data.linkedin && profiles.linkedin ? ["LinkedIn", profiles.linkedin] : null, data.github && profiles.github ? ["GitHub", profiles.github] : null].filter(Boolean);

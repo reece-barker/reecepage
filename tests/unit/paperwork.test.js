@@ -360,6 +360,7 @@ test("the signature reads on a dark background: no dark olive text, and a dark m
   assert.doesNotMatch(sent, /color:#33412A|color:#5A6652|color:#4C5E3E/i);
   assert.match(sent, /prefers-color-scheme:dark/);
   assert.match(sent, /class="sg-ink"/);
+  assert.match(sent, /class="sg-link"/);
   // the editor preview follows the checkbox, not the browsers own dark mode, so it has no style block
   assert.doesNotMatch(signatureParts(data, me, { baseUrl: "https://reece.page", preview: true }).html, /prefers-color-scheme/);
 });
