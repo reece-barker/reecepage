@@ -3,6 +3,10 @@
 // Design tokens. Everything visual comes from here as a CSS custom property, so the dark theme only has to swap
 // values and every component follows. Contrast ratios are noted next to the text colours (checked against the
 // background they sit on, WCAG AA is 4.5 for text and 3 for marks and borders that carry meaning).
+//
+// The surfaces are spaced by lightness on purpose (OKLCH L in the comments), eyes tell things apart by lightness
+// first and hue last, so raised, page and sunken are each 3 to 5 points apart instead of all sitting around 93.
+// Measured and rebuilt with the palette-separation skill in November 2026.
 
 // Brand colours from the dove brand pack, used raw only for marks and fills, never as text on cream
 $brand: (
@@ -35,59 +39,61 @@ $breakpoints: (
 
 @mixin light-theme {
   color-scheme: light;
-  --color-bg: #{brand(cream)};
-  --color-bg-raised: #fffdf7;
-  --color-bg-sunken: #{brand(cream-2)};
+  --color-bg: #{brand(cream)};               // L96.8
+  --color-bg-raised: #fffefa;               // L99.7, cards and panels
+  --color-bg-sunken: #ebe4cb;               // L91.8, wells, selected rows, the admin side areas
   --color-bg-inverse: #{brand(olive)};
   --color-text: #{brand(olive)};            // 9.9 on bg
-  --color-text-muted: #{brand(olive-80)};   // 5.5 on bg, 5.0 on sunken
+  --color-text-muted: #{brand(olive-80)};   // 5.5 on bg, 4.8 on sunken
   --color-text-inverse: #{brand(cream)};
-  --color-line: #d6cfb8;
-  --color-line-strong: #a9a58f;
+  --color-line: #d6cfb8;                    // L85.4, dividers only, they dont have to be seen to be understood
+  --color-line-strong: #797f65;             // L58.4, form fields and borders that matter: 3.8 on bg, 3.3 on sunken
   --color-accent: #{brand(olive)};
   --color-on-accent: #{brand(cream)};
   --color-highlight: #{brand(blush)};
-  --color-highlight-soft: #{brand(blush-50)};
+  --color-highlight-soft: #fadacd;
   --color-leaf: #{brand(sage)};
-  --color-leaf-soft: #{brand(sage-25)};
+  --color-leaf-soft: #deedd5;               // L92.8
+  --color-leaf-strong: #628252;             // L56.9, icons and marks on any light surface, 3.4 or more
   --color-focus: #{brand(olive)};
   --color-focus-halo: #{brand(blush)};
   --color-danger: #9a3a2b;                  // 6.4 on bg
   --color-success: #3f6b2f;
-  --color-code-bg: #f1ebd8;
+  --color-code-bg: #f1e9d3;
   // Branch marks: the squares next to projects. Text never uses these, the label beside them does that job
   --branch-code: #4a7f93;                   // 4.0, marks only
   --branch-earth: #5e8a4e;                  // 3.7, marks only
   --branch-faith: #b8735c;                  // 3.4, marks only
-  --branch-code-tint: #e1ecef;
-  --branch-earth-tint: #e4ecdf;
-  --branch-faith-tint: #f6dcd1;
-  --shadow-raised: 0 1px 0 rgb(51 65 42 / 0.06), 0 8px 24px -12px rgb(51 65 42 / 0.25);
+  --branch-code-tint: #dff0f6;              // L94.4, the three tints differ in lightness as well as hue
+  --branch-earth-tint: #deedd5;             // L92.8
+  --branch-faith-tint: #fadacd;             // L91.1, muted text still 4.6 on it
+  --shadow-raised: 0 1px 0 rgb(51 65 42 / 0.08), 0 10px 26px -12px rgb(51 65 42 / 0.3);
   --pattern-leaves: url("../images/pattern/reece-dove-pattern-light-transparent.svg");
 }
 
 @mixin dark-theme {
   color-scheme: dark;
   --color-bg: #{brand(night)};
-  --color-bg-raised: #{brand(night-2)};
-  --color-bg-sunken: #{brand(night-3)};
+  --color-bg-raised: #{brand(night-2)};     // L29.5, up for elevation
+  --color-bg-sunken: #151c11;               // L21.5, down for wells, it used to be lighter than raised
   --color-bg-inverse: #{brand(cream)};
   --color-text: #{brand(cream)};            // 14.2 on bg
   --color-text-muted: #b9c7ae;              // 8.8 on bg, 7.8 on raised
   --color-text-inverse: #{brand(olive)};
   --color-line: #3c4a33;
-  --color-line-strong: #6d7e5e;
+  --color-line-strong: #768768;             // 4.0 on bg, 3.6 on raised
   --color-accent: #{brand(sage)};
   --color-on-accent: #{brand(night)};
   --color-highlight: #{brand(blush)};
   --color-highlight-soft: #4a3a33;
   --color-leaf: #{brand(sage)};
-  --color-leaf-soft: #2f3b28;
+  --color-leaf-soft: #293820;
+  --color-leaf-strong: #9fc48e;
   --color-focus: #{brand(blush)};
   --color-focus-halo: #{brand(blush)};
   --color-danger: #ffb4a2;
   --color-success: #b4d9a3;
-  --color-code-bg: #171e14;
+  --color-code-bg: #11170e;
   --branch-code: #7fb0c2;
   --branch-earth: #9fc48e;
   --branch-faith: #efb9a4;
