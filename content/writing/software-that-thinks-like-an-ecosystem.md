@@ -1,15 +1,13 @@
 ---
 title: Software that thinks like an ecosystem
 summary: >-
-  Where my slogan comes from: one sentence from Rachel Carson, and the other writers on green tech and
-  sustainability who say the same thing in their own words.
+  Where my slogan comes from: one sentence from Rachel Carson, and the other writers on green tech and sustainability
+  who say the same thing in their own words.
 date: '2026-11-09'
 tags:
   - Sustainability
   - Green tech
   - Books
-todo:
-  - Drafted by Claude from sources it checked online. It does not say you read these books cover to cover, because nobody knows that yet. If you did, add a sentence or two of your own about what stayed with you, a passage or a chapter. Check the two quotes against your own copies if you have them, then remove this line
 ---
 
 My slogan is "Software that thinks like an ecosystem". I swapped it in for an older one, and it is worth saying
@@ -40,11 +38,11 @@ Carson came at it with data from a laboratory, Muir with his boots on a mountain
 Once I started looking, it was everywhere in the writing on sustainability, each time in different words.
 
 - **Aldo Leopold, *A Sand County Almanac* (1949).** His "land ethic" asks us to widen the idea of a community to include
-  soil, water, plants and animals, and to treat them as members and not as property.
+soil, water, plants and animals, and to treat them as members and not as property.
 - **Donella Meadows, *Thinking in Systems* (2008).** A system is more than its parts, and the place where you push
-  is often not the place where it changes. Her best known essay on this is about leverage points.
+is often not the place where it changes. Her best known essay on this is about leverage points.
 - **William McDonough and Michael Braungart, *Cradle to Cradle* (2002).** Design things so that nothing is waste:
-  what is left over becomes food for something else, the way it does in a forest.
+what is left over becomes food for something else, the way it does in a forest.
 
 Different decades, different jobs, one habit of mind: look at the whole thing, not just the part in front of you.
 
