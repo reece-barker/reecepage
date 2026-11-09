@@ -1,11 +1,13 @@
 <header class="admin-head">
   <div class="admin-head__text">
     <h1>{{doc.kindLabel}} {{doc.number}}</h1>
-    <p class="admin-head__lede">{{help}} The page on the right is the PDF, it follows what you type.</p>
+    <p class="admin-head__lede">{{help}} {{#if hasPdf}}The page on the right is the PDF, it follows what you type.{{else}}The preview on the right follows what you type.{{/if}}</p>
   </div>
   <div class="admin-head__actions">
-    <a class="button button--small" href="/admin/paperwork/{{doc.id}}/pdf" data-download>{{icon "arrow"}}PDF</a>
-    <a class="button button--secondary button--small" href="/admin/paperwork/{{doc.id}}/docx" data-download>{{icon "arrow"}}Word</a>
+    {{#if hasPdf}}<a class="button button--small" href="/admin/paperwork/{{doc.id}}/pdf" data-download>{{icon "arrow"}}PDF</a>{{/if}}
+    {{#if hasWord}}<a class="button button--secondary button--small" href="/admin/paperwork/{{doc.id}}/docx" data-download>{{icon "arrow"}}Word</a>{{/if}}
+    {{#if isSignature}}<button class="button button--small" type="button" data-copy-signature>{{icon "check"}}Copy signature</button>
+    <a class="button button--secondary button--small" href="/admin/paperwork/{{doc.id}}/signature?download=1" data-download>{{icon "arrow"}}HTML file</a>{{/if}}
     <form method="post" action="/admin/paperwork/{{doc.id}}/duplicate"><input type="hidden" name="_csrf" value="{{csrfToken}}"><button class="button button--secondary button--small" type="submit">{{icon "plus"}}Copy as new</button></form>
   </div>
 </header>

@@ -66,6 +66,37 @@
 
   form.addEventListener("submit", function (event) { event.preventDefault(); save(); });
 
+  // The email signature: copied as html and plain text together, so pasting into Outlook or Apple Mail keeps the
+  // formatting and a plain text mail app still gets something sensible. Saves first so whats copied is whats shown
+  var copyButton = document.querySelector("[data-copy-signature]");
+  if (copyButton && config.signatureUrl) {
+    copyButton.addEventListener("click", function () {
+      var copy = function () {
+        fetch(config.signatureUrl, { credentials: "same-origin", headers: { Accept: "application/json" } })
+          .then(function (response) { return response.json(); })
+          .then(function (data) {
+            if (!data.ok) throw new Error("no signature");
+            if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+              return navigator.clipboard.write([new window.ClipboardItem({
+                "text/html": new Blob([data.html], { type: "text/html" }),
+                "text/plain": new Blob([data.text], { type: "text/plain" })
+              })]);
+            }
+            return navigator.clipboard.writeText(data.text);
+          })
+          .then(function () {
+            statusLine.classList.remove("is-error");
+            statusLine.textContent = "Signature copied, paste it into your mail app's signature settings";
+          })
+          .catch(function () {
+            statusLine.classList.add("is-error");
+            statusLine.textContent = "Couldnt copy here, use HTML file instead and copy it from the browser";
+          });
+      };
+      if (dirty) save(copy); else copy();
+    });
+  }
+
   // Contracts: copies the clauses the facts make into the form as text, so they can be edited from there. The form
   // gets built again with the new value, then it saves and redraws like after any other change
   var writeOutButton = form.querySelector("[data-write-out]");

@@ -90,6 +90,7 @@ export function createRouter(c, m) {
     router.get("/admin/paperwork/:id/docx", ...admin, p.docx);
     router.post("/admin/paperwork/:id/duplicate", ...form, p.duplicate);
     router.post("/admin/paperwork/:id/write-out", ...json, p.writeOut);
+    router.get("/admin/paperwork/:id/signature", ...admin, p.signature);
     router.post("/admin/paperwork/:id/status", ...form, p.setStatus);
   }
   router.get("/admin/sync", ...page, a.syncPage);

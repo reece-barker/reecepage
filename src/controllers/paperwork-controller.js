@@ -1,4 +1,4 @@
-// Paperwork in the admin: letters, invoices and contracts (cards follow) with a form on the left and the live
+// Paperwork in the admin: letters, invoices, contracts, business cards, compliments slips and the email signature, with a form on the left and the live
 // A4 preview on the right, numbered, kept with their revisions, and downloaded as PDF or a plain Word file.
 // Your details and bank accounts come from the private lists My details and Payment accounts.
 import { randomBytes } from "node:crypto";
@@ -9,6 +9,7 @@ import { businessDetails, missingRequired } from "../documents/business.js";
 import { pageHtml, pdfFooterTemplate } from "../documents/page.js";
 import { makeDocx } from "../documents/docx.js";
 import { writeOut } from "../documents/contract.js";
+import { signatureParts } from "../documents/stationery.js";
 import { CvPdfError, printUrl } from "../services/cv-pdf.js";
 
 const PREVIEW_MINUTES = 20;
@@ -49,7 +50,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
   function renderPage(kind, record, ctx, { preview = false } = {}) {
     const def = documentKind(kind);
     const logo = assets.url("images/brand/reece-dove-long-horizontal-colour.svg");
-    const out = def.render(record.data, { ...ctx, number: record.number, logo, preview });
+    const out = def.render(record.data, { ...ctx, number: record.number, logo, preview, asset: (p) => assets.url(p), baseUrl: config.baseUrl });
     const html = pageHtml({ title: out.title, lang: record.data.lang, body: out.body, footer: out.footer, stylesheet: assets.url("css/paperwork.css"), preview });
     return { html, out };
   }
@@ -86,7 +87,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
     return record;
   }
 
-  const filename = (record, ext) => `${record.number}${record.title ? `-${record.title.toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 40)}` : ""}.${ext}`;
+  const filename = (record, ext) => `${record.number}${record.title ? `-${record.title.toLowerCase().replace(/ß/g, "ss").normalize("NFKD").replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 40)}` : ""}.${ext}`;
 
   return {
     async list(req, res, next) {
@@ -136,6 +137,10 @@ export function createPaperworkController({ config, paperwork, repository, asset
           help: def.help,
           missing,
           hasAccounts: ctx.accounts.length > 0,
+          // what this kind can be downloaded as, the signature is copied instead of printed
+          hasPdf: !def.outputs || def.outputs.includes("pdf"),
+          hasWord: Boolean(def.plain),
+          isSignature: record.kind === "signature",
           editorJson: safeJson({
             id: record.id,
             kind: record.kind,
@@ -143,6 +148,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
             previewUrl: "/admin/paperwork/preview",
             fields: fieldsFor(record.kind, ctx.accounts, record.data),
             writeOutUrl: record.kind === "contract" ? `/admin/paperwork/${record.id}/write-out` : null,
+            signatureUrl: record.kind === "signature" ? `/admin/paperwork/${record.id}/signature` : null,
             value: record.data,
             updatedAt: record.updatedAt
           }),
@@ -203,6 +209,26 @@ export function createPaperworkController({ config, paperwork, repository, asset
       }
     },
 
+    /**
+     * The email signature as html and plain text, from what's saved. The editor copies it from here, and with
+     * ?download=1 its an html file to open in a browser and copy from, or to import into a mail app
+     */
+    async signature(req, res, next) {
+      try {
+        const record = await load(req, res, next);
+        if (!record) return;
+        if (record.kind !== "signature") return next(notFound());
+        const ctx = await context();
+        const parts = signatureParts(record.data, ctx.details, { baseUrl: config.baseUrl });
+        res.set("Cache-Control", "no-store");
+        if (req.query.download) {
+          const page = `<!doctype html>\n<html lang="${record.data.lang === "en" ? "en-GB" : record.data.lang || "de"}">\n<head>\n<meta charset="utf-8">\n<title>Email signature</title>\n</head>\n<body>\n${parts.html}\n</body>\n</html>\n`;
+          return res.attachment(filename(record, "html")).type("html").send(page);
+        }
+        res.json({ ok: true, html: parts.html, text: parts.text });
+      } catch (error) { next(error); }
+    },
+
     /** The page Chromium prints, once, with the key the PDF button just made */
     showPrint(req, res, next) {
       const key = String(req.params.key);
@@ -223,12 +249,16 @@ export function createPaperworkController({ config, paperwork, repository, asset
       try {
         const record = await load(req, res, next);
         if (!record) return;
+        const def = documentKind(record.kind);
+        if (def.outputs && !def.outputs.includes("pdf")) return next(notFound());
         if (printing) return res.status(409).type("text").send("A PDF is being made already, try again in a few seconds.");
         const ctx = await context();
         const { html, out } = renderPage(record.kind, record, ctx);
         const key = randomBytes(24).toString("hex");
         toPrint.set(key, { html, expires: Date.now() + 60000 });
-        printing = printUrl({ url: `http://127.0.0.1:${config.port}/admin/paperwork/print/${key}`, footerTemplate: pdfFooterTemplate({ lang: record.data.lang, footer: out.footer, number: record.number }) });
+        // cards and slips have no footer, theyre too small for one and the page size comes from their own @page
+        const footerTemplate = def.pdfFooter === false ? "" : pdfFooterTemplate({ lang: record.data.lang, footer: out.footer, number: record.number });
+        printing = printUrl({ url: `http://127.0.0.1:${config.port}/admin/paperwork/print/${key}`, footerTemplate });
         const { pdf } = await printing;
         res.set("Cache-Control", "no-store");
         res.attachment(filename(record, "pdf")).type("application/pdf").send(Buffer.from(pdf));
@@ -246,6 +276,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
         if (!record) return;
         const ctx = await context();
         const def = documentKind(record.kind);
+        if (!def.plain) return next(notFound());
         const buffer = makeDocx(def.plain(record.data, { ...ctx, number: record.number }), { lang: record.data.lang, title: record.title });
         res.set("Cache-Control", "no-store");
         res.attachment(filename(record, "docx")).type("application/vnd.openxmlformats-officedocument.wordprocessingml.document").send(buffer);

@@ -9,6 +9,8 @@ import { makeDocx } from "../../src/documents/docx.js";
 import { KINDS } from "../../src/documents/index.js";
 import { buildContract, writeOut } from "../../src/documents/contract.js";
 import { TYPES, paySchedule, repaySchedule } from "../../src/documents/contract-templates.js";
+import { qrMatrix, qrSvg } from "../../src/documents/qr.js";
+import { signatureParts, vcard } from "../../src/documents/stationery.js";
 
 test("amounts are read the German and the English way, always as whole cents", () => {
   assert.equal(parseMoney("12,50"), 1250);
@@ -83,9 +85,13 @@ test("every kind draws without crashing from its own defaults", () => {
   const details = businessDetails(null, { name: "Reece Norman Barker" });
   for (const kind of Object.values(KINDS)) {
     const data = kind.defaults(details, "en", []);
-    const out = kind.render(data, { details, accounts: [], number: "RP-X-2026-0001", logo: "" });
-    assert.match(out.body, /RP-X-2026-0001/);
-    assert.ok(kind.plain(data, { details, accounts: [], number: "RP-X-2026-0001" }).length > 3);
+    const out = kind.render(data, { details, accounts: [], number: "RP-X-2026-0001", logo: "", asset: (p) => `/${p}`, baseUrl: "https://reece.page" });
+    assert.ok(out.body.length > 200);
+    // the printed kinds show their number, cards, slips and signatures dont need one on them
+    if (kind.plain) {
+      assert.match(out.body, /RP-X-2026-0001/);
+      assert.ok(kind.plain(data, { details, accounts: [], number: "RP-X-2026-0001" }).length > 3);
+    }
   }
 });
 
@@ -152,4 +158,53 @@ test("the Word file of a contract has the clauses and the schedule as a table", 
   assert.ok(blocks.some((b) => b.table && b.rows.length === 5));
   assert.ok(blocks.some((b) => b.bold && /^\d+\. Schlussbestimmungen$/.test(b.text)));
   assert.ok(makeDocx(blocks, { lang: "de" }).length > 1000);
+});
+
+/* ------------------------------------------------------------------ cards, slips and the email signature */
+
+test("the QR code has the right size and the three finder patterns", () => {
+  const { size, version, modules } = qrMatrix("https://reece.page");
+  assert.equal(version, 2);
+  assert.equal(size, 25);
+  // a finder is a 7 by 7 square: dark ring, light ring, dark 3 by 3 in the middle
+  for (const [x, y] of [[0, 0], [size - 7, 0], [0, size - 7]]) {
+    assert.equal(modules[y][x], true);
+    assert.equal(modules[y + 1][x + 1], false);
+    assert.equal(modules[y + 3][x + 3], true);
+  }
+  assert.match(qrSvg("https://reece.page", { size: 14 }), /width="14mm"/);
+  assert.throws(() => qrMatrix("x".repeat(3000)), /Too much data/);
+});
+
+test("the vCard has the name split right and no address", () => {
+  const v = vcard({ phone: "+49 162 000", email: "me@reece.page", web: "reece.page", street: "Teststr. 1" }, "Reece Norman Barker");
+  assert.match(v, /N:Barker;Reece;Norman;;/);
+  assert.match(v, /TEL;TYPE=CELL:\+49162000/);
+  assert.match(v, /URL:https:\/\/reece\.page/);
+  assert.doesNotMatch(v, /Teststr/);
+});
+
+test("a company's card and signature carry its register details, a private person's dont", () => {
+  const gmbh = businessDetails({ entity: "de-gmbh", trading_name: "Beispiel", full_name: "Reece Barker", web: "reece.page", company: { seat: "München", register_court: "Amtsgericht München", register_number: "HRB 1", directors: "Reece Barker" } });
+  const me = businessDetails({ entity: "de-private", full_name: "Reece Barker", web: "reece.page" });
+  const asset = (p) => `/${p}`;
+  const cardOf = (details) => KINDS.card.render(KINDS.card.defaults(details, "de"), { details, asset }).body;
+  assert.match(cardOf(gmbh), /HRB 1/);
+  assert.doesNotMatch(cardOf(me), /card__fine[^>]*>[^<]/);
+  const minimal = (details) => signatureParts({ ...KINDS.signature.defaults(details, "de"), style: "minimal" }, details, { baseUrl: "https://reece.page" });
+  assert.equal(minimal(gmbh).required, true);
+  assert.match(minimal(gmbh).text, /Beispiel GmbH/);
+  assert.equal(minimal(me).text, "Reece Barker | reece.page");
+  const full = signatureParts(KINDS.signature.defaults(me, "en"), me, { baseUrl: "https://reece.page" });
+  assert.match(full.text, /^-- \n/);
+  assert.match(full.html, /https:\/\/reece\.page\/email\/reece-dove-symbol-144\.png/);
+  assert.match(full.text, /Privacy: https:\/\/reece\.page\/privacy/);
+});
+
+test("the slip has writing lines only when there is no note", () => {
+  const details = businessDetails({ entity: "de-private", full_name: "Reece Barker" });
+  const draw = (message) => KINDS.slip.render({ ...KINDS.slip.defaults(details, "en"), message }, { details, asset: (p) => `/${p}` }).body;
+  assert.match(draw(""), /slip__lines/);
+  assert.doesNotMatch(draw("Here is the book I promised."), /slip__lines/);
+  assert.match(draw(""), /With compliments/);
 });

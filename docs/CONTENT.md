@@ -181,10 +181,10 @@ file name. SVG and HTML are refused on purpose, a browser would run scripts insi
 follow new writing without social media. Nothing to set up, it updates itself when an article is added. It is not an
 upload tool, uploads go through the media library above.
 
-## Paperwork: letters, invoices and contracts
+## Paperwork: letters, invoices, contracts and stationery
 
 /admin/paperwork. The old Stationery and Contract Builders from the brand pack, moving into the admin one kind at
-a time. Letters, invoices and contracts are here now, cards follow.
+a time. All of it is here now: letters, invoices, contracts, business cards, compliments slips and the email signature.
 
 1. Once: fill in **My details** (business type, name, address, tax numbers) and **Payment accounts** (the IBAN is
    checked when you save). Both are private: never on GitHub, never on the site.
@@ -221,5 +221,21 @@ stays with the contract, use Copy as new for another type of the same deal.
   placeholders still in the text. These are templates, not legal advice: get anything big checked before it is signed.
 - Not ported from the old builder: two languages side by side in one contract, and drafting with Claude.
 
-The code is in src/documents/ (one file per kind, the contract wording in contract-templates.js), the layout in
-styles/paperwork.scss.
+### Business cards, compliments slips and the email signature
+
+They take your name, contact details and business type from My details, so they stay in line with the letters.
+
+- **Business card:** four designs (olive, leaf border, sage, minimal white), EU or US size. The back has your name,
+  the line under it, contact details, the fine print your business type needs and a QR code (your website or a
+  contact card). The PDF has one side per page at the real size with 3 mm bleed for a print shop, or switch the
+  bleed off to print at home. The red dashed line in the preview is where it gets cut.
+- **Compliments slip:** DIN lang (210 x 99 mm, a third of A4) with a heading, a short note or writing lines, and
+  your details at the bottom.
+- **Email signature:** full, short or minimal. **Copy signature** puts it on the clipboard as formatted text and
+  plain text, paste it into the signature settings of Outlook, Apple Mail or Gmail. **HTML file** downloads it to
+  open in a browser and copy from. The dove in it is loaded from reece.page/email/reece-dove-symbol-144.png, so
+  that file has to stay where it is. A company (and a Dutch or UK sole trader with a trading name) has to give its
+  details in every business email, so even the minimal variant keeps them.
+
+The code is in src/documents/ (one file per kind, the contract wording in contract-templates.js, the stationery in
+stationery.js and the QR codes in qr.js), the layout in styles/paperwork.scss.

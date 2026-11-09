@@ -115,6 +115,7 @@ export const ENDPOINT_GROUPS = [
       { method: "GET", path: "/admin/paperwork/:id/docx", what: "The document as a plain Word file" },
       { method: "POST", path: "/admin/paperwork/:id/duplicate", what: "A copy with a new number" },
       { method: "POST", path: "/admin/paperwork/:id/write-out", what: "A contract's clauses as text for the form, nothing saved" },
+      { method: "GET", path: "/admin/paperwork/:id/signature", what: "The email signature as html and text, ?download=1 for a file" },
       { method: "POST", path: "/admin/paperwork/:id/status", what: "Draft, sent or the trash" }
     ]
   }

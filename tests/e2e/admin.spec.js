@@ -86,6 +86,32 @@ test("a contract: the facts change the page, the clauses write out and stay edit
   expect(errors).toEqual([]);
 });
 
+test("a business card and the email signature: the preview follows and the signature copies", async ({ page, context }) => {
+  test.skip(test.info().project.name !== "desktop", "once is enough");
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  const errors = watchConsole(page);
+  await signIn(page);
+  await page.goto("/admin/paperwork");
+  await page.getByRole("button", { name: "New business card" }).click();
+  await expect(page).toHaveURL(/\/admin\/paperwork\/\d+$/);
+  await page.getByLabel("Line under the name").fill("End to end tester");
+  const frame = page.frameLocator("[data-preview-frame]");
+  await expect(frame.locator(".card__role")).toHaveText("End to end tester");
+  await page.getByLabel("Design").selectOption("white");
+  await expect(frame.locator(".card--front img")).toHaveAttribute("src", /long-horizontal-colour/);
+  await expect(page.locator("[data-status]")).toHaveText("Saved", { timeout: 8000 });
+  expect(await axe(page)).toEqual([]);
+
+  await page.goto("/admin/paperwork");
+  await page.getByRole("button", { name: "New email signature" }).click();
+  await expect(page).toHaveURL(/\/admin\/paperwork\/\d+$/);
+  await expect(frame.locator(".sig__mail table")).toBeVisible();
+  await page.getByRole("button", { name: "Copy signature" }).click();
+  await expect(page.locator("[data-status]")).toContainText("Signature copied");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(/^-- \n/);
+  expect(errors).toEqual([]);
+});
+
 test("a letter: type, the preview follows, and the editor page is accessible", async ({ page }) => {
   test.skip(test.info().project.name !== "desktop", "once is enough");
   const errors = watchConsole(page);

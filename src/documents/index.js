@@ -3,8 +3,9 @@
 import { letter } from "./letter.js";
 import { invoice } from "./invoice.js";
 import { contract } from "./contract.js";
+import { card, signature, slip } from "./stationery.js";
 
-export const KINDS = { letter, invoice, contract };
+export const KINDS = { letter, invoice, contract, card, slip, signature };
 
 export function documentKind(kind) {
   return Object.hasOwn(KINDS, kind) ? KINDS[kind] : null;
