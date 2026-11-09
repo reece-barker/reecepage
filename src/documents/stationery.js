@@ -12,7 +12,7 @@ import { PHOTO_EMAIL, photoTag } from "./photo.js";
 
 // The brand colours, same as the brand pack
 const C = { olive: "#33412A", olive80: "#5A6652", olive90: "#41532F", sage: "#9FB98F", sage50: "#C9D8BF", sage25: "#E4ECDF", blush: "#EFB9A4", cream: "#F9F4E8", leaf: "#C3D1B3", deep: "#4C5E3E" };
-const SLOGAN = "Code for a living world.";
+const SLOGAN = "Software that thinks like an ecosystem.";
 
 const W = {
   de: { role: "Software und Green Tech", slip: "Mit besten Grüßen", details: "Angaben zum Unternehmen", detailsLaw: "Pflichtangaben", legal: "Impressum", privacy: "Datenschutz",
