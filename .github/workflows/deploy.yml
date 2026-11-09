@@ -3,46 +3,53 @@ name: Deploy reece.page
 on:
   push:
     branches: [main]
-  # Lets you rerun the deploy from the Actions tab, handy after changing one of the secrets below
+  # Pull requests get the checks only, they go live once merged
+  pull_request:
+  # Lets you rerun the deploy from the Actions tab
   workflow_dispatch:
 
+# One deploy at a time, a second merge waits for the first instead of both pulling at once
+concurrency:
+  group: deploy-reece-page
+  cancel-in-progress: false
+
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      # Lint, the unit and integration tests and the content check, a broken change stops here and never reaches
+      # the server
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - name: Deploy scripts parse
+        run: bash -n deploy/update.sh && bash -n deploy/release.sh
+
   deploy:
+    needs: check
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
         env:
-          # The admin sign in and the GitHub sync, set under Settings > Secrets and variables > Actions. The deploy
-          # writes them into the server .env, an empty or missing one leaves whats there alone
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          KEY: ${{ secrets.REECE_PAGE_DEPLOY_KEY }}
+          # The admin sign in and the GitHub sync, set under Settings > Secrets and variables > Actions. They go to
+          # the server on stdin and from there into .env, an empty or missing one leaves whats there alone
           SIMPLELOGIN_CLIENT_ID: ${{ secrets.SIMPLELOGIN_CLIENT_ID }}
           SIMPLELOGIN_CLIENT_SECRET: ${{ secrets.SIMPLELOGIN_CLIENT_SECRET }}
           ADMIN_SIMPLELOGIN_ID: ${{ secrets.ADMIN_SIMPLELOGIN_ID }}
           GITHUB_SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: SIMPLELOGIN_CLIENT_ID,SIMPLELOGIN_CLIENT_SECRET,ADMIN_SIMPLELOGIN_ID,GITHUB_SYNC_TOKEN
-          script: |
-            set -e
-            cd /srv/reece-page
-            # The commit the site was on before, so content changes in this deploy can be told apart from the
-            # ones made in the admin since
-            BEFORE=$(git rev-parse HEAD)
-            git pull
-            # RELEASE is the commit thats live, /status and every error report show it
-            RELEASE=$(git rev-parse --short HEAD) node scripts/env-set.js
-            npm ci
-            npm run build
-            npm prune --omit=dev
-            # Chromium for the CV PDFs the admin makes, only downloads when the version changed. The system libraries
-            # it needs are a one time sudo npx playwright-core install-deps chromium, see docs/DEPLOYMENT.md
-            npx --no-install playwright-core install chromium || echo "chromium download failed, the CV PDF button wont work until it does"
-            npm run db:migrate
-            # Content files changed in the pull request go into the database, unless that page or list was edited
-            # in the admin since. It prints any clash and never stops the deploy
-            npm run content:apply -- --since "$BEFORE" || echo "content apply failed, the site still deploys, check the lines above"
-            sudo systemctl restart reece-page
-            sleep 2
-            curl -fsS http://127.0.0.1:3000/health/ready
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$KEY" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          ssh-keyscan -q -H "$HOST" >> ~/.ssh/known_hosts
+          # The key is locked to reece-page-update on the server (like kino), whatever command is sent that is the
+          # only thing it runs. It pulls, builds, migrates, restarts and fails this step if the site doesnt come back
+          printf 'SIMPLELOGIN_CLIENT_ID=%s\nSIMPLELOGIN_CLIENT_SECRET=%s\nADMIN_SIMPLELOGIN_ID=%s\nGITHUB_SYNC_TOKEN=%s\n' \
+            "$SIMPLELOGIN_CLIENT_ID" "$SIMPLELOGIN_CLIENT_SECRET" "$ADMIN_SIMPLELOGIN_ID" "$GITHUB_SYNC_TOKEN" \
+            | ssh -i ~/.ssh/deploy -o BatchMode=yes -o ServerAliveInterval=30 "root@$HOST" reece-page-update

@@ -295,32 +295,56 @@ If it exits straight away, `journalctl -u reece-page -n 50` shows the list of wh
 
 ## 8. Every deploy after that
 
-A push to main does this on its own (.github/workflows/deploy.yml). By hand it is:
+A merge to main deploys on its own, the same way kino does. `.github/workflows/deploy.yml` first runs `npm run check`
+(lint, tests, content check), a broken change stops there. Then GitHub logs into the server as root with a key that
+can only run one command, `reece-page-update` (`deploy/update.sh`). It:
+
+1. takes the GitHub secrets (sign in, sync token) from stdin, never from a command line
+2. waits if another deploy is running
+3. gives anything owned by root in `/srv/reece-page` back to `deploy` (a `sudo npm` once broke a deploy that way)
+4. fetches main and resets to it as `deploy`, then runs `deploy/release.sh` from that commit: .env values, `npm ci`,
+   build, Chromium, migrations, content apply, restart, and waits for `/health/ready`, the run fails if the site
+   doesnt come back
+5. installs the newest `deploy/update.sh` as `reece-page-update` for next time
+
+Everything that touches the app runs as `deploy`, so no file in the repo ends up owned by root.
+
+Redeploy by hand without a merge: `sudo reece-page-update`. Pull requests only get the checks.
+
+### Setting it up, once
+
+On the server (as a user with sudo):
 
 ```bash
+# 1. the repo belongs to deploy again
+sudo chown -R deploy:deploy /srv/reece-page
+
+# 2. a key just for GitHub, locked to the update command
+sudo ssh-keygen -t ed25519 -N "" -C "github actions reece-page" -f /root/.ssh/reece_page_actions
+echo "restrict,command=\"/usr/local/sbin/reece-page-update\" $(sudo cat /root/.ssh/reece_page_actions.pub)" | sudo tee -a /root/.ssh/authorized_keys
+
+# 3. the update command, from the branch until its merged (after that every deploy reinstalls it)
 cd /srv/reece-page
-BEFORE=$(git rev-parse HEAD)
-git pull
-RELEASE=$(git rev-parse --short HEAD) node scripts/env-set.js
-npm ci && npm run check && npm run build && npm prune --omit=dev
-npm run db:migrate
-npx --no-install playwright-core install chromium   # for the CV PDFs, see below
-npm run content:apply -- --since "$BEFORE"     # content changes from the pull, see CONTENT.md
-sudo systemctl restart reece-page
-curl -fsS https://reece.page/health/ready
+sudo -u deploy git fetch -q origin deploy/ssh-like-kino
+sudo -u deploy git show origin/deploy/ssh-like-kino:deploy/update.sh | sudo install -m 755 /dev/stdin /usr/local/sbin/reece-page-update
+
+# 4. the private key, to copy into GitHub
+sudo cat /root/.ssh/reece_page_actions
 ```
+
+In GitHub (Settings, Secrets and variables, Actions): add `REECE_PAGE_DEPLOY_KEY` with that private key, keep
+`DEPLOY_HOST`, `SIMPLELOGIN_*`, `ADMIN_SIMPLELOGIN_ID` and `SYNC_TOKEN` as they are. `DEPLOY_USER` and
+`DEPLOY_SSH_KEY` arent used anymore and can go. Root has to be allowed to log in with a key
+(`PermitRootLogin prohibit-password`, its already like that for kino).
+
+The steps the deploy runs are in `deploy/release.sh`, to do them by hand run `sudo reece-page-update`.
 
 ### The CV PDFs on the server
 
 The admin CV editor has a button that prints /cv and /lebenslauf to PDF with Chromium, from what's in the
 database, into `var/cv/`. The site serves whichever is newer, that or the one committed in `content/cv/`. The deploy
-downloads Chromium for the deploy user. Chromium also needs some system libraries, install them once:
-
-```bash
-cd /srv/reece-page && sudo npx --no-install playwright-core install-deps chromium
-```
-
-If the button says Chromium wouldnt start, that's the step that's missing.
+downloads Chromium for the deploy user and installs the system libraries it needs (as root, from the update
+command). If the button says Chromium wouldnt start, look at the Chromium lines in the last deploy run.
 
 Then purge the Cloudflare cache for `/` if the home page changed (Caching, Configuration, Purge Everything is fine,
 hashed assets are unaffected).
