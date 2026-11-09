@@ -235,8 +235,10 @@ They take your name, contact details and business type from My details, so they 
   vector everything, and converted to CMYK with FOGRA52 (PSO Uncoated v3, for uncoated paper). Nothing is smaller
   than 6 pt and everything that matters stays at least 4 mm inside the cut. The CMYK step needs Ghostscript and the
   FOGRA52 profile on the server, the deploy installs both. Without them the PDF stays RGB and the preview says so.
-- **Compliments slip:** DIN lang (210 x 99 mm, a third of A4) with a heading, a short note or writing lines, and
-  your details at the bottom.
+- **Compliments slip:** 1/3 A4 (210 x 99 mm, DIN lang) with a heading, a short note or writing lines, and your
+  details at the bottom. It is made for a print shop the same way as the cards: for Onlineprinters (1/3 A4, 2 mm bleed)
+  the PDF is 214 x 103 mm with a trim and bleed box, in CMYK, fonts embedded, with an empty second page because their
+  slips are printed on both sides (untick it for a one sided order). Everything is at least 7 mm inside the cut.
 - **Email signature:** full, short or minimal. **Copy signature** puts it on the clipboard as formatted text and
   plain text, paste it into the signature settings of Outlook, Apple Mail or Gmail. **HTML file** downloads it to
   open in a browser and copy from. The dove in it is loaded from reece.page/email/reece-dove-symbol-144.png, so

@@ -60,6 +60,8 @@ const DESIGNS = {
     back: { bg: "#FFFFFF", ink: C.olive, sub: C.olive80, sym: null, qrDark: C.olive, qrLight: "#FFFFFF", rule: C.sage } }
 };
 const SIZES = { eu: { w: 85, h: 55 }, us: { w: 88.9, h: 50.8 } };
+// The compliments slip is a third of A4, same as Onlineprinters 1/3 A4 (9.9 x 21 cm trimmed)
+const SLIP = { w: 210, h: 99 };
 // How the card gets printed: the bleed is the colour running past the cut so a slightly off cut never shows a white
 // edge. Onlineprinters wants 2 mm (data 8.9 x 5.9 cm for an 8.5 x 5.5 cm card), most other shops 3 mm, at home none
 const PRINT = {
@@ -67,6 +69,11 @@ const PRINT = {
   shop3: { bleed: 3, label: "Print shop with 3 mm bleed" },
   home: { bleed: 0, label: "Printing at home, cut size, no bleed" }
 };
+/** The box above the page with the notes for you that are never printed */
+function notesAside(notes) {
+  return notes.length ? `<aside class="doc-notes" aria-label="Notes for you, not printed"><strong>Notes for you, not printed</strong><ul>${notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></aside>` : "";
+}
+
 /** The print setting of a card, older cards had a bleed tick box (3 mm) instead */
 export function cardPrint(data) {
   if (Object.hasOwn(PRINT, data.print)) return { id: data.print, ...PRINT[data.print] };
@@ -268,8 +275,7 @@ export const card = {
     const body = `<div class="cards cards--${data.format === "us" ? "us" : "eu"}${bleed ? ` cards--bleed cards--bleed${b}` : ""}">${front}${back}</div>`;
     if (b > 0 && cmyk && !cmyk.ready) notes.push(`The PDF comes out in RGB on this server because ${cmyk.reason}. The next deploy installs both, or the print shop converts it.`);
     if (fine.length > 5) notes.push("The fine print is long for a card, check it is still readable at this size.");
-    const notesHtml = notes.length ? `<aside class="doc-notes" aria-label="Notes for you, not printed"><strong>Notes for you, not printed</strong><ul>${notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></aside>` : "";
-    return { body: notesHtml + body, footer: "", title: `${senderName(details)}, business card`, notes, print: { w, h, bleed: b, cmyk: print.id !== "home" } };
+    return { body: notesAside(notes) + body, footer: "", title: `${senderName(details)}, business card`, notes, print: { w, h, bleed: b, cmyk: print.id !== "home" } };
   }
 };
 
@@ -279,7 +285,7 @@ export const slip = {
   kind: "slip",
   label: "Compliments slip",
   code: "S",
-  help: "A DIN lang compliments slip (210 x 99 mm, a third of A4) for a short note with something you send.",
+  help: "A compliments slip, 1/3 A4 (210 x 99 mm, DIN lang) for a short note with something you send. Ready for a print shop: bleed, trim box, CMYK and nothing under 6 pt.",
   pdfFooter: false,
   fields: [
     LANG_FIELD,
@@ -287,32 +293,49 @@ export const slip = {
     { name: "message", label: "Short note", type: "textarea", max: 600, help: "Leave it empty to write by hand" },
     { name: "lines", label: "Writing lines when there is no note", type: "checkbox", default: true },
     { name: "photo", label: "My photo in the corner", type: "checkbox", help: "A small round photo next to your contact details" },
-    { name: "slogan", label: "Slogan", type: "text", max: 60, help: "Empty for none" }
+    { name: "slogan", label: "Slogan", type: "text", max: 60, help: "Empty for none" },
+    { name: "print", label: "Printed by", type: "select", required: true, options: Object.keys(PRINT), labels: Object.fromEntries(Object.entries(PRINT).map(([k, v]) => [k, v.label])), help: "For a print shop the PDF is the slip plus its bleed (214 x 103 mm for Onlineprinters), has a trim box and comes out in CMYK (FOGRA52, for uncoated paper)" },
+    { name: "back_page", label: "Empty back page for the print shop", type: "checkbox", default: true, help: "Their slips are printed on both sides (4/4) so the shop expects two pages. Untick it for a one sided order or at home" }
   ],
 
   defaults(details, lang = "de") {
-    return { lang, heading: words(lang).slip, message: "", lines: true, photo: false, slogan: SLOGAN };
+    return { lang, heading: words(lang).slip, message: "", lines: true, photo: false, slogan: SLOGAN, print: "shop2", back_page: true };
   },
 
   title(data) {
     return data.heading || "Compliments slip";
   },
 
-  render(data, { details, asset }) {
+  render(data, { details, asset, cmyk = null }) {
     const lang = data.lang || "de";
     const contact = [clean(details.phone), clean(details.email), clean(details.web)].filter(Boolean);
     const fine = [`<strong>${txt(senderName(details))}</strong>`, txt(addressLine(details)), ...legalLines(details, lang).map(txt)].filter(Boolean);
     const lines = !clean(data.message) && data.lines !== false ? `<div class="slip__lines" aria-hidden="true">${"<span></span>".repeat(3)}</div>` : "";
-    const body = `<article class="slip">
-  <header class="slip__head">
-    <img class="slip__logo" src="${esc(asset("images/brand/reece-dove-long-horizontal-colour.svg"))}" alt="reece">
-    <div class="slip__id"><div class="slip__contact"><p class="slip__name">${txt(details.full_name || "[Name]")}</p><p>${contact.map(txt).join("<br>")}</p></div>${data.photo === true ? photoTag(asset, "slip__photo") : ""}</div>
-  </header>
-  <h1 class="slip__heading">${txt(data.heading || words(lang).slip)}</h1>
-  ${clean(data.message) ? `<p class="slip__message">${txt(data.message).replace(/\n/g, "<br>")}</p>` : lines}
-  <footer class="slip__foot"><p>${fine.join(" · ")}</p>${clean(data.slogan) ? `<p class="slip__slogan">${txt(data.slogan)}</p>` : ""}</footer>
+    // Slips from before the print setting existed are printed by the shop like the cards now, thats what its for
+    const print = Object.hasOwn(PRINT, data.print) ? { id: data.print, ...PRINT[data.print] } : { id: "shop2", ...PRINT.shop2 };
+    const b = print.bleed, bleed = b > 0;
+    // The page is the slip plus the bleed all round, the white paper means nothing runs into the bleed but the page
+    // still has to be that size. The content sits in a box the size of the cut slip
+    const pageStyle = `width:${SLIP.w + 2 * b}mm;height:${SLIP.h + 2 * b}mm`;
+    const trimStyle = `left:${b}mm;top:${b}mm;width:${SLIP.w}mm;height:${SLIP.h}mm`;
+    const pageClass = `slip${bleed ? ` slip--bleed slip--bleed${b}` : ""}`;
+    const front = `<article class="${pageClass}" style="${pageStyle}" aria-label="Front">
+  <div class="slip__trim" style="${trimStyle}">
+    <header class="slip__head">
+      <img class="slip__logo" src="${esc(asset("images/brand/reece-dove-long-horizontal-colour.svg"))}" alt="reece">
+      <div class="slip__id"><div class="slip__contact"><p class="slip__name">${txt(details.full_name || "[Name]")}</p><p>${contact.map(txt).join("<br>")}</p></div>${data.photo === true ? photoTag(asset, "slip__photo") : ""}</div>
+    </header>
+    <h1 class="slip__heading">${txt(data.heading || words(lang).slip)}</h1>
+    ${clean(data.message) ? `<p class="slip__message">${txt(data.message).replace(/\n/g, "<br>")}</p>` : lines}
+    <footer class="slip__foot"><p>${fine.join(" · ")}</p>${clean(data.slogan) ? `<p class="slip__slogan">${txt(data.slogan)}</p>` : ""}</footer>
+  </div>
 </article>`;
-    return { body, footer: "", title: `${senderName(details)}, ${slip.title(data)}` };
+    // The shops slips are printed on both sides, so page two is the empty back
+    const backPage = bleed && data.back_page !== false ? `<article class="${pageClass} slip--back" style="${pageStyle}" aria-label="Back, empty"><div class="slip__trim" style="${trimStyle}"></div></article>` : "";
+    const notes = [];
+    if (bleed && cmyk && !cmyk.ready) notes.push(`The PDF comes out in RGB on this server because ${cmyk.reason}. The next deploy installs both, or the print shop converts it.`);
+    if (fine.length > 4) notes.push("The fine print is long for a slip, check it still fits at the bottom.");
+    return { body: notesAside(notes) + front + backPage, footer: "", title: `${senderName(details)}, ${slip.title(data)}`, notes, print: { w: SLIP.w, h: SLIP.h, bleed: b, cmyk: print.id !== "home" } };
   }
 };
 

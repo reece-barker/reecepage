@@ -330,3 +330,29 @@ test("my photo is an option on the card back, the slip, the letterhead and the s
   assert.doesNotMatch(signatureParts({ ...sig, photo: true, style: "minimal" }, me, { baseUrl: "https://reece.page" }).html, /round-192/);
   assert.match(signatureParts({ ...sig, photo: true }, me, { baseUrl: "https://reece.page", preview: true }).html, /src="\/email\/reece-barker-round-192\.png"/);
 });
+
+test("the compliments slip is made for the print shop: the bleed round it, an empty back page, CMYK", () => {
+  const details = businessDetails({ entity: "de-private", full_name: "Reece Barker", street: "Teststr. 1", postcode: "81247", city: "München", email: "me@reece.page" });
+  const asset = (p) => `/${p}`;
+  const base = KINDS.slip.defaults(details, "en");
+  assert.equal(base.print, "shop2");
+  // Onlineprinters 1/3 A4: 9.9 x 21 cm cut, 10.3 x 21.4 cm with the 2 mm bleed
+  const shop = KINDS.slip.render(base, { details, asset, cmyk: { ready: true } });
+  assert.deepEqual(shop.print, { w: 210, h: 99, bleed: 2, cmyk: true });
+  assert.match(shop.body, /slip--bleed2" style="width:214mm;height:103mm"/);
+  assert.match(shop.body, /slip__trim" style="left:2mm;top:2mm;width:210mm;height:99mm"/);
+  assert.match(shop.body, /aria-label="Back, empty"/);
+  assert.equal((shop.body.match(/<article/g) || []).length, 2);
+  // the back page can be left out, and at home it is the cut size and one page
+  assert.equal((KINDS.slip.render({ ...base, back_page: false }, { details, asset }).body.match(/<article/g) || []).length, 1);
+  const home = KINDS.slip.render({ ...base, print: "home" }, { details, asset });
+  assert.equal(home.print.cmyk, false);
+  assert.match(home.body, /style="width:210mm;height:99mm"/);
+  assert.doesNotMatch(home.body, /Back, empty/);
+  // slips saved before the setting existed are made for the shop too
+  const old = { ...base };
+  delete old.print;
+  assert.equal(KINDS.slip.render(old, { details, asset }).print.bleed, 2);
+  // without Ghostscript the preview says why the PDF stays RGB
+  assert.ok(KINDS.slip.render(base, { details, asset, cmyk: { ready: false, reason: "Ghostscript isnt installed on this server" } }).notes.some((n) => /RGB on this server/.test(n)));
+});
