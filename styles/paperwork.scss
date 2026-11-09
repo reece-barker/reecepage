@@ -569,19 +569,18 @@ th.num {
   flex: none;
 }
 
-// The photo takes the dovess place in the head of the back. Round and cropped from the top so the face stays in, and
-// a little smaller when the back gets full so it doesnt push the contact lines down
+// The photo sits top right and is big now, theres loads of empty space there next to the contact lines. The negative bottom margin
+// makes it take no height in the head so the name and the lines under it dont get pushed down, they just run beside it, and its the same size
+// however full the back is cause the contact lines are short and never reach it. Round and cropped from the top so the face stays in
 .card__photo {
   flex: none;
-  width: 16mm;
-  height: 16mm;
+  width: 21mm;
+  height: 21mm;
+  margin-bottom: -21mm;
   border-radius: 50%;
   object-fit: cover;
   object-position: 50% 0;
 }
-
-.card__back--compact .card__photo { width: 13mm; height: 13mm; }
-.card__back--tight .card__photo { width: 11mm; height: 11mm; }
 
 // Contact lines, each on its own row, with a small icon in the accent colour lined up in a column of its own
 .card__contact {
