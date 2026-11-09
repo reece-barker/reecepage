@@ -105,6 +105,10 @@ test("a business card and the email signature: the preview follows and the signa
   await page.goto("/admin/paperwork");
   await page.getByRole("button", { name: "New business card" }).click();
   await expect(page).toHaveURL(/\/admin\/paperwork\/\d+$/);
+  // the editor is a normal admin page: the sidebar is there, the page has room around it and nothing runs off the screen
+  await expect(page.getByRole("link", { name: "Dashboard" })).toBeVisible();
+  expect(await page.locator(".admin-main").evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft))).toBeGreaterThan(16);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByLabel("Line under the name").fill("End to end tester");
   const frame = page.frameLocator("[data-preview-frame]");
   await expect(frame.locator(".card__role")).toHaveText("End to end tester");
@@ -116,7 +120,11 @@ test("a business card and the email signature: the preview follows and the signa
   await page.goto("/admin/paperwork");
   await page.getByRole("button", { name: "New email signature" }).click();
   await expect(page).toHaveURL(/\/admin\/paperwork\/\d+$/);
-  await expect(frame.locator(".sig__mail table")).toBeVisible();
+  await expect(frame.locator(".sig__mail > table")).toBeVisible();
+  // the save paper note is the last line of the signature, with its leaf
+  await expect(frame.locator(".sig__mail > table").getByText("Bitte nur drucken")).toBeVisible();
+  await page.getByLabel("Save paper note").fill("Printed on recycled paper");
+  await expect(frame.locator(".sig__mail > table").getByText("Printed on recycled paper")).toBeVisible();
   await page.getByRole("button", { name: "Copy signature" }).click();
   await expect(page.locator("[data-status]")).toContainText("Signature copied");
   expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(/^-- \n/);

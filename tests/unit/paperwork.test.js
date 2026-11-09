@@ -272,3 +272,26 @@ test("print shop PDFs say why they stay RGB when the profile is missing", async 
   const out = await printReadyPdf(Buffer.from("%PDF-1.4"), { w: 85, h: 55, bleed: 2, profile: "/nowhere/PSOuncoated_v3_FOGRA52.icc" });
   assert.equal(out.cmyk, false);
 });
+
+test("the email signature ends with a save paper note: a leaf and a line, editable, never in the minimal one", () => {
+  const me = businessDetails({ entity: "de-private", full_name: "Reece Barker", street: "Teststr. 1", postcode: "81247", city: "München", email: "me@reece.page" });
+  const data = KINDS.signature.defaults(me, "en");
+  const full = signatureParts(data, me, { baseUrl: "https://reece.page" });
+  assert.match(full.html, /email\/leaf-32\.png/);
+  assert.match(full.html, /Please only print this email if you really need to/);
+  assert.match(full.text, /\n\nPlease only print this email if you really need to\. It saves paper\.$/);
+  // the note is the last thing, after the links
+  assert.ok(full.html.lastIndexOf("leaf-32.png") > full.html.lastIndexOf("/privacy"));
+  // your own words, and an emptied field means none
+  const own = signatureParts({ ...data, note: "Printed on recycled paper" }, me, { baseUrl: "https://reece.page" });
+  assert.match(own.text, /Printed on recycled paper$/);
+  const none = signatureParts({ ...data, note: "" }, me, { baseUrl: "https://reece.page" });
+  assert.doesNotMatch(none.html, /leaf-32/);
+  // signatures saved before the field existed get the default line, the minimal variant never does
+  const old = { ...data };
+  delete old.note;
+  assert.match(signatureParts(old, me, { baseUrl: "https://reece.page" }).text, /saves paper/);
+  assert.doesNotMatch(signatureParts({ ...data, style: "minimal" }, me, { baseUrl: "https://reece.page" }).html, /leaf-32/);
+  // the preview uses the svg, the copied one the hosted png
+  assert.match(signatureParts(data, me, { baseUrl: "https://reece.page", preview: true }).html, /leaf-mark\.svg/);
+});
