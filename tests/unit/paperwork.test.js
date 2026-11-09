@@ -256,11 +256,18 @@ test("a business card follows the print shop: 2 mm bleed by default, older cards
   const home = KINDS.card.render({ ...base, print: "home" }, { details, asset });
   assert.equal(home.print.cmyk, false);
   assert.match(home.body, /width:85mm;height:55mm/);
-  const front = KINDS.card.render({ ...base, corner_note: "Printed on recycled paper" }, { details, asset });
+  const front = KINDS.card.render({ ...base, corner_note: "Printed on recycled paper", corner_side: "front" }, { details, asset });
   assert.match(front.body, /class="card__corner"[^>]*>Printed on recycled paper/);
   const back = KINDS.card.render({ ...base, corner_note: "Printed on recycled paper", corner_side: "back" }, { details, asset });
   assert.match(back.body, /card__corner-line">Printed on recycled paper/);
   assert.doesNotMatch(back.body, /class="card__corner"/);
+  // new cards start with the recycled paper note on the back and the internship line, in the cards language
+  assert.equal(base.corner_note, "Printed on 100% recycled paper");
+  assert.equal(base.corner_side, "back");
+  assert.equal(base.message, "Looking for an internship from September 2027.");
+  assert.match(shop.body, /card__corner-line">Printed on 100% recycled paper/);
+  assert.match(shop.body, /card__message">Looking for an internship from September 2027\./);
+  assert.match(KINDS.card.defaults(details, "de").message, /Praktikum ab September 2027/);
   const noGs = KINDS.card.render(base, { details, asset, cmyk: { ready: false, reason: "Ghostscript isnt installed on this server" } });
   assert.ok(noGs.notes.some((n) => /RGB on this server because Ghostscript/.test(n)));
 });
@@ -329,6 +336,20 @@ test("my photo is an option on the card back, the slip, the letterhead and the s
   assert.doesNotMatch(photoSig, /reece-dove-symbol/);
   assert.doesNotMatch(signatureParts({ ...sig, photo: true, style: "minimal" }, me, { baseUrl: "https://reece.page" }).html, /round-192/);
   assert.match(signatureParts({ ...sig, photo: true }, me, { baseUrl: "https://reece.page", preview: true }).html, /src="\/email\/reece-barker-round-192\.png"/);
+});
+
+test("the signature has LinkedIn and GitHub as links when they are ticked and set in the site settings", () => {
+  const me = businessDetails({ entity: "de-private", full_name: "Reece Barker", city: "München", email: "me@reece.page" });
+  const profiles = { linkedin: "https://www.linkedin.com/in/example", github: "https://github.com/example" };
+  const data = KINDS.signature.defaults(me, "en");
+  const off = signatureParts(data, me, { baseUrl: "https://reece.page", profiles });
+  assert.doesNotMatch(off.html, /linkedin/);
+  const on = signatureParts({ ...data, linkedin: true, github: true }, me, { baseUrl: "https://reece.page", profiles });
+  assert.match(on.html, /href="https:\/\/www\.linkedin\.com\/in\/example"[^>]*>LinkedIn<\/a>/);
+  assert.match(on.html, /href="https:\/\/github\.com\/example"[^>]*>GitHub<\/a>/);
+  assert.match(on.text, /LinkedIn: https:\/\/www\.linkedin\.com\/in\/example \| GitHub: https:\/\/github\.com\/example/);
+  // nothing set in the site settings, nothing to show
+  assert.doesNotMatch(signatureParts({ ...data, linkedin: true }, me, { baseUrl: "https://reece.page" }).html, /LinkedIn/);
 });
 
 test("the compliments slip is made for the print shop: the bleed round it, an empty back page, CMYK", () => {

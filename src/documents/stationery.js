@@ -17,12 +17,15 @@ const SLOGAN = "Code for a living world.";
 const W = {
   de: { role: "Software und Green Tech", slip: "Mit besten Grüßen", details: "Angaben zum Unternehmen", detailsLaw: "Pflichtangaben", legal: "Impressum", privacy: "Datenschutz",
     paper: "Bitte nur drucken, wenn es wirklich nötig ist. Das spart Papier.",
+    recycled: "Gedruckt auf 100 % Recyclingpapier", internship: "Ich suche ein Praktikum ab September 2027.",
     disclaimer: "Diese E-Mail und ihre Anhänge können vertrauliche Informationen enthalten und sind nur für den genannten Empfänger bestimmt. Wenn Sie nicht der richtige Empfänger sind, informieren Sie mich bitte und löschen Sie die Nachricht." },
   en: { role: "Software and green tech", slip: "With compliments", details: "Business details", detailsLaw: "Company details", legal: "Legal notice", privacy: "Privacy",
     paper: "Please only print this email if you really need to. It saves paper.",
+    recycled: "Printed on 100% recycled paper", internship: "Looking for an internship from September 2027.",
     disclaimer: "This email and its attachments may contain confidential information and are intended only for the named recipient. If you are not the intended recipient, please tell me and delete the message." },
   nl: { role: "Software en groene technologie", slip: "Met vriendelijke groet", details: "Bedrijfsgegevens", detailsLaw: "Bedrijfsgegevens", legal: "Juridische informatie", privacy: "Privacy",
     paper: "Print deze e-mail alleen als het echt nodig is. Dat bespaart papier.",
+    recycled: "Gedrukt op 100% gerecycled papier", internship: "Ik zoek een stage vanaf september 2027.",
     disclaimer: "Dit bericht en de bijlagen kunnen vertrouwelijke informatie bevatten en zijn alleen bestemd voor de genoemde ontvanger. Bent u niet de bedoelde ontvanger, laat het mij dan weten en verwijder het bericht." }
 };
 const words = (lang) => W[lang] || W.de;
@@ -205,7 +208,7 @@ export const card = {
   ],
 
   defaults(details, lang = "de") {
-    return { lang, design: "olive", format: businessType(details.entity).country === "US" ? "us" : "eu", name: details.full_name || "", role: words(lang).role, front_text: "slogan", slogan: SLOGAN, quote: { text: "", author: "" }, qr: "url", address: false, linkedin: false, github: false, icons: true, photo: false, message: "", corner_note: "", corner_side: "front", fine: true, tax: false, print: "shop2" };
+    return { lang, design: "olive", format: businessType(details.entity).country === "US" ? "us" : "eu", name: details.full_name || "", role: words(lang).role, front_text: "slogan", slogan: SLOGAN, quote: { text: "", author: "" }, qr: "url", address: false, linkedin: false, github: false, icons: true, photo: false, message: words(lang).internship, corner_note: words(lang).recycled, corner_side: "back", fine: true, tax: false, print: "shop2" };
   },
 
   title(data) {
@@ -359,7 +362,7 @@ function detailLines(details, lang) {
  * The signature as email html (tables and inline styles, the only thing every mail app shows the same) and as plain
  * text. preview swaps the hosted png for the svg and marks [placeholders]
  */
-export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/${p}`, preview = false } = {}) {
+export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/${p}`, preview = false, profiles = {} } = {}) {
   const lang = data.lang || "de";
   const w = words(lang);
   const style = ["full", "short", "minimal"].includes(data.style) ? data.style : "full";
@@ -369,6 +372,8 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
   const sep = `<span style="color:${C.sage}">&nbsp;&nbsp;|&nbsp;&nbsp;</span>`;
   const a = (href, text, col = C.olive) => `<a href="${esc(href)}" style="color:${col};text-decoration:none">${mark(text)}</a>`;
   const contact = [clean(details.phone) ? a(`tel:${clean(details.phone).replace(/[^\d+]/g, "")}`, details.phone) : "", clean(details.email) ? a(`mailto:${clean(details.email)}`, details.email) : "", web ? a(url, web) : ""].filter(Boolean).join(sep);
+  // LinkedIn and GitHub from the site settings, as links with their names (the ticks on the form did nothing before)
+  const social = [data.linkedin && profiles.linkedin ? ["LinkedIn", profiles.linkedin] : null, data.github && profiles.github ? ["GitHub", profiles.github] : null].filter(Boolean);
   const links = data.links !== false && baseUrl ? [[w.legal, `${baseUrl}/impressum`], [w.privacy, `${baseUrl}/privacy`]] : [];
   const linkHtml = links.map(([t, u]) => `<a href="${esc(u)}" style="color:${C.olive80};text-decoration:underline">${esc(t)}</a>`).join(sep);
   const required = detailsRequired(details);
@@ -388,13 +393,14 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
     if (required) inner += `<tr>${td(mark(detail.join(" · ")), `font-size:11px;line-height:16px;color:${C.olive80};padding-top:4px`)}</tr>`;
     html = table(inner);
   } else {
-    // The photo takes the dovess place when its ticked: round, a bit bigger than the dove is wide so the face reads
+    // The photo takes the dovess place when its ticked: round, clearly bigger than the dove is wide so the face reads
     const withPhoto = data.photo === true;
-    const symbol = withPhoto ? (style === "full" ? 72 : 56) : style === "full" ? 64 : 48, symbolH = withPhoto ? symbol : Math.round(symbol * 202 / 249);
+    const symbol = withPhoto ? (style === "full" ? 88 : 68) : style === "full" ? 64 : 48, symbolH = withPhoto ? symbol : Math.round(symbol * 202 / 249);
     const src = withPhoto ? (preview ? `/${PHOTO_EMAIL}` : `${baseUrl}/${PHOTO_EMAIL}`) : preview ? asset("images/brand/reece-dove-symbol-colour.svg") : `${baseUrl}/email/reece-dove-symbol-144.png`;
     let right = `<div style="${nameStyle};font-size:${style === "full" ? 19 : 17}px;line-height:24px;color:${C.olive}">${mark(name)}</div>`;
     if (clean(data.role)) right += `<div style="font-family:${SANS};font-size:13px;line-height:19px;color:${C.olive80}">${mark(data.role)}</div>`;
     right += `<div style="font-family:${SANS};font-size:13px;line-height:19px;padding-top:6px">${contact}</div>`;
+    if (social.length) right += `<div style="font-family:${SANS};font-size:13px;line-height:19px">${social.map(([label, href]) => a(href, label)).join(sep)}</div>`;
     if (data.address && addressLine(details)) right += `<div style="font-family:${SANS};font-size:12px;line-height:18px;color:${C.olive80}">${mark(addressLine(details))}</div>`;
     if (clean(data.slogan)) right += `<div style="font-family:${SERIF};font-size:12px;line-height:18px;color:${C.olive80};padding-top:4px">${mark(data.slogan)}</div>`;
     let inner = `<tr><td valign="top" style="width:${symbol + 16}px;padding:2px 16px 0 0;vertical-align:top"><img src="${esc(src)}" width="${symbol}" height="${symbolH}" alt="${withPhoto ? "" : "reece"}" style="display:block;border:0;width:${symbol}px;height:${symbolH}px"></td><td valign="top" style="padding:0 0 0 16px;border-left:2px solid ${C.sage};vertical-align:top">${right}</td></tr>`;
@@ -418,6 +424,7 @@ export function signatureParts(data, details, { baseUrl = "", asset = (p) => `/$
     const lines = ["-- ", name];
     if (clean(data.role)) lines.push(clean(data.role));
     lines.push([clean(details.phone), clean(details.email), web].filter(Boolean).join(" | "));
+    if (social.length) lines.push(social.map(([label, href]) => `${label}: ${href}`).join(" | "));
     if (data.address && addressLine(details)) lines.push(addressLine(details));
     if (clean(data.slogan)) lines.push(clean(data.slogan));
     if (style === "full" && showBlock) lines.push("", isCompany(details) ? w.detailsLaw : w.details, ...detail);
@@ -460,8 +467,8 @@ export const signature = {
     return `Email signature, ${data.style || "full"}`;
   },
 
-  render(data, { details, asset, baseUrl }) {
-    const parts = signatureParts(data, details, { baseUrl, asset, preview: true });
+  render(data, { details, asset, baseUrl, profiles = {} }) {
+    const parts = signatureParts(data, details, { baseUrl, asset, preview: true, profiles });
     const notes = [];
     if (parts.placeholders) notes.push("Some details are still [placeholders], fill them in under My details before you copy it.");
     if (parts.required && data.style === "minimal") notes.push("Your business type has to give its details in every business email, so the minimal variant keeps them.");

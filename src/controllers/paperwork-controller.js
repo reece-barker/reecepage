@@ -222,7 +222,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
         if (!record) return;
         if (record.kind !== "signature") return next(notFound());
         const ctx = await context();
-        const parts = signatureParts(record.data, ctx.details, { baseUrl: config.baseUrl });
+        const parts = signatureParts(record.data, ctx.details, { baseUrl: config.baseUrl, profiles: site()?.profiles || {} });
         res.set("Cache-Control", "no-store");
         if (req.query.download) {
           const page = `<!doctype html>\n<html lang="${record.data.lang === "en" ? "en-GB" : record.data.lang || "de"}">\n<head>\n<meta charset="utf-8">\n<title>Email signature</title>\n</head>\n<body>\n${parts.html}\n</body>\n</html>\n`;
