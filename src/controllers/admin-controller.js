@@ -32,6 +32,11 @@ export const ADMIN_NAV = [
     { id: "references", label: "References", href: "/admin/lists/references", icon: "quote" },
     { id: "now", label: "Right now", href: "/admin/lists/now", icon: "clock" }
   ] },
+  { group: "Paperwork", items: [
+    { id: "paperwork", label: "Documents", href: "/admin/paperwork", icon: "page" },
+    { id: "business", label: "My details", href: "/admin/lists/business", icon: "key" },
+    { id: "payment_accounts", label: "Payment accounts", href: "/admin/lists/payment_accounts", icon: "list" }
+  ] },
   { group: "Site", items: [
     { id: "home", label: "Home page", href: "/admin/lists/home", icon: "home" },
     { id: "branches", label: "Tree branches", href: "/admin/lists/branches", icon: "tree" },
@@ -147,6 +152,9 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
 
   return {
     nav,
+
+    /** For the other admin controllers (paperwork), so every admin page has the same layout and sidebar */
+    renderPage: page,
 
     async dashboard(req, res, next) {
       try {
@@ -429,7 +437,8 @@ export function createAdminController({ config, seo, content, contentAdmin, repo
             fixedLength: Boolean(schema.fixedLength),
             value,
             defaults,
-            cvPdf: req.params.name === "cv"
+            cvPdf: req.params.name === "cv",
+            privateList: PRIVATE_DOCUMENTS.includes(req.params.name)
           }),
           scripts: ["js/admin-fields.js", "js/admin-list.js"]
         });

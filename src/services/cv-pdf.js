@@ -78,6 +78,43 @@ export async function makeCvPdfs({ baseUrl, outDir, versions = Object.keys(CV_VE
   return made;
 }
 
+/**
+ * Prints a page of the running site to a PDF and returns the bytes, for the admin's paperwork. Chromium opens the
+ * address like a browser would (so the site's own stylesheet and pictures load, a page put in with setContent
+ * has no origin and the site refuses to hand it the css). footerTemplate is printed on every page (Chromium
+ * fills in the page numbers), in the bottom margin the page's own @page rule leaves free
+ */
+export async function printUrl({ url, footerTemplate = "", env = process.env }) {
+  const chromium = await loadChromium();
+  let browser;
+  try {
+    browser = await chromium.launch(chromiumOptions(env));
+  } catch (error) {
+    if (/Executable doesn't exist|install/i.test(error.message)) {
+      throw new CvPdfError("Chromium isnt installed on this machine. On the server: npx playwright-core install chromium, then sudo npx playwright-core install-deps chromium");
+    }
+    throw new CvPdfError(`Chromium wouldnt start: ${String(error.message).split("\n")[0]}`);
+  }
+  try {
+    const page = await browser.newPage();
+    await page.emulateMedia({ media: "print", colorScheme: "light" });
+    const response = await page.goto(url, { waitUntil: "networkidle", timeout: 30000 });
+    if (!response?.ok()) throw new CvPdfError(`the page to print answered ${response?.status()}`);
+    await page.evaluate(() => globalThis.document.fonts.ready);
+    const pdf = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      preferCSSPageSize: true,
+      displayHeaderFooter: Boolean(footerTemplate),
+      headerTemplate: "<span></span>",
+      footerTemplate: footerTemplate || "<span></span>"
+    });
+    return { pdf, pages: countPages(pdf) };
+  } finally {
+    await browser.close();
+  }
+}
+
 /** The newest copy of a CV PDF out of the folders it can be in, or null when there is none */
 export async function findCvPdf(dirs, lang) {
   const version = CV_VERSIONS[lang];

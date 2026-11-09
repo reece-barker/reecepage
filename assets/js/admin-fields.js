@@ -225,7 +225,8 @@
         heading.textContent = titleOf(now);
         meta.textContent = metaOf(now);
       });
-      if (!item || opts.open) setOpen(true);
+      // New rows open, and so do rows that are still blank (a new invoice starts with one empty line to fill in)
+      if (!item || opts.open || (field.openEmpty && !(item && item[field.itemLabel]))) setOpen(true);
       if (atStart) { entries.unshift(entry); list.insertBefore(node, list.firstChild); } else { entries.push(entry); list.appendChild(node); }
       refresh();
       return body;

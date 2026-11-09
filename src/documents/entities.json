@@ -1,0 +1,302 @@
+{
+  "_about": "Business setups for builders. 'letter' = details that must or should appear on business letters and emails that count as business letters, in order. 'invoice' = extra details for invoices. Field keys refer to the form fields list. Not legal advice: check with the tax office, the chamber or Companies House / KvK before relying on it. 'tax' = tax ids this type can have, in print order; they print on invoices, letter footers and signatures when filled in, and on cards only when switched on. 'extra' = other optional details for this type. UTR (UK), EIN and SSN (US) and the German personal Steuer-IdNr. are never printed and have no field.",
+  "fields": {
+    "full_name": "Full legal name",
+    "trading_name": "Business name (optional, shown with your full name)",
+    "legal_form": "Legal form addition",
+    "street": "Street and number",
+    "postcode": "Postcode",
+    "city": "City",
+    "country": "Country",
+    "phone": "Phone",
+    "email": "Email",
+    "web": "Website",
+    "tax_number": "Tax number (Steuernummer, from the Finanzamt for your business)",
+    "vat_id": "VAT ID (USt-IdNr. / VAT number / btw-id)",
+    "w_id": "Business ID (Wirtschafts-IdNr., § 139c AO)",
+    "seat": "Registered seat",
+    "register_court": "Register court",
+    "register_number": "Register number (HRA / HRB)",
+    "directors": "Managing directors (all, full names)",
+    "share_capital": "Share capital (only if you state it, then also the unpaid part)",
+    "company_number": "Company number",
+    "registered_office": "Registered office address",
+    "registered_in": "Place of registration (England and Wales / Scotland / Northern Ireland)",
+    "kvk": "KvK number",
+    "btw_id": "btw-id (VAT ID)",
+    "ein": "EIN (never print it)",
+    "state": "State of organisation (LLC only, printed on letters when filled in)",
+    "bank_holder": "Account holder",
+    "bank_name": "Bank",
+    "iban": "IBAN",
+    "bic": "BIC"
+  },
+  "types": [
+    {
+      "id": "de-private",
+      "country": "DE",
+      "lang": "de",
+      "paper": "A4",
+      "stage": "now",
+      "label": "Germany, private person, no business registered yet",
+      "letter": [],
+      "invoice": [],
+      "tax": [],
+      "card_fineprint": [],
+      "notes": [
+        "Nothing is legally required on letters or cards.",
+        "Never print your personal tax ID (Steuer-Identifikationsnummer) on cards, letters or invoices. It is for your income tax only. For invoices you need a business tax number (Steuernummer) from the Finanzamt, which you get by registering the activity.",
+        "Do not invent a company-like name with GmbH, UG or e.K. in it."
+      ]
+    },
+    {
+      "id": "de-freelance",
+      "country": "DE",
+      "lang": "de",
+      "paper": "A4",
+      "stage": "next",
+      "label": "Germany, freelancer (Freiberufler, not in the commercial register)",
+      "letter": [
+        "full_name",
+        "street_postcode_city"
+      ],
+      "invoice": [
+        "tax_number_or_vat_id"
+      ],
+      "tax": [
+        "tax_number",
+        "vat_id",
+        "w_id"
+      ],
+      "kleinunternehmer": true,
+      "notes": [
+        "Use your full name. A business name may be added, but not one that looks like a registered firm.",
+        "Invoices (§ 14 Abs. 4 UStG): your and the client's full name and address, tax number or VAT ID, date, consecutive invoice number, what and when you delivered, net amount, tax rate and tax, or the Kleinunternehmer note.",
+        "Kleinunternehmer note on invoices: \"Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.\""
+      ]
+    },
+    {
+      "id": "de-gewerbe",
+      "country": "DE",
+      "lang": "de",
+      "paper": "A4",
+      "stage": "next",
+      "label": "Germany, sole trader with a trade licence (Einzelunternehmen, Gewerbe, not in the commercial register)",
+      "letter": [
+        "full_name",
+        "street_postcode_city"
+      ],
+      "invoice": [
+        "tax_number_or_vat_id"
+      ],
+      "tax": [
+        "tax_number",
+        "vat_id",
+        "w_id"
+      ],
+      "kleinunternehmer": true,
+      "notes": [
+        "Same as freelancer for letters and invoices. Register the trade with the Gewerbeamt first, the Finanzamt then sends the tax registration questionnaire."
+      ]
+    },
+    {
+      "id": "de-ek",
+      "country": "DE",
+      "lang": "de",
+      "paper": "A4",
+      "stage": "later",
+      "label": "Germany, registered merchant (eingetragener Kaufmann, e.K.)",
+      "letter": [
+        "trading_name+legal_form",
+        "seat",
+        "register_court",
+        "register_number"
+      ],
+      "invoice": [
+        "tax_number_or_vat_id"
+      ],
+      "tax": [
+        "tax_number",
+        "vat_id",
+        "w_id"
+      ],
+      "legal_form_default": "e.K.",
+      "law": "§ 37a HGB",
+      "notes": [
+        "Letters and business emails must show the firm with 'e.K.', the place of business, the register court and the register number (§ 37a HGB)."
+      ]
+    },
+    {
+      "id": "de-ug",
+      "country": "DE",
+      "lang": "de",
+      "paper": "A4",
+      "stage": "later",
+      "label": "Germany, UG (haftungsbeschränkt)",
+      "letter": [
+        "trading_name+legal_form",
+        "seat",
+        "register_court",
+        "register_number",
+        "directors"
+      ],
+      "invoice": [
+        "tax_number_or_vat_id"
+      ],
+      "tax": [
+        "tax_number",
+        "vat_id",
+        "w_id"
+      ],
+      "legal_form_default": "UG (haftungsbeschränkt)",
+      "law": "§ 35a GmbHG, § 5a GmbHG",
+      "notes": [
+        "The legal form must be written out as 'UG (haftungsbeschränkt)' or 'Unternehmergesellschaft (haftungsbeschränkt)', never abbreviated further (§ 5a GmbHG).",
+        "Letters and business emails: legal form, seat, register court, register number and all managing directors with surname and at least one first name written out (§ 35a GmbHG). If you state the share capital, state the unpaid part too."
+      ]
+    },
+    {
+      "id": "de-gmbh",
+      "country": "DE",
+      "lang": "de",
+      "paper": "A4",
+      "stage": "later",
+      "label": "Germany, GmbH",
+      "letter": [
+        "trading_name+legal_form",
+        "seat",
+        "register_court",
+        "register_number",
+        "directors"
+      ],
+      "invoice": [
+        "tax_number_or_vat_id"
+      ],
+      "tax": [
+        "tax_number",
+        "vat_id",
+        "w_id"
+      ],
+      "legal_form_default": "GmbH",
+      "law": "§ 35a GmbHG",
+      "notes": [
+        "Same rules as the UG, § 35a GmbHG."
+      ]
+    },
+    {
+      "id": "uk-sole",
+      "country": "UK",
+      "lang": "en",
+      "paper": "A4",
+      "stage": "later",
+      "label": "United Kingdom, sole trader",
+      "letter": [
+        "full_name",
+        "street_postcode_city"
+      ],
+      "invoice": [
+        "vat_id_if_registered"
+      ],
+      "tax": [
+        "vat_id"
+      ],
+      "law": "Companies Act 2006 s 1202 (when trading under a business name)",
+      "notes": [
+        "If you trade under a name that is not your own, letters, orders, invoices and receipts must show your name and an address for service of documents (Companies Act 2006, s 1202)."
+      ]
+    },
+    {
+      "id": "uk-ltd",
+      "country": "UK",
+      "lang": "en",
+      "paper": "A4",
+      "stage": "later",
+      "label": "United Kingdom, private limited company (Ltd)",
+      "letter": [
+        "trading_name+legal_form",
+        "registered_in",
+        "company_number",
+        "registered_office"
+      ],
+      "invoice": [
+        "vat_id_if_registered"
+      ],
+      "tax": [
+        "vat_id"
+      ],
+      "legal_form_default": "Ltd",
+      "law": "Company, Limited Liability Partnership and Business (Names and Trading Disclosures) Regulations 2015, regs 24 to 26",
+      "notes": [
+        "Letters, order forms and websites: registered name, part of the UK where registered, company number and registered office address. If you name any director, name all of them."
+      ]
+    },
+    {
+      "id": "nl-eenmanszaak",
+      "country": "NL",
+      "lang": "nl",
+      "paper": "A4",
+      "stage": "later",
+      "label": "Netherlands, sole trader (eenmanszaak)",
+      "letter": [
+        "trading_name_or_full_name",
+        "street_postcode_city",
+        "kvk"
+      ],
+      "invoice": [
+        "btw_id"
+      ],
+      "tax": [
+        "btw_id"
+      ],
+      "law": "Handelsregisterbesluit 2008, art. 50 (KvK number on letters and websites)",
+      "notes": [
+        "Show the KvK number on letters, invoices, order forms and your website. Use the btw-id (not the omzetbelastingnummer) on invoices and your website.",
+        "Under the small business scheme (KOR) invoices say: 'Vrijgesteld van btw op grond van de kleineondernemersregeling' or similar. Check the current wording with the Belastingdienst."
+      ]
+    },
+    {
+      "id": "nl-bv",
+      "country": "NL",
+      "lang": "nl",
+      "paper": "A4",
+      "stage": "later",
+      "label": "Netherlands, private company (B.V.)",
+      "letter": [
+        "trading_name+legal_form",
+        "seat",
+        "kvk"
+      ],
+      "invoice": [
+        "btw_id"
+      ],
+      "tax": [
+        "btw_id"
+      ],
+      "legal_form_default": "B.V.",
+      "law": "Burgerlijk Wetboek art. 2:186, Handelsregisterbesluit 2008 art. 50",
+      "notes": [
+        "Letters and order forms show the full statutory name with B.V., the statutory seat and the KvK number."
+      ]
+    },
+    {
+      "id": "us-sole",
+      "country": "US",
+      "lang": "en",
+      "paper": "Letter",
+      "stage": "later",
+      "label": "United States, sole proprietor or LLC",
+      "letter": [
+        "trading_name_or_full_name",
+        "street_postcode_city"
+      ],
+      "invoice": [],
+      "tax": [],
+      "extra": [
+        "state"
+      ],
+      "notes": [
+        "No national rule for letter details. If you use a DBA (assumed name) or an LLC, use the registered name exactly. Never print an EIN or SSN on stationery."
+      ]
+    }
+  ]
+}

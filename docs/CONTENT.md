@@ -180,3 +180,25 @@ file name. SVG and HTML are refused on purpose, a browser would run scripts insi
 `/writing/feed.xml` lists the articles for feed readers (Feedly, NetNewsWire, Thunderbird and so on), so people can
 follow new writing without social media. Nothing to set up, it updates itself when an article is added. It is not an
 upload tool, uploads go through the media library above.
+
+## Paperwork: letters and invoices
+
+/admin/paperwork. The old Stationery and Contract Builders from the brand pack, moving into the admin one kind at
+a time. Letters and invoices are here now, contracts and cards follow.
+
+1. Once: fill in **My details** (business type, name, address, tax numbers) and **Payment accounts** (the IBAN is
+   checked when you save). Both are private: never on GitHub, never on the site.
+2. New letter or New invoice gives the next number for that kind and year (RP-L-2026-0001, RP-I-2026-0001).
+   Numbers are never reused, not even from the trash.
+3. Type in the form, the A4 page on the right follows. It saves on its own while you type, Ctrl or Cmd + S saves
+   straight away. [Square brackets] are marked as still to fill in.
+4. PDF prints the same page with Chromium on the server (same setup as the CV PDFs, see DEPLOYMENT.md), with the
+   fine print and Page x of y on every page. Word gives a plain Word file to edit.
+5. Mark as sent when it went out. Every save is kept, so a sent invoice can always be looked up as it was.
+
+The business type decides what is printed: nothing extra for a private person, tax number or VAT ID on invoices for
+a freelancer, register court, number and directors on every letter for a GmbH. If something required is missing the
+editor says so. Your personal Steuer-IdNr. has no field anywhere on purpose. Invoices are worked out in whole cents,
+VAT per rate over the net totals. A small business (§ 19 UStG) gets no VAT and the note that says why.
+
+The code is in src/documents/ (one file per kind), the layout in styles/paperwork.scss.
