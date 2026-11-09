@@ -68,6 +68,8 @@ try {
   }
 } catch (error) {
   console.error(`Content apply stopped: ${error.message}`);
+  // the deploy keeps going, but a non zero exit tells it not to mark this commit as applied so the next one retries
+  process.exitCode = 1;
 } finally {
   await database.close();
 }
