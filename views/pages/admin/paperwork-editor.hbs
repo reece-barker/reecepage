@@ -1,7 +1,7 @@
 <header class="admin-head">
   <div class="admin-head__text">
     <h1>{{doc.kindLabel}} {{doc.number}}</h1>
-    <p class="admin-head__lede">{{help}} {{#if hasPdf}}The page on the right is the PDF, it follows what you type.{{else}}The preview on the right follows what you type.{{/if}}</p>
+    <p class="admin-head__lede">{{help}} {{#if hasPdf}}The preview is the PDF and it follows what you type.{{else}}The preview follows what you type.{{/if}}</p>
   </div>
   <div class="admin-head__actions">
     {{#if hasPdf}}<a class="button button--small" href="/admin/paperwork/{{doc.id}}/pdf" data-download>{{icon "arrow"}}PDF</a>{{/if}}
