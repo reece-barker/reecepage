@@ -67,7 +67,7 @@ test("only changed files are committed, in one commit", async () => {
     { path: "README.md", type: "blob", sha: "1111" }
   ];
   const { sync, gh } = syncWith(records, tree);
-  const status = await sync.run();
+  const status = await sync.run({ full: true });
   assert.equal(status.state, "ok");
   const made = gh.calls.find((c) => c.method === "POST" && c.path === "/git/trees");
   assert.deepEqual(made.body.tree.map((t) => t.path), ["content/writing/changed.md"]);
@@ -80,7 +80,7 @@ test("nothing changed means no commit at all", async () => {
   const records = { entries: [entry("same")], documents: {} };
   const files = desiredFiles(records, new Date());
   const { sync, gh } = syncWith(records, [{ path: "content/writing/same.md", type: "blob", sha: gitBlobSha(files.get("content/writing/same.md")) }]);
-  assert.equal((await sync.run()).state, "ok");
+  assert.equal((await sync.run({ full: true })).state, "ok");
   assert.ok(!gh.calls.some((c) => c.method === "POST"));
 });
 
@@ -88,25 +88,25 @@ test("a file thats no longer published is deleted, but lots at once waits", asyn
   const records = { entries: [entry("keep")], documents: {} };
   const many = Array.from({ length: 7 }, (_, i) => ({ path: `content/writing/gone-${i}.md`, type: "blob", sha: "x" }));
   const { sync, gh } = syncWith(records, many);
-  const blocked = await sync.run();
+  const blocked = await sync.run({ full: true });
   assert.equal(blocked.state, "failed");
   assert.equal(blocked.blocked.length, 7);
   assert.ok(!gh.calls.some((c) => c.method === "POST"));
   sync.stop();
-  const done = await sync.run({ allowManyDeletes: true });
+  const done = await sync.run({ allowManyDeletes: true, full: true });
   assert.equal(done.state, "ok");
   const made = gh.calls.find((c) => c.path === "/git/trees" && c.method === "POST");
   assert.equal(made.body.tree.filter((t) => t.sha === null).length, 7);
   // references.yml in the repo is never touched, even though its not "published"
   const keep = desiredFiles(records, new Date()).get("content/writing/keep.md");
   const { sync: other, gh: gh2 } = syncWith(records, [{ path: "content/writing/keep.md", type: "blob", sha: gitBlobSha(keep) }, { path: "content/data/references.yml", type: "blob", sha: "x" }]);
-  await other.run();
+  await other.run({ full: true });
   assert.ok(!gh2.calls.some((c) => c.method === "POST"));
 });
 
 test("an empty database never empties the repository", async () => {
   const { sync, gh } = syncWith({ entries: [], documents: {} }, [{ path: "content/writing/a.md", type: "blob", sha: "x" }]);
-  const status = await sync.run();
+  const status = await sync.run({ full: true });
   assert.equal(status.state, "failed");
   assert.match(status.lastError.message, /no content/);
   assert.equal(gh.calls.length, 0);
@@ -117,8 +117,42 @@ test("a branch that moved in between is tried again from the new head", async ()
   fakeGitHub.moveOnce = true;
   try {
     const { sync, gh } = syncWith({ entries: [entry("a")], documents: {} }, []);
-    const status = await sync.run();
+    const status = await sync.run({ full: true });
     assert.equal(status.state, "ok");
     assert.equal(gh.calls.filter((c) => c.path === "/git/refs/heads/main").length, 2);
   } finally { fakeGitHub.moveOnce = false; }
+});
+
+// What went wrong on 9 November 2026: a restart with a database that still had old content committed it over the
+// new content in the repo. Now a start only takes a snapshot, and later runs only send what moved since
+test("a start commits nothing, even when the repo has newer content than the database", async () => {
+  const records = { entries: [entry("stale")], documents: { now: { updated: "2026-10-12" } } };
+  const { sync, gh } = syncWith(records, [
+    { path: "content/writing/stale.md", type: "blob", sha: "newer-in-the-repo" },
+    { path: "content/data/now.yml", type: "blob", sha: "newer-in-the-repo" }
+  ]);
+  await sync.prime();
+  const status = await sync.run();
+  assert.equal(status.state, "ok");
+  assert.ok(!gh.calls.some((c) => c.method === "POST"), "nothing may be committed");
+});
+
+test("after the snapshot only what changed in the admin is sent", async () => {
+  const records = { entries: [entry("stale"), entry("edited")], documents: { now: { updated: "2026-10-12" } } };
+  const { sync, gh } = syncWith(records, [
+    { path: "content/writing/stale.md", type: "blob", sha: "newer-in-the-repo" },
+    { path: "content/writing/edited.md", type: "blob", sha: "old" },
+    { path: "content/data/now.yml", type: "blob", sha: "newer-in-the-repo" }
+  ]);
+  await sync.prime();
+  // an edit in the admin: the database read now returns a changed post
+  records.entries = [entry("stale"), { ...entry("edited"), body: "Changed in the admin." }];
+  const status = await sync.run();
+  assert.equal(status.state, "ok");
+  const made = gh.calls.find((c) => c.method === "POST" && c.path === "/git/trees");
+  assert.deepEqual(made.body.tree.map((t) => t.path), ["content/writing/edited.md"]);
+  // and the next run with no new edits sends nothing again
+  const before = gh.calls.filter((c) => c.method === "POST").length;
+  await sync.run();
+  assert.equal(gh.calls.filter((c) => c.method === "POST").length, before);
 });

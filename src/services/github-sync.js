@@ -3,6 +3,13 @@
 // with only the differences. If GitHub is down the next run catches up on its own, nothing can get lost or out of
 // order, and a run with nothing to do makes no commit.
 //
+// It only sends what changed in the admin since the site started. When the site starts it takes a snapshot of the
+// content as the baseline and commits nothing, after that a run only looks at files whose content moved away from
+// the snapshot. Before this it compared everything on every start, and on 9 November 2026 a restart with a
+// database that hadnt had the new content applied yet committed the old content over all of it. The Sync now
+// button sends the same changed files again, for when GitHub was down. run({ full: true }) compares everything and
+// is only for scripts, never a button.
+//
 // Only published content goes to GitHub, the repository is public, so drafts and anythin scheduled for later
 // stay in the database. references.yml never goes (it has private contact details). Every commit message ends in
 // [skip ci] so it doesnt trigger the deploy, the site allready has the change and a restart for a typo fix would
@@ -59,6 +66,8 @@ export class GitHubSync {
     this.timer = null;
     this.running = null;
     this.failures = 0;
+    // path -> text of every file as it was at start or after the last commit, null until its been read once
+    this.baseline = null;
   }
 
   get enabled() { return Boolean(this.settings.token && this.settings.repo && this.repository); }
@@ -67,7 +76,16 @@ export class GitHubSync {
   start() {
     if (!this.enabled) return;
     this.unsubscribe = this.content.onChange(() => this.schedule(4000));
-    this.schedule(15000);
+    // No commit at start, only the snapshot to compare later changes with
+    this.prime().catch(() => {});
+  }
+
+  /** Reads what the content is right now and keeps it as the baseline, without sending anything */
+  async prime() {
+    const records = await this.repository.readAll();
+    this.baseline = desiredFiles(records);
+    this.status.state = "ok";
+    return this.baseline;
   }
 
   stop() {
@@ -109,20 +127,28 @@ export class GitHubSync {
    * Works out the differences and commits them. allowManyDeletes is for the Sync now button after the admin
    * showed what would be deleted
    */
-  async run({ allowManyDeletes = false } = {}) {
+  async run({ allowManyDeletes = false, full = false } = {}) {
     if (!this.enabled) return this.status;
     if (this.running) return this.running;
-    this.running = this.runOnce({ allowManyDeletes }).finally(() => { this.running = null; });
+    this.running = this.runOnce({ allowManyDeletes, full }).finally(() => { this.running = null; });
     return this.running;
   }
 
-  async runOnce({ allowManyDeletes }) {
+  async runOnce({ allowManyDeletes, full }) {
     this.status.state = "running";
     try {
       // Content from the database only, if its not readable right now theres nothing safe to compare against
       const records = await this.repository.readAll();
       if (!records.entries.length) throw new SyncError("The database has no content, nothing was sent so the repository isnt emptied by mistake");
       const desired = desiredFiles(records);
+      // Without a snapshot yet (the start couldnt read the database) this run becomes the snapshot and sends nothing
+      if (!full && !this.baseline) {
+        this.baseline = desired;
+        this.markDone(null);
+        return this.status;
+      }
+      // The paths changed in the admin since the snapshot: different text, new, or gone. A full run looks at all
+      const touched = full ? null : new Set([...desired.keys(), ...this.baseline.keys()].filter((path) => desired.get(path) !== this.baseline.get(path)));
 
       for (let attempt = 1; attempt <= 3; attempt += 1) {
         const branch = this.settings.branch;
@@ -135,10 +161,10 @@ export class GitHubSync {
         const existing = new Map(tree.tree.filter((item) => item.type === "blob" && MANAGED.test(item.path)).map((item) => [item.path, item.sha]));
         const changes = [];
         for (const [path, text] of desired) {
-          if (!MANAGED.test(path)) continue;
+          if (!MANAGED.test(path) || (touched && !touched.has(path))) continue;
           if (existing.get(path) !== gitBlobSha(text)) changes.push({ path, mode: "100644", type: "blob", content: text, kind: existing.has(path) ? "update" : "add" });
         }
-        const deletes = [...existing.keys()].filter((path) => !desired.has(path) && !PRIVATE_DOCUMENTS.some((name) => path === `content/data/${name}.yml`));
+        const deletes = [...existing.keys()].filter((path) => !desired.has(path) && (!touched || touched.has(path)) && !PRIVATE_DOCUMENTS.some((name) => path === `content/data/${name}.yml`));
         if (deletes.length > MAX_DELETES && !allowManyDeletes) {
           this.status.blocked = deletes;
           throw new SyncError(`${deletes.length} files would be deleted on GitHub, thats more than ${MAX_DELETES} at once so it waits for you to press Sync now`);
@@ -148,6 +174,7 @@ export class GitHubSync {
         this.status.blocked = null;
 
         if (!changes.length) {
+          this.baseline = desired;
           this.markDone(null);
           return this.status;
         }
@@ -163,6 +190,7 @@ export class GitHubSync {
           throw error;
         }
         this.logger?.info({ commit: newCommit.sha, files: changes.length }, "content committed to github");
+        this.baseline = desired;
         this.markDone({ sha: newCommit.sha, message, files: changes.length, url: newCommit.html_url || `https://github.com/${this.settings.repo}/commit/${newCommit.sha}` });
         return this.status;
       }

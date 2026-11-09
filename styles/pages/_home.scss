@@ -184,15 +184,56 @@
   }
 }
 
+// The closing band: olive in both themes (in the dark one the usual inverse band would be a glaring cream block),
+// heading on the left and the ways to get in touch on the right. The button is cream so it stays the main action
+.home-contact-band {
+  --band: #33412a;
+  --on-band: #f9f4e8;
+
+  background: var(--band);
+  color: var(--on-band);
+
+  :focus-visible {
+    outline-color: var(--on-band);
+  }
+}
+
 .home-contact {
-  text-align: left;
+  display: grid;
+  gap: var(--space-6);
+  align-items: end;
+
+  @include up(lg) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+
+  h2 {
+    color: inherit;
+  }
+
+  .lead {
+    margin-top: var(--space-3);
+    max-width: 32em;
+    color: color-mix(in srgb, currentColor 82%, transparent);
+  }
 
   .email-link {
     display: inline-block;
-    margin-top: var(--space-5);
+    color: inherit;
   }
 
   .cluster {
-    margin-top: var(--space-6);
+    margin-top: var(--space-5);
+  }
+
+  .button {
+    --button-bg: var(--on-band);
+    --button-fg: var(--band);
+    --button-border: var(--on-band);
+  }
+
+  .link-action {
+    color: inherit;
   }
 }
