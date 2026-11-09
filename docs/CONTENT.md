@@ -181,14 +181,15 @@ file name. SVG and HTML are refused on purpose, a browser would run scripts insi
 follow new writing without social media. Nothing to set up, it updates itself when an article is added. It is not an
 upload tool, uploads go through the media library above.
 
-## Paperwork: letters and invoices
+## Paperwork: letters, invoices and contracts
 
 /admin/paperwork. The old Stationery and Contract Builders from the brand pack, moving into the admin one kind at
-a time. Letters and invoices are here now, contracts and cards follow.
+a time. Letters, invoices and contracts are here now, cards follow.
 
 1. Once: fill in **My details** (business type, name, address, tax numbers) and **Payment accounts** (the IBAN is
    checked when you save). Both are private: never on GitHub, never on the site.
-2. New letter or New invoice gives the next number for that kind and year (RP-L-2026-0001, RP-I-2026-0001).
+2. New letter, New invoice or New contract gives the next number for that kind and year (RP-L-2026-0001,
+   RP-I-2026-0001, RP-C-2026-0001).
    Numbers are never reused, not even from the trash.
 3. Type in the form, the A4 page on the right follows. It saves on its own while you type, Ctrl or Cmd + S saves
    straight away. [Square brackets] are marked as still to fill in.
@@ -201,4 +202,24 @@ a freelancer, register court, number and directors on every letter for a GmbH. I
 editor says so. Your personal Steuer-IdNr. has no field anywhere on purpose. Invoices are worked out in whole cents,
 VAT per rate over the net totals. A small business (§ 19 UStG) gets no VAT and the note that says why.
 
-The code is in src/documents/ (one file per kind), the layout in styles/paperwork.scss.
+### Contracts
+
+Pick the type next to New contract: payment plan, repayment plan with direct payments to a third party, freelance
+project, NDA, sale of a used item, or an outline for a brand licence, contributor rights or anything custom. The type
+stays with the contract, use Copy as new for another type of the same deal.
+
+- The form asks for your side, the law (German, UK, Dutch or a US state), the other party and the facts of that
+  type. The clauses are written from the facts in German, English or Dutch and change when the facts do. The wording
+  follows the law where it has to: liability limits, rights of use instead of copyright transfer under German law,
+  jurisdiction with consumers and so on.
+- Payment plans take your bank account from Payment accounts when you are owed the money, or the other party's bank
+  when they are. The payment schedule is worked out in whole cents, the last instalment takes the rest.
+- **Write out the clauses** copies the generated text into the form. From then on what you type is what is printed:
+  edit, reorder, remove or add clauses. The payment schedule still follows the facts and goes after the ticked
+  clause. Clear the clauses list to go back to the facts.
+- The yellow notes above the preview are for you and never printed. They point out things like consumer rules or
+  placeholders still in the text. These are templates, not legal advice: get anything big checked before it is signed.
+- Not ported from the old builder: two languages side by side in one contract, and drafting with Claude.
+
+The code is in src/documents/ (one file per kind, the contract wording in contract-templates.js), the layout in
+styles/paperwork.scss.

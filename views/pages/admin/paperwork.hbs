@@ -1,17 +1,20 @@
 <header class="admin-head">
   <div class="admin-head__text">
     <h1>Documents</h1>
-    <p class="admin-head__lede">Letters and invoices on your letterhead, numbered and kept with every change. Fill in the form, watch the page, download a PDF or a Word file.</p>
+    <p class="admin-head__lede">Letters, invoices and contracts on your letterhead, numbered and kept with every change. Fill in the form, watch the page, download a PDF or a Word file.</p>
   </div>
   <div class="admin-head__actions">
     {{#each kinds}}
-    <form method="post" action="/admin/paperwork/new/{{kind}}"><input type="hidden" name="_csrf" value="{{@root.csrfToken}}"><button class="button{{#unless @first}} button--secondary{{/unless}}" type="submit">{{icon "plus"}}New {{lower label}}</button></form>
+    <form class="paperwork-new" method="post" action="/admin/paperwork/new/{{kind}}"><input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
+      {{#if choices}}<label class="visually-hidden" for="new-{{kind}}-type">Type of {{lower label}}</label><select class="select paperwork-new__type" id="new-{{kind}}-type" name="type">{{#each choices}}<option value="{{id}}">{{label}}</option>{{/each}}</select>{{/if}}
+      <button class="button{{#unless @first}} button--secondary{{/unless}}" type="submit">{{icon "plus"}}New {{lower label}}</button>
+    </form>
     {{/each}}
   </div>
 </header>
 
 {{#unless hasDetails}}<p class="alert alert--note">{{icon "info"}}<span>Fill in <a href="/admin/lists/business">My details</a> first: your business type decides what has to be printed on letters and invoices. Until then the name and address from the site settings are used.</span></p>{{/unless}}
-{{#unless hasAccounts}}<p class="alert alert--note">{{icon "info"}}<span>Add a bank account under <a href="/admin/lists/payment_accounts">Payment accounts</a> to pick it on invoices.</span></p>{{/unless}}
+{{#unless hasAccounts}}<p class="alert alert--note">{{icon "info"}}<span>Add a bank account under <a href="/admin/lists/payment_accounts">Payment accounts</a> to pick it on invoices and payment plans.</span></p>{{/unless}}
 {{#if (eq notice "trashed")}}<p class="alert alert--success" role="status">{{icon "check"}}<span>Moved to the trash. Its number stays taken, so no invoice number is ever given out twice.</span></p>{{/if}}
 
 <section class="panel" aria-label="Documents">
@@ -43,6 +46,6 @@
     </tbody>
   </table>
   {{else}}
-  <p class="panel__body admin-empty">{{#if (eq status "trash")}}The trash is empty.{{else}}Nothing yet. Start a letter or an invoice with the buttons at the top.{{/if}}</p>
+  <p class="panel__body admin-empty">{{#if (eq status "trash")}}The trash is empty.{{else}}Nothing yet. Start a letter, an invoice or a contract with the buttons at the top.{{/if}}</p>
   {{/if}}
 </section>

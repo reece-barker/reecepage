@@ -1,4 +1,4 @@
-// Paperwork in the admin: letters and invoices (contracts and cards follow) with a form on the left and the live
+// Paperwork in the admin: letters, invoices and contracts (cards follow) with a form on the left and the live
 // A4 preview on the right, numbered, kept with their revisions, and downloaded as PDF or a plain Word file.
 // Your details and bank accounts come from the private lists My details and Payment accounts.
 import { randomBytes } from "node:crypto";
@@ -8,6 +8,7 @@ import { KINDS, documentKind, fieldsFor } from "../documents/index.js";
 import { businessDetails, missingRequired } from "../documents/business.js";
 import { pageHtml, pdfFooterTemplate } from "../documents/page.js";
 import { makeDocx } from "../documents/docx.js";
+import { writeOut } from "../documents/contract.js";
 import { CvPdfError, printUrl } from "../services/cv-pdf.js";
 
 const PREVIEW_MINUTES = 20;
@@ -48,15 +49,19 @@ export function createPaperworkController({ config, paperwork, repository, asset
   function renderPage(kind, record, ctx, { preview = false } = {}) {
     const def = documentKind(kind);
     const logo = assets.url("images/brand/reece-dove-long-horizontal-colour.svg");
-    const out = def.render(record.data, { ...ctx, number: record.number, logo });
+    const out = def.render(record.data, { ...ctx, number: record.number, logo, preview });
     const html = pageHtml({ title: out.title, lang: record.data.lang, body: out.body, footer: out.footer, stylesheet: assets.url("css/paperwork.css"), preview });
     return { html, out };
   }
 
   /** Whats in the form, checked against the kind's fields. Drafts dont need everything filled in yet */
-  function cleanData(kind, raw, accounts) {
-    const fields = fieldsFor(kind, accounts);
+  // A few things are picked when the document is made and never come from the form (a contract's type), those are
+  // kept from whats saved
+  function cleanData(record, raw, accounts) {
+    const def = documentKind(record.kind);
+    const fields = fieldsFor(record.kind, accounts, record.data);
     const { value } = cleanObject(fields, raw, "", { lenient: true });
+    for (const key of def.fixed || []) if (record.data[key] !== undefined) value[key] = record.data[key];
     return value;
   }
 
@@ -92,7 +97,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
         const [items, ctx] = await Promise.all([paperwork.list({ kind, status, search }), context()]);
         page(res, "paperwork", "paperwork", "Documents", {
           items: items.map(present),
-          kinds: Object.values(KINDS).map((k) => ({ kind: k.kind, label: k.label, help: k.help, current: k.kind === kind })),
+          kinds: Object.values(KINDS).map((k) => ({ kind: k.kind, label: k.label, help: k.help, choices: k.choices, current: k.kind === kind })),
           kind,
           status,
           search,
@@ -106,10 +111,13 @@ export function createPaperworkController({ config, paperwork, repository, asset
     async create(req, res, next) {
       const def = documentKind(req.params.kind);
       if (!def) return next(notFound());
+      // A contract needs its type, the form on the list page sends it
+      const choice = typeof req.body?.type === "string" ? req.body.type : "";
+      if (def.choices && !def.choices.some((c) => c.id === choice)) return next(notFound());
       try {
         const ctx = await context();
         const lang = ["de", "en", "nl"].includes(req.body?.lang) ? req.body.lang : ctx.details.entity.startsWith("uk") || ctx.details.entity.startsWith("us") ? "en" : ctx.details.entity.startsWith("nl") ? "nl" : "de";
-        const data = def.defaults(ctx.details, lang, ctx.accounts);
+        const data = def.defaults(ctx.details, lang, ctx.accounts, { type: choice });
         const record = await paperwork.create({ kind: def.kind, title: def.title(data), lang, data, prefix: ctx.details.prefix, code: def.code, year: new Date().getFullYear() });
         res.redirect(303, `/admin/paperwork/${record.id}`);
       } catch (error) { next(error); }
@@ -133,7 +141,8 @@ export function createPaperworkController({ config, paperwork, repository, asset
             kind: record.kind,
             saveUrl: `/admin/paperwork/${record.id}`,
             previewUrl: "/admin/paperwork/preview",
-            fields: fieldsFor(record.kind, ctx.accounts),
+            fields: fieldsFor(record.kind, ctx.accounts, record.data),
+            writeOutUrl: record.kind === "contract" ? `/admin/paperwork/${record.id}/write-out` : null,
             value: record.data,
             updatedAt: record.updatedAt
           }),
@@ -148,7 +157,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
         if (!record || !documentKind(record.kind)) return res.status(404).json({ ok: false, error: "Not found" });
         if (record.status === "trash") return res.status(409).json({ ok: false, error: "Its in the trash, restore it first" });
         const ctx = await context();
-        const data = cleanData(record.kind, req.body?.value, ctx.accounts);
+        const data = cleanData(record, req.body?.value, ctx.accounts);
         const def = documentKind(record.kind);
         const saved = await paperwork.save(record.id, { title: def.title(data), lang: data.lang || record.lang, data });
         res.json({ ok: true, doc: present(saved) });
@@ -164,7 +173,7 @@ export function createPaperworkController({ config, paperwork, repository, asset
         const record = await paperwork.get(req.body?.id);
         if (!record || !documentKind(record.kind)) return res.status(404).json({ ok: false, error: "Not found" });
         const ctx = await context();
-        const data = cleanData(record.kind, req.body?.value, ctx.accounts);
+        const data = cleanData(record, req.body?.value, ctx.accounts);
         const { html } = renderPage(record.kind, { ...record, data }, ctx, { preview: true });
         const now = Date.now();
         for (const [key, value] of previews) if (value.expires < now) previews.delete(key);
@@ -174,6 +183,23 @@ export function createPaperworkController({ config, paperwork, repository, asset
       } catch (error) {
         req.log?.error({ err: error }, "paperwork preview failed");
         res.status(500).json({ ok: false, error: "The preview could not be drawn" });
+      }
+    },
+
+    /**
+     * A contract's clauses as text in the form, from whats in the form right now. Nothing is saved here, the editor
+     * puts them in the form and the normal autosave takes it from there
+     */
+    async writeOut(req, res) {
+      try {
+        const record = await paperwork.get(req.params.id);
+        if (!record || record.kind !== "contract") return res.status(404).json({ ok: false, error: "Not found" });
+        const ctx = await context();
+        const data = cleanData(record, req.body?.value, ctx.accounts);
+        res.json({ ok: true, value: { ...data, ...writeOut(data, ctx.details, ctx.accounts) } });
+      } catch (error) {
+        req.log?.error({ err: error }, "writing out the clauses failed");
+        res.status(500).json({ ok: false, error: "The clauses could not be written out, it has been logged" });
       }
     },
 

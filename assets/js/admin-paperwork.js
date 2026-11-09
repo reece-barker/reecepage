@@ -65,6 +65,39 @@
   }
 
   form.addEventListener("submit", function (event) { event.preventDefault(); save(); });
+
+  // Contracts: copies the clauses the facts make into the form as text, so they can be edited from there. The form
+  // gets built again with the new value, then it saves and redraws like after any other change
+  var writeOutButton = form.querySelector("[data-write-out]");
+  if (writeOutButton && config.writeOutUrl) {
+    writeOutButton.addEventListener("click", function () {
+      var current = built.get();
+      var hasClauses = current.clauses && current.clauses.length;
+      if (hasClauses && writeOutButton.getAttribute("data-armed") !== "true") {
+        // theres already clauses in the form, ask again on the button instead of a popup
+        writeOutButton.setAttribute("data-armed", "true");
+        writeOutButton.textContent = "Press again to replace your clauses";
+        setTimeout(function () { writeOutButton.removeAttribute("data-armed"); writeOutButton.textContent = "Write out the clauses"; }, 4000);
+        return;
+      }
+      writeOutButton.removeAttribute("data-armed");
+      writeOutButton.textContent = "Write out the clauses";
+      writeOutButton.disabled = true;
+      statusLine.textContent = "Writing out the clauses...";
+      window.RP.send(config.writeOutUrl, { value: current }).then(function (result) {
+        writeOutButton.disabled = false;
+        if (!result.ok) {
+          statusLine.textContent = (result.data && result.data.error) || "The clauses could not be written out";
+          statusLine.classList.add("is-error");
+          return;
+        }
+        built = F.buildFields(config.fields, result.data.value, changed);
+        root.replaceChildren(built.node);
+        changed();
+        statusLine.textContent = "Clauses written out, scroll down to edit them";
+      });
+    });
+  }
   document.addEventListener("keydown", function (event) {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") { event.preventDefault(); save(); }
   });

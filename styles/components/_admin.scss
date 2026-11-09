@@ -314,6 +314,18 @@
   grid-column: 1 / -1;
 }
 
+.paperwork-new {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+// the type picker sits next to New contract and shouldnt be wider than the button needs
+.paperwork-new__type {
+  width: auto;
+  max-width: 16rem;
+}
+
 .paperwork__status {
   display: flex;
   flex-wrap: wrap;

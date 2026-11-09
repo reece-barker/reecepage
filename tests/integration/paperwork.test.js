@@ -74,6 +74,51 @@ test("a letter has its own numbers and a copy gets a new one", async () => {
   assert.match(copyPage.text, /Kündigung/);
 });
 
+test("a contract keeps its type, follows the facts and its clauses can be written out and edited", async () => {
+  const year = new Date().getFullYear();
+  await form("/admin/paperwork/new/contract", { type: "nonsense" }).expect(404);
+  const made = await form("/admin/paperwork/new/contract", { type: "payment" }).expect(303);
+  const id = Number(made.headers.location.split("/").pop());
+  const editor = await get(`/admin/paperwork/${id}`).expect(200);
+  assert.match(editor.text, new RegExp(`RP-C-${year}-0001`));
+  assert.match(editor.text, /data-write-out/);
+  assert.match(editor.text, /not legal advice/);
+
+  // the form trys to change the type, it stays a payment plan
+  const value = { lang: "de", type: "nda", role: "creditor", law: "DE", currency: "EUR", other: { kind: "consumer", name: "Max Mustermann", street: "Musterweg 5", postcode: "80331", city: "München" }, facts: { debt_desc: "Webentwicklung", total: "1.250,00", n: "3", interval: "monthly", first: "2026-12-01", method: "transfer" }, account: "Main" };
+  const saved = await post(`/admin/paperwork/${id}`, { value }).expect(200);
+  assert.equal(saved.body.doc.title, "Ratenzahlungsvereinbarung");
+  assert.match((await get(`/admin/paperwork/${id}`).expect(200)).text, /&quot;type&quot;:&quot;payment&quot;|"type":"payment"/);
+
+  const preview = await post("/admin/paperwork/preview", { id, value }).expect(200);
+  const page = await get(preview.body.url).expect(200);
+  assert.match(page.text, /416,66\u00a0€|416,66 €/);
+  assert.match(page.text, /416,68/);
+  assert.match(page.text, /DE89 3704 0044 0532 0130 00/);
+  assert.match(page.text, /Notes for you, not printed/);
+
+  // written out, edited, then the facts change: the edited text stays, the schedule still follows the facts
+  const out = await post(`/admin/paperwork/${id}/write-out`, { value }).expect(200);
+  const clauses = out.body.value.clauses;
+  assert.ok(clauses.length >= 6);
+  assert.equal(clauses.at(-1).heading, "Schlussbestimmungen");
+  assert.ok(clauses.some((c) => c.schedule));
+  clauses[0].text = "Ein eigener Satz, den ich geschrieben habe.";
+  clauses.push({ heading: "Eigene Klausel", text: "Noch etwas.\n- erstens\n- zweitens" });
+  const edited = { ...out.body.value, clauses, facts: { ...value.facts, total: "900" } };
+  await post(`/admin/paperwork/${id}`, { value: edited }).expect(200);
+  const again = await post("/admin/paperwork/preview", { id, value: edited }).expect(200);
+  const html = (await get(again.body.url).expect(200)).text;
+  assert.match(html, /Ein eigener Satz, den ich geschrieben habe/);
+  assert.match(html, /Eigene Klausel/);
+  assert.match(html, /\(b\)<\/span><div>zweitens/);
+  assert.match(html, /300,00/);
+
+  const word = await get(`/admin/paperwork/${id}/docx`).expect(200);
+  assert.match(word.headers["content-disposition"], new RegExp(`RP-C-${year}-0001-ratenzahlungsvereinbarung\\.docx`));
+  await post("/admin/paperwork/999999/write-out", { value }).expect(404);
+});
+
 test("my details and payment accounts never go to GitHub", async () => {
   await post("/admin/lists/business", { value: { entity: "de-private", full_name: "Reece Norman Barker" } }).expect(200);
   const { entries, documents } = await ctx.services.contentRepository.readAll();

@@ -7,6 +7,8 @@ import { invoiceTotals } from "../../src/documents/invoice.js";
 import { businessDetails, legalLines, missingRequired, senderName, taxLines } from "../../src/documents/business.js";
 import { makeDocx } from "../../src/documents/docx.js";
 import { KINDS } from "../../src/documents/index.js";
+import { buildContract, writeOut } from "../../src/documents/contract.js";
+import { TYPES, paySchedule, repaySchedule } from "../../src/documents/contract-templates.js";
 
 test("amounts are read the German and the English way, always as whole cents", () => {
   assert.equal(parseMoney("12,50"), 1250);
@@ -85,4 +87,69 @@ test("every kind draws without crashing from its own defaults", () => {
     assert.match(out.body, /RP-X-2026-0001/);
     assert.ok(kind.plain(data, { details, accounts: [], number: "RP-X-2026-0001" }).length > 3);
   }
+});
+
+/* ------------------------------------------------------------------ contracts */
+
+test("a payment plan adds up to the cent, the last instalment takes the rest", () => {
+  const plan = paySchedule({ total: "1.000,00", down: "100", n: 7, interval: "monthly", first: "2027-01-31" });
+  assert.equal(plan.principal, 90000);
+  assert.equal(plan.rows.reduce((sum, r) => sum + r.amt, 0), 90000);
+  assert.equal(plan.rows.at(-1).amt, 90000 - Math.floor(90000 / 7) * 6);
+  // 31 January plus a month is the end of February, not 3 March
+  assert.equal(plan.rows[1].date, "2027-02-28");
+  assert.equal(paySchedule({ total: "100", down: "200", n: 3 }).ok, false);
+  const repay = repaySchedule({ total: "500", p1_n: 5, p1_amt: "30", p1_first: "2026-12-01", p2_amt: "15" });
+  assert.equal(repay.rest, 35000);
+  assert.equal(repay.rows2.length, Math.ceil(35000 / 1500));
+  assert.equal(repay.rows2.reduce((sum, r) => sum + r.amt, 0), 35000);
+  assert.equal(repay.p2first, "2027-05-01");
+});
+
+test("every contract type draws in every language and law without holes", () => {
+  const accounts = [{ label: "Main", holder: "Reece Barker", iban: "DE89370400440532013000", default: true }];
+  for (const entity of ["de-private", "de-gmbh", "uk-ltd", "nl-bv"]) {
+    const details = businessDetails({ entity, full_name: "Reece Barker", street: "Teststr. 1", postcode: "81247", city: "München" });
+    for (const type of TYPES) for (const lang of ["de", "en", "nl"]) for (const law of ["DE", "UK", "NL", "US"]) for (const role of type.roles) {
+      const data = { ...KINDS.contract.defaults(details, lang, accounts, { type: type.id }), law, role: role.id };
+      const { body } = KINDS.contract.render(data, { details, accounts, number: "RP-C-2026-0001" });
+      assert.doesNotMatch(body, /undefined|NaN|\[object/, `${entity} ${type.id} ${lang} ${law} ${role.id}`);
+      assert.match(body, /ct-sigs/);
+    }
+  }
+});
+
+test("the right law gets the right wording", () => {
+  const details = businessDetails({ entity: "de-private", full_name: "Reece Barker", city: "München" });
+  const draw = (law, lang, type = "service") => buildContract({ ...KINDS.contract.defaults(details, lang, [], { type }), law }, details).clauses.map((c) => [c.heading, ...c.paragraphs.map((p) => p.text)].join(" ")).join(" ");
+  assert.match(draw("DE", "de"), /Recht der Bundesrepublik Deutschland/);
+  assert.match(draw("DE", "de"), /Textform/);
+  assert.match(draw("UK", "en"), /law of England and Wales/);
+  assert.match(draw("NL", "nl"), /Nederlands recht/);
+  // a sale under german law excludes the UN sales convention
+  assert.match(draw("DE", "en", "sale"), /excluding the UN Convention/);
+});
+
+test("written out clauses come back as the same document and then stay as typed", () => {
+  const details = businessDetails({ entity: "de-private", full_name: "Reece Barker", city: "München" });
+  const data = { ...KINDS.contract.defaults(details, "en", [], { type: "payment" }), facts: { total: "600", n: 3, interval: "monthly", first: "2027-01-01" } };
+  const auto = buildContract(data, details);
+  const written = writeOut(data, details);
+  const again = buildContract({ ...data, ...written }, details);
+  assert.equal(again.written, true);
+  assert.deepEqual(again.clauses.map((c) => c.heading), auto.clauses.map((c) => c.heading));
+  assert.equal(again.schedule[0].after_clause, auto.schedule[0].after_clause);
+  // the facts change, the typed text doesnt but the table does
+  const changed = buildContract({ ...data, ...written, facts: { ...data.facts, total: "900" } }, details);
+  assert.deepEqual(changed.clauses[1].paragraphs, again.clauses[1].paragraphs);
+  assert.equal(changed.schedule[0].rows.at(-1)[2], "€900.00");
+});
+
+test("the Word file of a contract has the clauses and the schedule as a table", () => {
+  const details = businessDetails({ entity: "de-private", full_name: "Reece Barker", city: "München" });
+  const data = { ...KINDS.contract.defaults(details, "de", [], { type: "payment" }), facts: { total: "600", n: 3, interval: "monthly", first: "2027-01-01" } };
+  const blocks = KINDS.contract.plain(data, { details });
+  assert.ok(blocks.some((b) => b.table && b.rows.length === 5));
+  assert.ok(blocks.some((b) => b.bold && /^\d+\. Schlussbestimmungen$/.test(b.text)));
+  assert.ok(makeDocx(blocks, { lang: "de" }).length > 1000);
 });

@@ -11,6 +11,7 @@
 </header>
 
 {{#if missing.length}}<p class="alert alert--note">{{icon "info"}}<span>For your business type this still needs {{#each missing}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}. Add it under <a href="/admin/lists/business">My details</a>.</span></p>{{/if}}
+{{#if (eq doc.kind "contract")}}<p class="alert alert--note">{{icon "info"}}<span>A template, not legal advice. The preview lists notes for your contract above the page, they are not printed.</span></p>{{/if}}
 {{#if (eq doc.status "final")}}<p class="alert alert--note">{{icon "info"}}<span>Marked as sent. You can still correct it, every change is kept, but an invoice that went out should get a correction invoice instead.</span></p>{{/if}}
 
 <form class="paperwork" data-paperwork novalidate>
@@ -25,6 +26,7 @@
     <div class="cluster">
       <button class="button" type="submit" data-save>Save</button>
       <span class="form-status" role="status" aria-live="polite" data-status>Saved</span>
+      {{#if (eq doc.kind "contract")}}<button class="button button--secondary" type="button" data-write-out>Write out the clauses</button>{{/if}}
     </div>
   </div>
 </form>
