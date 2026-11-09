@@ -10,14 +10,14 @@ export const CV_PDF_NAME = CV_VERSIONS.en.file;
 const LABELS = {
   en: {
     title: "CV", profile: "Profile", education: "Education", projects: "Projects", experience: "Experience",
-    skills: "Skills", languages: "Languages", also: "Also", more: "Languages and more", interests: "Interests", references: "References",
+    skills: "Skills and languages", languages: "Languages", also: "Also", more: "Languages and more", interests: "Interests", references: "References",
     onRequest: "Available on request.", contactOnRequest: "Contact details on request.", download: "Download as PDF",
     pdfMade: "PDF made", photoAlt: "Photo of Reece Barker", other: { lang: "de", href: "/lebenslauf", label: "Auf Deutsch" },
     description: (name) => `The CV of ${name}: Applied Computer Science at Saxion, projects, work, skills and languages, also as a PDF.`
   },
   de: {
     title: "Lebenslauf", profile: "Kurzprofil", education: "Ausbildung", projects: "Projekte", experience: "Berufserfahrung",
-    skills: "Kenntnisse", languages: "Sprachen", also: "Sonstiges", more: "Sprachen und Weiteres", interests: "Interessen", references: "Referenzen",
+    skills: "Kenntnisse und Sprachen", languages: "Sprachen", also: "Sonstiges", more: "Sprachen und Weiteres", interests: "Interessen", references: "Referenzen",
     onRequest: "Auf Anfrage.", contactOnRequest: "Kontaktdaten auf Anfrage.", download: "Als PDF herunterladen",
     pdfMade: "PDF erstellt am", photoAlt: "Foto von Reece Barker", other: { lang: "en", href: "/cv", label: "In English" },
     description: (name) => `Der Lebenslauf von ${name}: Angewandte Informatik an der Saxion, Projekte, Berufserfahrung, Kenntnisse und Sprachen, auch als PDF.`

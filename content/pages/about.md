@@ -62,6 +62,10 @@ stations, arrive on time and are tracked through the process. I am also software
 [machine that sorts loose LEGO parts](/projects/lego-sorting-machine) by colour, by size and with a camera that
 recognises each piece.
 
+Outside the course I run [my own servers](/projects/home-lab): one with nginx in front of this website and my other
+apps, and one at home. On them runs [Kino](/projects/kino), a streaming platform I built for my family with profiles,
+live TV and apps for Android TV and the iPhone. Its code is public on GitHub.
+
 ## The Honours Programme
 
 I was also selected for the Saxion Honours Programme, a track for students who want more than the standard

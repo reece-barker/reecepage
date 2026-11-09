@@ -63,7 +63,7 @@ export function createPagesController({ content, seo, config, media, settings })
         meta: seo.build({ isHome: true, title: siteSettings().name, description: siteSettings().description, path: "/" }),
         home: settings?.home() || {},
         bodyClass: "page-home",
-        featured: content.featuredProjects(4),
+        featured: content.featuredProjects(5),
         now: content.data("now"),
         latest,
         intro,
