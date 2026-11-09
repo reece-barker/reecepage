@@ -45,6 +45,13 @@ projects:
       text: >-
         Chrome-Erweiterung, die iPads in Snipe-IT ein- und auscheckt und mit Klassenlisten abgleicht. Idee und
         Prototyp von mir, größtenteils mit KI-Werkzeugen gebaut. Im Einsatz.
+  - slug: kino
+    text: >-
+      On my own server: Python and FastAPI behind nginx, Android TV app, nightly backups. Code on GitHub.
+    de:
+      title: Kino, eine Streaming-Plattform für meine Familie
+      text: >-
+        Auf eigenem Server: Python und FastAPI hinter nginx, Android-TV-App, nächtliche Backups. Code auf GitHub.
 extras:
   - Sustainability ambassador
 interests: ''

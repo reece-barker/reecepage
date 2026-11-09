@@ -90,12 +90,7 @@
         {{#each skills}}
         <div><dt>{{group}}</dt><dd>{{#each items}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}</dd></div>
         {{/each}}
-      </dl>
-    </section>
-
-    <section class="cv-section" aria-labelledby="cv-languages">
-      <h2 id="cv-languages">{{labels.more}}</h2>
-      <dl class="cv-facts">
+        {{!-- languages and the rest sit in the same list, a heading of their own cost the lines that keep it on one page --}}
         {{#if cv.languages.length}}<div><dt>{{labels.languages}}</dt><dd>{{#each cv.languages}}{{name}} ({{level}}){{#unless @last}}, {{/unless}}{{/each}}</dd></div>{{/if}}
         {{#if cv.extras.length}}<div><dt>{{labels.also}}</dt><dd>{{#each cv.extras}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</dd></div>{{/if}}
       </dl>

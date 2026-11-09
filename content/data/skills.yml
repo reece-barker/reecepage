@@ -18,6 +18,35 @@
   - name: Microsoft Power Platform
     evidence:
     - mis-purchase-orders
+  - name: Python and FastAPI
+    evidence:
+    - kino
+  - name: Git and GitHub Actions
+    name_de: Git und GitHub Actions
+    evidence:
+    - home-lab
+    - reece-page
+    - kino
+  - name: Android (Java)
+    evidence:
+    - kino
+- group: Servers
+  group_de: Server
+  items:
+  - name: Linux, systemd and SSH
+    name_de: Linux, systemd und SSH
+    evidence:
+    - home-lab
+    - kino
+  - name: nginx and DNS
+    name_de: nginx und DNS
+    evidence:
+    - home-lab
+    - kino
+  - name: ffmpeg and HLS streaming
+    name_de: ffmpeg und HLS-Streaming
+    evidence:
+    - kino
 - group: Hardware and automation
   group_de: Automatisierung
   items:

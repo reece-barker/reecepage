@@ -13,7 +13,7 @@ export const HOME_DEFAULTS = Object.freeze({
   intro_heading: "Meet me",
   intro_text: "Where I grew up, what I study, what I have built and what I want to work on next, in one video.",
   work_heading: "Selected work",
-  work_intro: "A startup, a robot production line, a sensor that listens to traffic and a tool for a school's IT team.",
+  work_intro: "A startup, a robot production line, a sensor that listens to traffic, a tool for a school's IT team and a streaming platform I run for my family.",
   contact_heading: "Say hello",
   contact_lead: "Open to internships, green tech projects and good conversations about either.",
   contact_button: "Send a message"
