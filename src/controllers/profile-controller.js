@@ -20,7 +20,7 @@ const LABELS = {
     skills: "Kenntnisse und Sprachen", languages: "Sprachen", also: "Sonstiges", more: "Sprachen und Weiteres", interests: "Interessen", references: "Referenzen",
     onRequest: "Auf Anfrage.", contactOnRequest: "Kontaktdaten auf Anfrage.", download: "Als PDF herunterladen",
     pdfMade: "PDF erstellt am", photoAlt: "Foto von Reece Barker", other: { lang: "en", href: "/cv", label: "In English" },
-    description: (name) => `Der Lebenslauf von ${name}: Angewandte Informatik an der Saxion, Projekte, Berufserfahrung, Kenntnisse und Sprachen, auch als PDF.`
+    description: (name) => `Der Lebenslauf von ${name}: Technische Informatik an der Saxion, Projekte, Berufserfahrung, Kenntnisse und Sprachen, auch als PDF.`
   }
 };
 
@@ -68,7 +68,8 @@ export function createProfileController({ content, seo, config, status }) {
       const project = content.state.projects.find((p) => p.slug === item.slug);
       if (!project) return null;
       return {
-        title: pick(project.title, item.de?.title),
+        // An English title of its own is optional, otherwise the project's title is used
+        title: pick(item.title || project.title, item.de?.title),
         url: project.hasPage ? project.url : null,
         period: de ? germanWhen(project.period) : project.period,
         text: pick(item.text || project.summary, item.de?.text)

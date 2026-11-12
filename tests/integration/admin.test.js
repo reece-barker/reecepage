@@ -236,6 +236,16 @@ test("cv, references and status pages render", async () => {
   assert.doesNotMatch(de.text, /Since 09\/2024/);
   assert.match(de.text, /Microsoft Power Platform/);
   assert.match(de.text, /Auf Deutsch|In English/);
+  // The degree is called Technische Informatik in German, the German level is B1+, and the CV shows the purchase order
+  // request system and the ticketing system, not Scan Assistant and Kino
+  assert.match(de.text, /Technische Informatik/);
+  assert.doesNotMatch(de.text, /Angewandte Informatik/);
+  assert.match(de.text, /Bestellanforderungssystem auf der Power Platform/);
+  assert.match(de.text, /Support- und Ticketsystem/);
+  assert.match(de.text, /B1\+, Mittelstufe/);
+  assert.match(cv.text, /Purchase order request system on the Power Platform/);
+  assert.match(cv.text, /B1\+, intermediate/);
+  assert.doesNotMatch(cv.text + de.text, /Scan Assistant|Kino/);
   await request(ctx.app).get("/references").expect(200);
   const status = await request(ctx.app).get("/status");
   assert.ok([200, 503].includes(status.status));
