@@ -14,10 +14,10 @@ languages:
       name: Englisch
       level: Muttersprache
   - name: German
-    level: B2
+    level: B1+, intermediate
     de:
       name: Deutsch
-      level: B2
+      level: B1+, Mittelstufe
 projects:
   - slug: lego-bulldozer-production-line
     text: >-
@@ -37,26 +37,30 @@ projects:
       text: >-
         Allein umgesetzt. Raspberry Pi erkennt Verkehr am Geräusch: CUSUM, drei Klassifikatoren in MATLAB verglichen
         (u. a. k-NN, 1D-CNN). Note 9/10.
-  - slug: scan-assistant
+  - slug: mis-purchase-orders
+    title: Purchase order request system on the Power Platform
     text: >-
-      Chrome extension that scans the school's iPads in and out of Snipe-IT against class lists. My idea and
-      prototype, built largely with AI coding tools. In use.
+      Rebuilt the finance team's purchase order requests in Power Apps, replacing a Microsoft Form, Power Automate
+      and Excel. Built on contract at Munich International School.
     de:
+      title: Bestellanforderungssystem auf der Power Platform
       text: >-
-        Chrome-Erweiterung, die iPads in Snipe-IT ein- und auscheckt und mit Klassenlisten abgleicht. Idee und
-        Prototyp von mir, größtenteils mit KI-Werkzeugen gebaut. Im Einsatz.
-  - slug: kino
+        Bestellanforderungen der Finanzabteilung in Power Apps neu gebaut, statt Microsoft Forms, Power Automate und
+        Excel. Auf Vertragsbasis an der Munich International School.
+  - slug: support-ticketing-system
     text: >-
-      On my own server: Python and FastAPI behind nginx, Android TV app, nightly backups. Code on GitHub.
+      Built on Discord for online communities in the entertainment space, connected to the APIs they already use.
+      Sold commercially on two marketplaces to almost ten customers.
     de:
-      title: Kino, eine Streaming-Plattform für meine Familie
+      title: Support- und Ticketsystem
       text: >-
-        Auf eigenem Server: Python und FastAPI hinter nginx, Android-TV-App, nächtliche Backups. Code auf GitHub.
+        Auf Discord aufgebaut, für Online-Communities im Unterhaltungsbereich, mit deren bestehenden APIs verbunden.
+        Auf zwei Marktplätzen kommerziell an fast zehn Kunden verkauft.
 extras:
   - Sustainability ambassador
 interests: ''
 de:
-  headline: Student der Angewandten Informatik an der Saxion University of Applied Sciences
+  headline: Student der Technischen Informatik an der Saxion University of Applied Sciences
   profile: >-
     Informatikstudent, der Software und Hardware baut, von Power-Platform-Apps für die Finanzabteilung einer Schule
     bis zum Transportsystem einer Roboter-Fertigungslinie. Mitgründer von Cognitive Atmospherics.

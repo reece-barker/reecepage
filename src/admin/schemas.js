@@ -90,6 +90,7 @@ export const DATA_SCHEMAS = {
       ] },
       { name: "projects", label: "Projects on the CV, best first, three or four", type: "objects", itemLabel: "slug", singular: "project", fields: [
         { name: "slug", label: "Project (its address, like scan-assistant)", type: "text", required: true },
+        { name: "title", label: "Title on the CV", type: "text", help: "Left empty the project's own title is used" },
         { name: "text", label: "The line on the CV: what it was, your part, what came of it", type: "textarea", help: "Two lines at most. Left empty the project's summary is used" },
         { name: "de", label: "German", type: "object", fields: [
           { name: "title", label: "Titel", type: "text", help: "Left empty the English title is used" },
