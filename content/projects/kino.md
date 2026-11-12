@@ -9,7 +9,7 @@ context: Personal project
 period: Since 10/2026
 sort_date: 2026-10
 status: In use by my family
-role: The idea and the design are mine, built largely with AI coding tools
+role: The idea and the design are mine, built by directing AI coding agents
 featured: true
 order: 5
 stack:
@@ -37,7 +37,7 @@ de:
   period: Seit 10/2026
   status: Wird von meiner Familie genutzt
   role: >-
-    Idee und Design stammen von mir, gebaut überwiegend mit KI-Coding-Werkzeugen
+    Idee und Design stammen von mir, gebaut mit KI-Coding-Agenten, die ich angeleitet habe
   links:
     - label: "Der Code auf GitHub"
       url: https://github.com/reece-barker/kino

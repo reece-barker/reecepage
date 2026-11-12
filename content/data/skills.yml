@@ -82,6 +82,20 @@
   - name: MATLAB
     evidence:
     - traffic-sound-profiling
+- group: AI and automation
+  group_de: KI und Automatisierung
+  items:
+  - name: Directing AI coding agents
+    name_de: KI-Coding-Agenten anleiten
+    evidence:
+    - scan-assistant
+    - kino
+  - name: Agents, custom skills and automated workflows
+    name_de: Agenten, eigene Skills und automatisierte Abläufe
+  - name: n8n and MCP
+    name_de: n8n und MCP
+    note: Learning
+    note_de: Ich lerne es gerade
 - group: Languages
   group_de: Sprachen
   items:

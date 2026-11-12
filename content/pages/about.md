@@ -43,7 +43,7 @@ de:
     Finanzabteilung in Power Apps neu gebaut, mit automatischen Summen und Wechselkursen. Außerdem stammt die Idee zum
     [Scan Assistant](/de/projects/scan-assistant) von mir, einer Browser-Erweiterung für das IT-Team, die die iPads der
     Schule ein- und ausscannt, mit Klassenlisten abgleicht und daraus automatisch einen Bericht erstellt. Idee und Prototyp
-    stammen von mir, den größten Teil habe ich mit KI-Coding-Werkzeugen gebaut.
+    stammen von mir, gebaut habe ich es, indem ich KI-Coding-Agenten angeleitet habe.
 
     ## Saxion
 
@@ -59,7 +59,7 @@ de:
 
     In der International Project Week der Saxion hat unser Team für den Hersteller von Durchflussmessgeräten Bronkhorst
     einen Kundenkonfigurator gebaut, der schon beim Eingeben echte physikalische Grenzen prüft. Wir haben ihn in einer Woche
-    geliefert, in enger Zusammenarbeit mit KI-Werkzeugen, und die höchste Auszeichnung erhalten.
+    geliefert, mit KI-Werkzeugen von Anfang an, und die höchste Auszeichnung erhalten.
 
     Jetzt bin ich im Minor Industrial Automation, in dem ein Team aus dreizehn Studierenden eine
     [komplette Produktionslinie](/de/projects/lego-bulldozer-production-line) mit acht ABB-Robotern, Bildverarbeitung und
@@ -99,8 +99,13 @@ de:
     ## Wie ich KI nutze
 
     Ich gehöre zur ersten Generation, die mit moderner KI aufgewachsen ist. Ich nutze große Sprachmodelle jeden Tag, um zu
-    bauen, zu recherchieren und schneller zu lernen. Gerade weil ich sie so viel nutze, weiß ich genau, wo sie an ihre
-    Grenzen stoßen. Sie können sich selbstsicher irren. Sie brauchen klare Grenzen und Menschen, die die Arbeit prüfen.
+    bauen, zu recherchieren und schneller zu lernen. Dabei bleibe ich nicht beim Chatten: Ich richte Agenten ein, schreibe
+    eigene Skills, die einem Agenten beibringen, wie ich eine Aufgabe erledigt haben möchte, und automatisiere Abläufe, damit
+    sich das Wiederkehrende von selbst erledigt. Mit Werkzeugen wie n8n und MCP lerne ich gerade, das alles an echte
+    Systeme anzubinden.
+
+    Gerade weil ich KI so viel nutze, weiß ich genau, wo sie an ihre Grenzen stößt. Sie kann sich selbstsicher irren. Sie
+    braucht klare Grenzen und Menschen, die die Arbeit prüfen.
 
     Deshalb möchte ich mithelfen, sie gut zu bauen. Ich glaube, dass KI wirklich Gutes für den Planeten und die Gesellschaft
     bewirken kann, von weniger verschwendeter Energie bis zu besserer Versorgung, solange die Menschen, die sie bauen,
@@ -159,7 +164,7 @@ From June 2024 to July 2026 I was back there on contract, supporting IT and buil
 rebuilt the finance team's [purchase orders](/projects/mis-purchase-orders) in Power Apps, with automatic totals and
 exchange rates. I also came up with [Scan Assistant](/projects/scan-assistant), a browser extension for the IT team
 that scans the school's iPads in and out, matches them against class lists and turns it all into a report
-automatically. The idea and the prototype were mine, and I built most of it with AI coding tools.
+automatically. The idea and the prototype were mine, and I built it by directing AI coding agents.
 
 ## Saxion
 
@@ -174,7 +179,7 @@ without a single camera, and compared three machine learning models to classify 
 of ten.
 
 At Saxion's International Project Week our team built a customer configurator for the flow meter maker Bronkhorst
-that checks real physics constraints as you type. We delivered it in one week, in close collaboration with AI tools,
+that checks real physics constraints as you type. We delivered it in one week, using AI tools throughout,
 and earned the highest distinction.
 
 Now I am in the Industrial Automation minor, where a team of thirteen is designing a
@@ -212,8 +217,12 @@ recovery.
 ## How I use AI
 
 I belong to the first generation to grow up alongside modern AI. I use large language models every day, to build, to
-research and to learn faster. Using them that much has taught me exactly where they fall short. They can be
-confidently wrong. They need clear limits, and people who check the work.
+research and to learn faster. And I go further than chatting with them: I set up agents, write custom skills that teach
+an agent how I want a job done, and automate workflows so the repetitive parts run themselves. I am learning tools like
+n8n and MCP to connect all of that to real systems.
+
+Using AI that much has taught me exactly where it falls short. It can be confidently wrong. It needs clear limits, and
+people who check the work.
 
 That is why I want to help build it well. I believe AI can do real good for the planet and for society, from cutting
 wasted energy to improving care, as long as the people building it choose that path on purpose.
