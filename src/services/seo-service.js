@@ -2,6 +2,7 @@
 // social previews are always made the same way. Controllers only say what is special about their page.
 import { truncate } from "../utils/text.js";
 import { isoDate } from "../utils/dates.js";
+import { hasGermanVersion, LANGUAGE_INFO, localePath, translator } from "../lib/i18n.js";
 
 export class SeoService {
   /**
@@ -70,7 +71,9 @@ export class SeoService {
    * @param {object} page
    * @param {string} page.title short title, the site name is added after it
    * @param {string} page.description
-   * @param {string} page.path canonical path, always without query string
+   * @param {string} page.path canonical path in English, always without query string. For a German page the /de goes
+   * in front here, nobody has to write it
+   * @param {string} [page.language] en (default) or de, the language the page is shown in
    * @param {string} [page.type] og:type, website or article
    * @param {string} [page.image] asset name of a 1200x630 image
    * @param {string} [page.imageAlt]
@@ -84,10 +87,19 @@ export class SeoService {
     const isHome = Boolean(page.isHome);
     const fullTitle = isHome ? this.site.name : `${page.title} | ${this.site.name}`;
     const description = truncate(page.description || this.site.description, 160);
-    const canonical = this.absoluteUrl(page.path);
+    const language = page.language === "de" ? "de" : "en";
+    const info = LANGUAGE_INFO[language];
+    const where = (path) => localePath(language, path);
+    const canonical = this.absoluteUrl(where(page.path));
     const imageUrl = this.absoluteUrl(this.assets.url(page.image || this.config.seo.default_image));
     const imageAlt = page.imageAlt || this.config.seo.default_image_alt;
-    const crumbs = page.breadcrumbs?.length ? [{ label: "Home", href: "/" }, ...page.breadcrumbs] : null;
+    const crumbs = page.breadcrumbs?.length
+      ? [{ label: translator(language)("breadcrumbs.home"), href: where("/") }, ...page.breadcrumbs.map((crumb) => ({ ...crumb, href: where(crumb.href) }))]
+      : null;
+    // A page that exists in both languages points search engines to the other one and says wich is the default
+    const alternates = page.alternates || (hasGermanVersion(page.path)
+      ? [{ lang: "en-GB", path: page.path }, { lang: "de", path: localePath("de", page.path) }, { lang: "x-default", path: page.path }]
+      : []);
 
     const graph = [];
     if (isHome) graph.push(this.website(), this.person());
@@ -97,7 +109,7 @@ export class SeoService {
       url: canonical,
       name: page.title,
       description,
-      inLanguage: page.lang || "en-GB",
+      inLanguage: page.lang || info.html,
       isPartOf: { "@id": this.absoluteUrl("/#website") },
       ...(page.pageType === "ProfilePage" ? { mainEntity: this.person() } : {}),
       ...(crumbs ? { breadcrumb: this.breadcrumbList(crumbs) } : {})
@@ -118,11 +130,11 @@ export class SeoService {
         image: imageUrl,
         imageAlt,
         siteName: this.site.domain,
-        locale: page.locale || this.site.locale
+        locale: page.locale || (language === "de" ? info.locale : this.site.locale)
       },
-      lang: page.lang || "en-GB",
-      // The same page in another language, like /cv and /lebenslauf
-      alternates: (page.alternates || []).map((alt) => ({ lang: alt.lang, href: this.absoluteUrl(alt.path) })),
+      lang: page.lang || info.html,
+      // The same page in another language like /cv and /lebenslauf
+      alternates: alternates.map((alt) => ({ lang: alt.lang, href: this.absoluteUrl(alt.path) })),
       article: page.article ? { published: isoDate(page.article.published), modified: isoDate(page.article.modified || page.article.published) } : null,
       breadcrumbs: crumbs,
       jsonLd: { "@context": "https://schema.org", "@graph": graph }

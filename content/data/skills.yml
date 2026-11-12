@@ -19,6 +19,7 @@
     evidence:
     - mis-purchase-orders
   - name: Python and FastAPI
+    name_de: Python und FastAPI
     evidence:
     - kino
   - name: Git and GitHub Actions

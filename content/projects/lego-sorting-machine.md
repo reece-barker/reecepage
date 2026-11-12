@@ -20,6 +20,30 @@ stack:
   - Machine learning
 todo:
   - A photo of the machine
+de:
+  title: Eine Maschine, die loses LEGO sortiert
+  summary: >-
+    Eine Maschine, die einen Haufen loser LEGO-Teile auf drei Arten sortiert: nach Farbe, nach Größe und indem
+    eine Kamera jedes Teil erkennt.
+  kind: Kursprojekt
+  context: Saxion, Minor Industrial Automation
+  period: "2026"
+  status: In Arbeit
+  role: Software-Berater, gibt dem Team Hinweise zur Software
+  team: Teamprojekt
+  body: |
+    ## Drei Arten zu sortieren
+
+    Die Maschine sortiert auf drei verschiedene Arten:
+
+    1. **Nach Farbe,** mit einem Farbsensor.
+    2. **Nach Größe,** mit einem mechanischen Rüttler, der jedes Teil durch das passende Loch fallen lässt.
+    3. **Nach Form,** mit einer Kamera und einem quelloffenen Machine-Learning-Modell, das das jeweilige Teil erkennt.
+
+    ## Mein Teil
+
+    In diesem Team bin ich Software-Berater. Ich habe dem Team Hinweise zur Software gegeben, der Bau und die Erkennung
+    selbst sind ihre Arbeit.
 ---
 
 ## Three ways to sort

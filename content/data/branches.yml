@@ -5,15 +5,30 @@
   text: >-
     Applied Computer Science at Saxion. I like building small tools that fix real annoyances, and I teach myself
     whatever a project needs.
+  de:
+    title: Code
+    text: >-
+      Technische Informatik an der Saxion. Ich baue gern kleine Werkzeuge, die echte Ärgernisse beseitigen, und bringe
+      mir bei, was ein Projekt gerade braucht.
 - id: earth
   limb: 1
   title: Earth
   text: >-
     Sustainability ambassador. I care about the changes that really cut waste or energy, and I get suspicious when
     something is only green on the label.
+  de:
+    title: Umwelt
+    text: >-
+      Nachhaltigkeitsbotschafter. Mir geht es um Veränderungen, die wirklich Abfall oder Energie sparen, und ich werde
+      misstrauisch, wenn etwas nur auf dem Etikett grün ist.
 - id: faith
   limb: 2
   title: People
   text: >-
     Being someone people can count on. Honest when it is inconvenient, patient, and doing good work even when nobody is
     checking.
+  de:
+    title: Menschen
+    text: >-
+      Jemand sein, auf den man sich verlassen kann. Ehrlich, wenn es unbequem ist, geduldig, und gute Arbeit leisten,
+      auch wenn niemand nachprüft.

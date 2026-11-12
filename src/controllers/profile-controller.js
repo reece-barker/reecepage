@@ -1,4 +1,5 @@
 // /cv and /lebenslauf (the CV in English and German, and their PDFs), /references and /status
+import { germanWhen } from "../services/localise.js";
 import path from "node:path";
 import { notFound } from "../middleware/errors.js";
 import { formatLongDate } from "../utils/dates.js";
@@ -25,9 +26,7 @@ const LABELS = {
 };
 
 /** When in German if nobody wrote one: Since 09/2024 becomes Seit 09/2024, 06/2024 to 07/2026 becomes 06/2024 bis 07/2026 */
-export function germanWhen(when) {
-  return String(when || "").replace(/^Since\b/, "Seit").replace(/^From\b/, "Ab").replace(/\bto\b/g, "bis").replace(/\band\b/g, "und").replace(/^Summers?\b/, "Sommer");
-}
+export { germanWhen };
 
 /**
  * @param {object} deps
@@ -113,6 +112,7 @@ export function createProfileController({ content, seo, config, status }) {
           title: data.labels.title,
           description: data.labels.description(config.site.legal_name),
           path: version.path,
+          language: lang,
           lang: lang === "de" ? "de-DE" : "en-GB",
           locale: lang === "de" ? "de_DE" : undefined,
           alternates: [{ lang: "en", path: CV_VERSIONS.en.path }, { lang: "de", path: CV_VERSIONS.de.path }],

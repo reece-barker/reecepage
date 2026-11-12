@@ -18,6 +18,33 @@ stack:
   - Microsoft Power Platform
 todo:
   - Screenshots with internal data removed
+de:
+  title: Bestellanforderungen auf der Power Platform
+  summary: >-
+    Auf Vertragsbasis habe ich an der Munich International School die IT unterstützt und auf Microsofts Power
+    Platform entwickelt, darunter ein neues Bestellanforderungssystem für die Finanzabteilung in Power Apps.
+  kind: Arbeit
+  context: Munich International School, IT und Finanzen
+  period: 06/2024 bis 07/2026
+  status: Im Einsatz
+  role: >-
+    Auf Vertragsbasis, IT-Support und Entwicklung auf Microsofts Power Platform
+  body: |
+    ## Die Arbeit
+
+    Ich habe drei Sommer lang in der IT-Abteilung der Munich International School gearbeitet, von 2021 bis 2023, im
+    letzten Sommer für IT und Finanzen. Von Juni 2024 bis Juli 2026 war ich wieder auf Vertragsbasis dabei, habe die IT
+    unterstützt und Apps und Automatisierungen auf Microsofts Power Platform gebaut, die den Leuten wiederkehrende
+    Verwaltungsarbeit abnehmen.
+
+    ## Bestellanforderungen, vorher und nachher
+
+    **Vorher** war eine Bestellanforderung ein Microsoft Form. Power Automate hat jede Antwort in Excel-Tabellen kopiert und
+    die Freigaben per E-Mail herumgeschickt.
+
+    **Nachher** habe ich das System in Power Apps neu gebaut, komplett auf der Power Platform. Die Finanzabteilung sieht die
+    Daten in einer übersichtlicheren Ansicht, die Summen werden automatisch berechnet, und Beträge in anderen Währungen
+    werden mit Wechselkursen umgerechnet, die automatisch aus einer öffentlichen Quelle abgerufen werden.
 ---
 
 ## The work

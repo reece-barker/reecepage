@@ -1,8 +1,9 @@
 <div class="container">
   <header class="page-head">
     {{> breadcrumbs}}
-    <h1 class="matte-words">{{matteWords "Writing"}}</h1>
-    <p class="lead load-fade">Notes on building software properly and keeping it light. <a href="/writing/feed.xml">Follow with the Atom feed</a>.</p>
+    <h1 class="matte-words">{{matteWords (t "writing.title")}}</h1>
+    <p class="lead load-fade">{{t "writing.lead"}} <a href="/writing/feed.xml">{{t "writing.feed"}}</a>.</p>
+    {{#if (eq lang "de")}}<p class="alert alert--note">{{icon "info"}}<span>{{t "writing.englishOnly"}}</span></p>{{/if}}
   </header>
   {{#if articles.length}}
   <ul class="project-list" role="list">
@@ -10,10 +11,10 @@
     <li class="project-row branch-code" data-reveal>
       <div class="project-row__meta">
         <time datetime="{{isoDate date}}">{{longDate date}}</time>
-        <span>{{readingMinutes}} min read</span>
+        <span>{{t "writing.minutes" count=readingMinutes}}</span>
       </div>
       <div>
-        <h2 class="project-row__title"><a href="{{url}}" data-match-cut="{{slug}}">{{title}}</a></h2>
+        <h2 class="project-row__title"><a href="{{lp url}}" data-match-cut="{{slug}}" lang="en">{{title}}</a></h2>
         <p class="project-row__summary">{{summary}}</p>
       </div>
       <span class="project-row__arrow" aria-hidden="true">{{icon "arrow"}}</span>
@@ -21,6 +22,6 @@
     {{/each}}
   </ul>
   {{else}}
-  <p class="alert alert--note">{{icon "info"}}<span>Nothing published yet. The first article is on its way.</span></p>
+  <p class="alert alert--note">{{icon "info"}}<span>{{t "writing.empty"}}</span></p>
   {{/if}}
 </div>

@@ -21,6 +21,44 @@ stack:
 todo:
   - A screenshot with student names blurred or replaced
   - How many devices it has been used for
+de:
+  title: Scan Assistant
+  summary: >-
+    Eine Chrome-Erweiterung für das IT-Team der Munich International School. Sie scannt die iPads der Schule ein
+    und aus, gleicht sie mit Klassenlisten ab und macht daraus automatisch einen Bericht.
+  kind: Arbeit
+  context: Munich International School, IT
+  period: "2026"
+  status: Im Einsatz
+  role: >-
+    Idee, Design und Prototyp stammen von mir, gebaut überwiegend mit KI-Coding-Werkzeugen
+  body: |
+    ## Das Problem
+
+    Das IT-Team verwaltet die iPads der Schule in Snipe-IT, einem Asset-Management-System. Einen Klassensatz ein- oder
+    auszubuchen hieß, jedes Gerät einzeln zu suchen, Seriennummern von Hand einzutippen und das Ergebnis danach mit der
+    Klassenliste abzugleichen.
+
+    ## Was es kann
+
+    - **Ein- und Ausbuchen** per Barcode-Scan, mit gesprochener Bestätigung, damit der Blick schon beim nächsten Gerät sein
+      kann.
+    - **Homeroom-Abfrage,** um zu sehen, welche Geräte zu welcher Klasse gehören.
+    - **Abgleich mit der Klassenliste,** der zeigt, welche Schülerinnen und Schüler ein Gerät haben, bei wem eines fehlt und
+      welche Geräte dort aufgetaucht sind, wo sie nicht hingehören.
+    - **Farbcodierte Excel-Berichte** am Ende eines Durchlaufs.
+    - **Namensabgleich, der mit deutschen Umlauten zurechtkommt,** sodass Namen zusammenpassen, egal wie sie getippt wurden.
+
+    ## Wie es entstanden ist
+
+    Die Idee und der erste Prototyp stammen von mir: Ich habe entworfen, wie ein Scan-Durchlauf ablaufen soll und was das
+    Team dafür braucht. Der größte Teil des Codes wurde dann mit KI-Coding-Werkzeugen geschrieben, wobei ich entschieden
+    habe, was er tun soll.
+
+    ## Entscheidungen unterwegs
+
+    Im gesamten Scan-Ablauf gibt es keine Pop-up-Dialoge, damit nichts eine Scan-Reihe unterbricht. Meldungen erscheinen
+    stattdessen im eigenen Bereich der Erweiterung. Klassenlisten werden als CSV-Dateien hochgeladen.
 ---
 
 ## The problem

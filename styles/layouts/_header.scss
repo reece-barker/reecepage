@@ -162,6 +162,100 @@
   }
 }
 
+// The language menu, top right next to the theme button. A details element: it opens and closes without any script,
+// the script only adds Escape and click outside. The button shows the globe and the code of the current language
+.language-menu {
+  position: relative;
+}
+
+.language-menu__button {
+  width: auto;
+  padding-inline: var(--space-2);
+  gap: 0.3rem;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  // The little triangle turns upside down while the menu is open
+  .icon:last-child {
+    width: 0.65rem;
+    height: 0.65rem;
+    transition: transform var(--duration-1) ease;
+  }
+}
+
+.language-menu[open] > .language-menu__button {
+  background: var(--color-bg-sunken);
+  border-color: var(--color-line);
+
+  .icon:last-child {
+    transform: rotate(180deg);
+  }
+}
+
+.language-menu__code {
+  font-weight: 750;
+  font-size: var(--step--1);
+  letter-spacing: 0.02em;
+}
+
+.language-menu__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  z-index: 60;
+  min-width: 12rem;
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+  background: var(--color-bg-raised);
+  border: var(--border-thin) solid var(--color-line-strong);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-raised);
+}
+
+.language-menu__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 44px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-1, 4px);
+  font-weight: 650;
+  text-decoration: none;
+
+  // The language you are reading in gets the same leaf as the current page in the main menu
+  &[aria-current="true"] {
+    background: var(--color-bg-sunken);
+
+    span:first-child::after {
+      content: "";
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-left: var(--space-3);
+      background: var(--color-highlight);
+      transform: rotate(45deg);
+    }
+  }
+
+  @include hover {
+    background: var(--color-bg-sunken);
+  }
+}
+
+.language-menu__short {
+  font-size: var(--step--1);
+  font-weight: 700;
+  opacity: 0.7;
+}
+
 .menu-button {
   display: none;
   gap: var(--space-2);

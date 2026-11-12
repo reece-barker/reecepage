@@ -19,6 +19,24 @@ export const HOME_DEFAULTS = Object.freeze({
   contact_button: "Send a message"
 });
 
+// The same texts for the german pages, written for a german reader and not translated word by word. Texts saved in the
+// admin under the german fields go on top of these just like for english
+export const HOME_DEFAULTS_DE = Object.freeze({
+  hero_lede: "Technische Informatik an der Saxion. Ich baue Software und Hardware und habe Cognitive Atmospherics mitgegründet, eine KI, die das Klima eines Raums regelt und dabei weniger Energie verschwendet. Ich suche ein Praktikum ab September 2027.",
+  hero_button: "Meine Projekte ansehen",
+  hero_cv: "Mein Lebenslauf",
+  hero_link: "Kontakt aufnehmen",
+  branches_heading: "Ein Baum, drei Äste",
+  branches_intro: "Alles, was ich mache, wächst aus einem davon.",
+  intro_heading: "Lernen Sie mich kennen",
+  intro_text: "Wo ich aufgewachsen bin, was ich studiere, was ich gebaut habe und woran ich als Nächstes arbeiten möchte, in einem Video.",
+  work_heading: "Ausgewählte Projekte",
+  work_intro: "Ein Startup, eine Roboter-Produktionslinie, ein Sensor, der dem Verkehr zuhört, ein Werkzeug für das IT-Team einer Schule und eine Streaming-Plattform, die ich für meine Familie betreibe.",
+  contact_heading: "Sagen Sie Hallo",
+  contact_lead: "Offen für Praktika, Green-Tech-Projekte und gute Gespräche über beides.",
+  contact_button: "Nachricht senden"
+});
+
 // Links to a part of the site that can be switched off, hidden while it is
 const FEATURE_PATHS = { "/writing": "writing", "/media": "media", "/status": "status_page", "/tools": "tools", "/contact": "contact_form" };
 
@@ -53,10 +71,17 @@ export class SettingsService {
     return filled(saved[name]) ? saved[name] : null;
   }
 
-  home() {
+  /** The home page texts in one language: the defaults, then what was saved in the admin (german under its own de block) */
+  home(lang = "en") {
     const saved = this.content.data("home") || {};
-    const out = { ...HOME_DEFAULTS };
-    for (const key of Object.keys(HOME_DEFAULTS)) if (filled(saved[key])) out[key] = saved[key];
+    const german = lang === "de";
+    const local = german ? saved.de || {} : {};
+    const out = { ...(german ? HOME_DEFAULTS_DE : HOME_DEFAULTS) };
+    for (const key of Object.keys(HOME_DEFAULTS)) {
+      if (filled(local[key])) out[key] = local[key];
+      // A german page never shows an english text Reece wrote in the english field cause that would be a hole in the page
+      else if (!german && filled(saved[key])) out[key] = saved[key];
+    }
     return out;
   }
 

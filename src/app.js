@@ -39,6 +39,7 @@ import { precompressedAssets } from "./middleware/precompressed.js";
 import { createCsrf } from "./middleware/csrf.js";
 import { siteRateLimit, contactRateLimit, errorReportLimit } from "./middleware/rate-limits.js";
 import { templateLocals } from "./middleware/locals.js";
+import { languageLocals, languageRouting } from "./middleware/language.js";
 import { notFoundHandler, errorHandler } from "./middleware/errors.js";
 import { createPagesController } from "./controllers/pages-controller.js";
 import { createContactController } from "./controllers/contact-controller.js";
@@ -140,6 +141,9 @@ export function createApp({ config, logger = createLogger(config), database, mai
   app.use(siteRateLimit());
   app.use(cookieParser());
   app.use(express.urlencoded({ extended: false, limit: "20kb", parameterLimit: 20 }));
+  // German lives under /de: strip it here so the router only ever sees normal addresses, then tell the templates which language it is
+  app.use(languageRouting());
+  app.use(languageLocals());
   app.use(templateLocals({ config, consent, csrf, settings }));
 
   const controllers = {

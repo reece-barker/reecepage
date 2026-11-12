@@ -43,9 +43,16 @@ export const DATA_SCHEMAS = {
       { name: "items", label: "Things I am doing", type: "objects", itemLabel: "title", itemMeta: ["link"], singular: "thing", fields: [
         { name: "title", label: "Title", type: "text", required: true },
         { name: "text", label: "Text", type: "textarea" },
-        { name: "link", label: "Link (a page on this site, like /projects/...)", type: "url" }
+        { name: "link", label: "Link (a page on this site, like /projects/...)", type: "url" },
+        { name: "de", label: "German (Deutsch)", type: "object", fields: [
+          { name: "title", label: "Titel", type: "text" },
+          { name: "text", label: "Text", type: "textarea" }
+        ] }
       ] },
-      { name: "next", label: "Coming next", type: "strings" }
+      { name: "next", label: "Coming next", type: "strings" },
+      { name: "de", label: "German (Deutsch)", type: "object", fields: [
+        { name: "next", label: "Als Nächstes", type: "strings" }
+      ] }
     ] }
   },
   references: {
@@ -187,7 +194,11 @@ export const DATA_SCHEMAS = {
       { name: "id", label: "Id", type: "select", options: BRANCHES, required: true },
       { name: "limb", label: "Tree limb (0, 1 or 2)", type: "select", options: ["0", "1", "2"], required: true, number: true },
       { name: "title", label: "Title", type: "text", required: true },
-      { name: "text", label: "Text", type: "textarea", required: true }
+      { name: "text", label: "Text", type: "textarea", required: true },
+      { name: "de", label: "German (Deutsch)", type: "object", fields: [
+        { name: "title", label: "Titel", type: "text" },
+        { name: "text", label: "Text", type: "textarea" }
+      ] }
     ] }
   }
 };
@@ -250,7 +261,22 @@ Object.assign(DATA_SCHEMAS, {
       { name: "work_intro", label: "Selected work intro", type: "textarea", max: 300 },
       { name: "contact_heading", label: "Contact heading", type: "text", max: 80 },
       { name: "contact_lead", label: "Contact text", type: "textarea", max: 300 },
-      { name: "contact_button", label: "Contact button", type: "text", max: 40 }
+      { name: "contact_button", label: "Contact button", type: "text", max: 40 },
+      { name: "de", label: "German (Deutsch), the same texts for the German pages. Empty fields use the built in German text", type: "object", fields: [
+        { name: "hero_lede", label: "Einleitung unter dem Namen", type: "textarea", max: 400 },
+        { name: "hero_button", label: "Hauptbutton", type: "text", max: 40 },
+        { name: "hero_cv", label: "Link zum Lebenslauf", type: "text", max: 40 },
+        { name: "hero_link", label: "Link zum Kontakt", type: "text", max: 40 },
+        { name: "branches_heading", label: "Überschrift der Äste (Über mich)", type: "text", max: 80 },
+        { name: "branches_intro", label: "Einleitung der Äste (Über mich)", type: "textarea", max: 300 },
+        { name: "intro_heading", label: "Überschrift beim Video", type: "text", max: 80 },
+        { name: "intro_text", label: "Text beim Video", type: "textarea", max: 300 },
+        { name: "work_heading", label: "Überschrift Ausgewählte Projekte", type: "text", max: 80 },
+        { name: "work_intro", label: "Einleitung Ausgewählte Projekte", type: "textarea", max: 300 },
+        { name: "contact_heading", label: "Überschrift Kontakt", type: "text", max: 80 },
+        { name: "contact_lead", label: "Text Kontakt", type: "textarea", max: 300 },
+        { name: "contact_button", label: "Kontakt-Button", type: "text", max: 40 }
+      ] }
     ] }
   }
 });
@@ -289,7 +315,13 @@ export const ENTRY_SCHEMAS = {
     editor: "blocks",
     fields: [
       { name: "lead", label: "Intro line", type: "textarea", max: 300, help: "The larger line under the title" },
-      SEO_DESCRIPTION
+      SEO_DESCRIPTION,
+      { name: "de", label: "German (Deutsch)", type: "object", help: "Only the About page is shown in German, other pages stay English", fields: [
+        { name: "title", label: "Titel", type: "text", max: 120 },
+        { name: "lead", label: "Einleitung", type: "textarea", max: 300 },
+        { name: "description", label: "Suchbeschreibung", type: "textarea", max: 160 },
+        { name: "body", label: "Text (Markdown)", type: "markdown" }
+      ] }
     ]
   },
   projects: {
@@ -321,6 +353,26 @@ export const ENTRY_SCHEMAS = {
       { name: "order", label: "Order on the home page (1 first)", type: "text", number: true },
       { name: "page", label: "Has its own page", type: "checkbox", default: true },
       SEO_DESCRIPTION,
+      { name: "de", label: "German (Deutsch)", type: "object", help: "What the German page shows. Anything left empty falls back to the English text, with a note on the page", fields: [
+        { name: "title", label: "Titel", type: "text", max: 120 },
+        { name: "summary", label: "Kurzbeschreibung", type: "textarea", max: 260 },
+        { name: "description", label: "Suchbeschreibung", type: "textarea", max: 160 },
+        { name: "kind", label: "Art", type: "text" },
+        { name: "context", label: "Kontext", type: "text" },
+        { name: "period", label: "Zeitraum", type: "text" },
+        { name: "role", label: "Meine Rolle", type: "text" },
+        { name: "team", label: "Team", type: "text" },
+        { name: "status", label: "Stand", type: "text" },
+        { name: "facts", label: "Auf einen Blick", type: "objects", itemLabel: "label", fields: [
+          { name: "label", label: "Bezeichnung", type: "text", required: true },
+          { name: "value", label: "Wert", type: "text", required: true }
+        ] },
+        { name: "links", label: "Links", type: "objects", itemLabel: "label", fields: [
+          { name: "label", label: "Bezeichnung", type: "text", required: true },
+          { name: "url", label: "Adresse", type: "url", required: true }
+        ] },
+        { name: "body", label: "Text (Markdown)", type: "markdown" }
+      ] },
       { name: "todo", label: "Still missing (only you see this)", type: "strings", group: "notes" }
     ]
   },

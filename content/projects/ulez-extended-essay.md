@@ -10,6 +10,15 @@ period: IB Diploma
 sort_date: 2023-06
 status: Finished
 page: false
+de:
+  title: Hat die ULEZ in London das CO2 gesenkt?
+  summary: >-
+    In meiner IB Extended Essay habe ich gefragt, ob die Ultra Low Emission Zone in London den Kohlendioxidausstoß
+    wirklich gesenkt hat. Dabei sind in meiner Arbeit zum ersten Mal Daten und Umwelt zusammengekommen.
+  kind: Forschung
+  context: IB Diploma, Munich International School
+  period: IB Diploma
+  status: Abgeschlossen
 ---
 
 

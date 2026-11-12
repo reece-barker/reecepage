@@ -1,6 +1,7 @@
 // The files machines read: robots.txt, sitemap.xml, llms.txt, the web app manifest, security.txt and the Atom feed.
 // They are built from the same content and config as the pages, so they can never list a page that doesnt exist.
 import { isoDate, isoDateTime } from "../utils/dates.js";
+import { hasGermanVersion, localePath } from "../lib/i18n.js";
 import { renderMediaShortcodes } from "../services/media-service.js";
 import { mediaFigure } from "../helpers/media-html.js";
 
@@ -67,15 +68,26 @@ export function createDiscoveryController({ config, content, seo, media, setting
     },
 
     async sitemap(req, res) {
-      const body = (await publicPages()).map((page) => [
+      // Pages with a german version are listed twice, each entry pointing at the other one so search engines
+      // know they belong together. The cv pair already has its own addresses so it stays as it was
+      const entries = [];
+      for (const page of await publicPages()) {
+        const paired = hasGermanVersion(page.path) && !["/cv", "/lebenslauf"].includes(page.path);
+        if (!paired) { entries.push({ ...page, alternates: [] }); continue; }
+        const alternates = [["en-GB", page.path], ["de", localePath("de", page.path)], ["x-default", page.path]];
+        entries.push({ ...page, alternates });
+        entries.push({ ...page, path: localePath("de", page.path), alternates });
+      }
+      const body = entries.map((page) => [
         "  <url>",
         `    <loc>${xml(url(page.path))}</loc>`,
+        ...page.alternates.map(([lang, path]) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${xml(url(path))}"/>`),
         page.lastmod ? `    <lastmod>${isoDate(page.lastmod)}</lastmod>` : null,
         `    <priority>${page.priority}</priority>`,
         "  </url>"
       ].filter(Boolean).join("\n")).join("\n");
       res.type("application/xml").set("Cache-Control", "public, max-age=3600")
-        .send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`);
+        .send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${body}\n</urlset>\n`);
     },
 
     // A plain Markdown summary for AI assistants and other tools that read llms.txt. Its a bonus, not SEO, the

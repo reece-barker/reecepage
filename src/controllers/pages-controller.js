@@ -4,6 +4,8 @@ import path from "node:path";
 import { notFound } from "../middleware/errors.js";
 import { renderMediaShortcodes } from "../services/media-service.js";
 import { mediaFigure } from "../helpers/media-html.js";
+import { localePath, translator } from "../lib/i18n.js";
+import { localiseBranches, localiseNow, localisePage, localiseProject, localiseSkills, localiseTimeline } from "../services/localise.js";
 
 const BRANCH_FILTERS = ["code", "earth"];
 
@@ -40,12 +42,12 @@ export function createPagesController({ content, seo, config, media, settings })
   }
 
   /** Turns the slugs in skills.yml into real links, a slug that doesnt exist anymore is dropped quietly */
-  function resolveSkills() {
-    return (content.data("skills") || []).map((group) => ({
+  function resolveSkills(lang = "en") {
+    return localiseSkills(content.data("skills") || [], lang).map((group) => ({
       ...group,
       items: group.items.map((item) => ({
         ...item,
-        evidence: (item.evidence || []).map((slug) => content.getProject(slug)).filter(Boolean)
+        evidence: (item.evidence || []).map((slug) => content.getProject(slug)).filter(Boolean).map((project) => localiseProject(project, lang))
       }))
     }));
   }
@@ -59,12 +61,13 @@ export function createPagesController({ content, seo, config, media, settings })
       if (config.features.media && media?.available) {
         try { intro = await media.featuredVideo(); } catch (error) { req.log?.warn({ err: { message: error.message } }, "featured video not loaded"); }
       }
+      const lang = req.lang || "en";
       res.render("pages/home", {
-        meta: seo.build({ isHome: true, title: siteSettings().name, description: siteSettings().description, path: "/" }),
-        home: settings?.home() || {},
+        meta: seo.build({ isHome: true, title: siteSettings().name, description: lang === "de" ? translator("de")("home.description") : siteSettings().description, path: "/", language: lang }),
+        home: settings?.home(lang) || {},
         bodyClass: "page-home",
-        featured: content.featuredProjects(5),
-        now: content.data("now"),
+        featured: content.featuredProjects(5).map((project) => localiseProject(project, lang)),
+        now: localiseNow(content.data("now"), lang),
         latest,
         intro,
         introHtml: intro ? mediaFigure(intro, { showCaption: false }) : "",
@@ -73,48 +76,57 @@ export function createPagesController({ content, seo, config, media, settings })
     },
 
     async about(req, res, next) {
-      const page = content.page("about");
-      if (!page) return next(notFound());
+      const lang = req.lang || "en";
+      const t = translator(lang);
+      const english = content.page("about");
+      if (!english) return next(notFound());
+      const page = localisePage(english, lang);
       res.render("pages/about", {
         // The three branches used to sit on the home page between the intro and the work, here they explain him
-        branches: content.data("branches"),
-        home: settings?.home() || {},
+        branches: localiseBranches(content.data("branches"), lang),
+        home: settings?.home(lang) || {},
         meta: seo.build({
-          title: "About",
-          description: page.description || pageDescription("about", "About Reece Barker: raised in Munich, studying Applied Computer Science at Saxion, co-founder of an AI climate control startup and sustainability ambassador."),
+          title: lang === "de" ? page.title : "About",
+          description: lang === "de"
+            ? page.description || t("about.description")
+            : page.description || pageDescription("about", t("about.description")),
           path: "/about",
           pageType: "ProfilePage",
-          breadcrumbs: [{ label: "About", href: "/about" }]
+          language: lang,
+          breadcrumbs: [{ label: lang === "de" ? page.title : "About", href: "/about" }]
         }),
         bodyClass: "page-about",
         page: { ...page, html: await withMedia(page.html, req) },
-        timeline: content.data("timeline"),
-        skills: resolveSkills(),
-        now: content.data("now")
+        timeline: localiseTimeline(content.data("timeline"), lang),
+        skills: resolveSkills(lang),
+        now: localiseNow(content.data("now"), lang)
       });
     },
 
     projects(req, res) {
       // Only known values are accepted, anything else shows everything (and is not repeated back into the page)
+      const lang = req.lang || "en";
+      const t = translator(lang);
       const branch = BRANCH_FILTERS.includes(req.query.branch) ? req.query.branch : null;
-      const all = content.listProjects();
+      const all = content.listProjects().map((project) => localiseProject(project, lang));
       const shown = branch ? all.filter((project) => project.branch === branch) : all;
       res.render("pages/projects", {
         meta: seo.build({
-          title: branch ? `${branch === "code" ? "Code" : "Earth"} projects` : "Projects",
-          description: pageDescription("projects", "Projects by Reece Barker: an AI climate control startup, a robot production line, sound based traffic profiling, tools for a school IT team and more."),
+          title: branch ? t("projects.filteredTitle", { branch: t(`branch.${branch}`) }) : t("projects.title"),
+          description: lang === "de" ? t("projects.description") : pageDescription("projects", t("projects.description")),
           // The filtered views are the same list cut down, so they all point search engines at /projects
           path: "/projects",
-          breadcrumbs: [{ label: "Projects", href: "/projects" }]
+          language: lang,
+          breadcrumbs: [{ label: t("projects.title"), href: "/projects" }]
         }),
         bodyClass: "page-projects",
         branch,
         filters: [
-          { label: "All", href: "/projects", active: !branch, count: all.length },
+          { label: t("projects.all"), href: localePath(lang, "/projects"), active: !branch, count: all.length },
           ...BRANCH_FILTERS.map((id) => ({
             id,
-            label: id === "code" ? "Code" : "Earth",
-            href: `/projects?branch=${id}`,
+            label: t(`branch.${id}`),
+            href: `${localePath(lang, "/projects")}?branch=${id}`,
             active: branch === id,
             count: all.filter((project) => project.branch === id).length
           }))
@@ -132,12 +144,15 @@ export function createPagesController({ content, seo, config, media, settings })
 
     writing(req, res, next) {
       if (!config.features.writing) return next(notFound());
+      const lang = req.lang || "en";
+      const t = translator(lang);
       res.render("pages/writing", {
         meta: seo.build({
-          title: "Writing",
-          description: pageDescription("writing", "Articles by Reece Barker about the things he builds and how he builds them."),
+          title: t("writing.title"),
+          description: lang === "de" ? t("writing.description") : pageDescription("writing", t("writing.description")),
           path: "/writing",
-          breadcrumbs: [{ label: "Writing", href: "/writing" }]
+          language: lang,
+          breadcrumbs: [{ label: t("writing.title"), href: "/writing" }]
         }),
         bodyClass: "page-writing",
         articles: content.listArticles()
@@ -198,17 +213,25 @@ export function createPagesController({ content, seo, config, media, settings })
     });
   }
 
-  async function renderProject(req, res, project, { preview = false } = {}) {
-    const { previous, next: following } = preview ? { previous: null, next: null } : content.neighbours(project.slug);
+  async function renderProject(req, res, english, { preview = false } = {}) {
+    const lang = req.lang || "en";
+    const t = translator(lang);
+    const project = localiseProject(english, lang);
+    const near = preview ? { previous: null, next: null } : content.neighbours(english.slug);
+    const previous = near.previous ? localiseProject(near.previous, lang) : null;
+    const following = near.next ? localiseProject(near.next, lang) : null;
     res.render("pages/project", {
       meta: seo.build({
         title: project.title,
         description: project.description,
         path: project.url,
         type: "article",
+        language: lang,
         image: shareImage("projects", project.slug),
-        imageAlt: shareImage("projects", project.slug) ? `${project.title}, a project by Reece Barker` : undefined,
-        breadcrumbs: [{ label: "Projects", href: "/projects" }, { label: project.title, href: project.url }],
+        imageAlt: shareImage("projects", project.slug)
+          ? (lang === "de" ? `${project.title}, ein Projekt von Reece Barker` : `${project.title}, a project by Reece Barker`)
+          : undefined,
+        breadcrumbs: [{ label: t("projects.title"), href: "/projects" }, { label: project.title, href: project.url }],
         schema: [seo.projectSchema(project)]
       }),
       bodyClass: `page-project branch-${project.branch}`,
@@ -220,6 +243,8 @@ export function createPagesController({ content, seo, config, media, settings })
   }
 
   async function renderArticle(req, res, article, { preview = false } = {}) {
+    const lang = req.lang || "en";
+    const t = translator(lang);
     res.render("pages/article", {
       html: await withMedia(article.html, req),
       meta: seo.build({
@@ -227,10 +252,11 @@ export function createPagesController({ content, seo, config, media, settings })
         description: article.description,
         path: article.url,
         type: "article",
+        language: lang,
         article: { published: article.date, modified: article.updated },
         image: shareImage("writing", article.slug),
         imageAlt: shareImage("writing", article.slug) ? `${article.title}, an article by Reece Barker` : undefined,
-        breadcrumbs: [{ label: "Writing", href: "/writing" }, { label: article.title, href: article.url }],
+        breadcrumbs: [{ label: t("writing.title"), href: "/writing" }, { label: article.title, href: article.url }],
         schema: [seo.articleSchema(article)]
       }),
       bodyClass: "page-article",

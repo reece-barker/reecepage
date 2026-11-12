@@ -3,6 +3,128 @@ title: About
 lead: >-
   I write software, build hardware and co-founded a startup. The easiest way to explain why is to start at the
   beginning.
+de:
+  title: Über mich
+  lead: >-
+    Ich schreibe Software, baue Hardware und habe ein Startup mitgegründet. Warum, erklärt sich am besten von
+    Anfang an.
+  body: |
+    ## Wo alles anfing
+
+    Ich bin in West Sussex, an der Südküste Englands, zur Grundschule gegangen, bevor meine Familie nach München zog. Dort
+    bin ich aufgewachsen, an der Munich International School, und dort ist Deutsch vom Schulfach zu einer zweiten Sprache
+    geworden, die ich heute im Beruf nutze.
+
+    Mit zwölf habe ich meine ersten Zeilen Code geschrieben. Mit fünfzehn habe ich mein erstes echtes Produkt
+    veröffentlicht, eine Echtzeit-Erweiterung für ein Web-Framework, und eine halbstündige Anleitung aufgenommen, die genau
+    erklärt, wie sie funktioniert.
+
+    ## Geografie hat alles verändert
+
+    Für mein IB Diploma habe ich Informatik, Deutsch und Geografie auf höherem Niveau belegt. Geografie hat alles
+    verändert. Meine Geografielehrerin hat das Fach lebendig gemacht: Sie hat mir gezeigt, wie unser Planet wirklich
+    funktioniert und wie viel auf dem Spiel steht. Ohne sie würde ich heute nicht tun, was ich tue.
+
+    In meiner Extended Essay habe ich mir die Ultra Low Emission Zone in London angesehen und gefragt, ob sie das CO2
+    wirklich gesenkt hat. Dabei sind zum ersten Mal meine beiden Interessen zusammengekommen: Daten und Umwelt.
+
+    ## Freelancer mit sechzehn
+
+    Mit sechzehn habe ich als Freelancer angefangen. In fast drei Jahren habe ich Full-Stack-Webplattformen mit sicherem
+    Login und Live-Monitoring gebaut. Außerdem habe ich ein [Support- und Ticketsystem](/de/projects/support-ticketing-system)
+    für Online-Communitys im Unterhaltungsbereich gebaut, angebunden an die APIs, auf die sie ohnehin setzten, und es
+    kommerziell an fast zehn Kunden verkauft.
+
+    ## Munich International School
+
+    Neben alledem habe ich drei Sommer lang in der IT-Abteilung der Munich International School gearbeitet, von 2021 bis
+    2023. Von Juni 2024 bis Juli 2026 war ich dort wieder auf Vertragsbasis tätig, habe die IT unterstützt und auf
+    Microsofts Power Platform gebaut. Ich habe die [Bestellanforderungen](/de/projects/mis-purchase-orders) der
+    Finanzabteilung in Power Apps neu gebaut, mit automatischen Summen und Wechselkursen. Außerdem stammt die Idee zum
+    [Scan Assistant](/de/projects/scan-assistant) von mir, einer Browser-Erweiterung für das IT-Team, die die iPads der
+    Schule ein- und ausscannt, mit Klassenlisten abgleicht und daraus automatisch einen Bericht erstellt. Idee und Prototyp
+    stammen von mir, den größten Teil habe ich mit KI-Coding-Werkzeugen gebaut.
+
+    ## Saxion
+
+    2024 bin ich in die Niederlande gezogen, um Technische Informatik an der Saxion University of Applied Sciences in
+    Enschede zu studieren. Mein erstes Jahr endete mit dem Propädeutikum, cum laude. Das Studium geht in die Tiefe:
+    Embedded C und C++, Echtzeitbetriebssysteme, Signalverarbeitung und maschinelles Lernen. Im ersten Jahr habe ich an
+    einem autonomen Roboter mitgebaut, der ein Labyrinth erkundet und von allein den kürzesten Weg hinaus findet.
+
+    In einem Projekt sind meine beiden alten Interessen wieder zusammengekommen. Allein habe ich einen Raspberry Pi gebaut,
+    der [dem vorbeifahrenden Verkehr zuhört und ihn allein anhand des Klangs profiliert](/de/projects/traffic-sound-profiling),
+    um Emissionen ohne eine einzige Kamera zu verstehen, und ich habe drei Machine-Learning-Modelle verglichen, um zu
+    klassifizieren, was er hört. Dafür gab es eine 9 von 10.
+
+    In der International Project Week der Saxion hat unser Team für den Hersteller von Durchflussmessgeräten Bronkhorst
+    einen Kundenkonfigurator gebaut, der schon beim Eingeben echte physikalische Grenzen prüft. Wir haben ihn in einer Woche
+    geliefert, in enger Zusammenarbeit mit KI-Werkzeugen, und die höchste Auszeichnung erhalten.
+
+    Jetzt bin ich im Minor Industrial Automation, in dem ein Team aus dreizehn Studierenden eine
+    [komplette Produktionslinie](/de/projects/lego-bulldozer-production-line) mit acht ABB-Robotern, Bildverarbeitung und
+    SPSen entwirft, die alle fünf Minuten einen LEGO-Bulldozer zusammenbaut. Ich bin für das Transportsystem
+    verantwortlich: wie sich Teile zwischen den Stationen bewegen, pünktlich ankommen und durch den Prozess verfolgt werden.
+    Außerdem berate ich als Software-Berater das Team, das eine
+    [Maschine zum Sortieren loser LEGO-Teile](/de/projects/lego-sorting-machine) baut, nach Farbe, nach Größe und mit einer
+    Kamera, die jedes Teil erkennt.
+
+    Neben dem Studium betreibe ich [meine eigenen Server](/de/projects/home-lab): einen mit nginx vor dieser Website und
+    meinen anderen Apps und einen bei mir zu Hause. Darauf läuft [Kino](/de/projects/kino), eine Streaming-Plattform, die ich
+    für meine Familie gebaut habe, mit Profilen, Live-TV und Apps für Android TV und das iPhone. Der Code ist öffentlich auf
+    GitHub.
+
+    ## Das Honours Programme
+
+    Ich wurde außerdem für das Honours Programme der Saxion ausgewählt, ein Programm für Studierende, die mehr wollen als den
+    normalen Lehrplan. Für mich ging es dabei ebenso um Menschen wie um Projekte: mit Studierenden aus ganz anderen
+    Fachrichtungen zu arbeiten, einen echten Freundeskreis aufzubauen, Fähigkeiten weit außerhalb der Informatik zu lernen
+    und größere Fragen zu stellen, wer ich bin und worauf es wirklich ankommt.
+
+    Ein Moment ist mir besonders in Erinnerung geblieben. Mein Vortrag über nachhaltige Software, „Smart Tech, Greener
+    Planet“, war das, worauf meine Mitstudierenden immer wieder zurückkamen.
+
+    ## Das Startup
+
+    Ebenfalls an der Saxion entstanden ist [Cognitive Atmospherics](/de/projects/microclimate-startup), das Startup, das ich
+    im Juni 2026 mit drei Kommilitonen mitgegründet habe. Ich kümmere mich um Betrieb, Software und die geschäftliche
+    Seite. Die Idee beginnt mit etwas Einfachem. Jeder Raum hat ein Klima: Temperatur, Luftfeuchtigkeit, Luftqualität und
+    Licht. Unsere KI verbindet sich mit den Anlagen, die ein Gebäude schon hat, und steuert sie gemeinsam, abgestimmt auf
+    die Menschen, die tatsächlich da sind.
+
+    Zu Hause bedeutet das Komfort bei weniger verschwendeter Energie. In der Industrie sind es stabile Bedingungen für
+    Menschen, Produkte und Maschinen. Und im Gesundheitswesen, wo es am meisten bewirkt, ist es ein Raum, der auf jede
+    Patientin und jeden Patienten abgestimmt ist, für bessere Versorgung und Genesung.
+
+    ## Wie ich KI nutze
+
+    Ich gehöre zur ersten Generation, die mit moderner KI aufgewachsen ist. Ich nutze große Sprachmodelle jeden Tag, um zu
+    bauen, zu recherchieren und schneller zu lernen. Gerade weil ich sie so viel nutze, weiß ich genau, wo sie an ihre
+    Grenzen stoßen. Sie können sich selbstsicher irren. Sie brauchen klare Grenzen und Menschen, die die Arbeit prüfen.
+
+    Deshalb möchte ich mithelfen, sie gut zu bauen. Ich glaube, dass KI wirklich Gutes für den Planeten und die Gesellschaft
+    bewirken kann, von weniger verschwendeter Energie bis zu besserer Versorgung, solange die Menschen, die sie bauen,
+    diesen Weg bewusst wählen.
+
+    ## Menschen
+
+    Fragen Sie die Menschen um mich herum, wie ich bin, und Sie hören immer wieder dasselbe: Ich bin unkompliziert, ich bin
+    lustig, und auf mich kann man sich verlassen. Ich habe ein enges Verhältnis zu meinen Eltern und einen Freundeskreis,
+    dem ich vollständig vertraue.
+
+    Man sieht es daran, wie ich arbeite und wie ich mit Menschen umgehe: ehrlich zu sein, auch wenn es unbequem ist,
+    geduldig zu sein, gute Arbeit zu leisten, auch wenn niemand hinsieht, und Menschen zu helfen, weil es das Richtige ist.
+    Mein Glaube ist ein stiller Teil dessen, woher das kommt.
+
+    ## Was ich als Nächstes will
+
+    Es ist einfach gesagt und schwerer getan. Ich möchte an Projekten arbeiten, die das Leben der Menschen wirklich besser
+    machen, und den Planeten in einem besseren Zustand hinterlassen, als ich ihn vorgefunden habe. Software, Hardware,
+    Automatisierung, KI: Für mich sind das alles Werkzeuge für dasselbe Ziel.
+
+    Als Nächstes folgt von März bis August 2027 ein European Project Semester an der TH Augsburg, danach ein Praktikum und
+    eine Abschlussarbeit in der Industrie. Wenn Sie etwas bauen, das Energie spart, Abfall vermeidet oder das Leben der
+    Menschen besser macht, [würde ich gern davon hören](/de/contact).
 ---
 
 ## Where it started

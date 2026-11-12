@@ -1,6 +1,7 @@
 // Everything that happens after someone presses "Send message": spam checks, validation, saving, emailing.
 // The controller only turns the result into a page.
 import { validateContact } from "../validators/contact-validator.js";
+import { translator } from "../lib/i18n.js";
 import { verifyFormToken, hashIp } from "../utils/form-token.js";
 
 /**
@@ -32,10 +33,10 @@ export class ContactService {
   get available() { return this.config.features.contact_form && (this.canStore || this.canNotify); }
 
   /**
-   * @param {{ body: Record<string, unknown>, ip?: string }} input
+   * @param {{ body: Record<string, unknown>, ip?: string, lang?: string }} input lang is the language the form was shown in, for the error messages
    * @returns {Promise<{ status: ContactStatus, values?: object, errors?: Record<string, string>, reason?: string }>}
    */
-  async submit({ body, ip }) {
+  async submit({ body, ip, lang = "en" }) {
     // A field people never see. Bots fill in every field they find, so anything in here means its not a person.
     // They get the normal thank you page, telling them they were caught only helps them adjust
     if (typeof body.website === "string" && body.website.trim() !== "") {
@@ -43,7 +44,7 @@ export class ContactService {
       return { status: "spam", reason: "honeypot" };
     }
 
-    const { values, errors } = validateContact(body, { topics: this.topics });
+    const { values, errors } = validateContact(body, { topics: this.topics, t: translator(lang) });
 
     // Mistakes first: someone fixing their email doesnt need to hear about tokens as well, they get a fresh one anyway
     if (Object.keys(errors).length) return { status: "invalid", values, errors };

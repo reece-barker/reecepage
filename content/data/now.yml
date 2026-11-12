@@ -6,11 +6,26 @@ items:
       A team of thirteen designing a production line that builds a LEGO bulldozer every five minutes with eight ABB
       robots. I am responsible for the transport system between the stations.
     link: /projects/lego-bulldozer-production-line
+    de:
+      title: Minor Industrial Automation
+      text: >-
+        Ein Team aus dreizehn Studierenden entwirft eine Produktionslinie, die mit acht ABB-Robotern alle fünf Minuten
+        einen LEGO-Bulldozer baut. Ich bin für das Transportsystem zwischen den Stationen verantwortlich.
   - title: Cognitive Atmospherics' second prototype
     text: AI that runs a room's heating, cooling, air and lighting together, starting with homes.
     link: /projects/microclimate-startup
+    de:
+      title: Zweiter Prototyp von Cognitive Atmospherics
+      text: Eine KI, die Heizung, Kühlung, Luft und Licht eines Raums gemeinsam steuert, zunächst für Privathaushalte.
   - title: Saxion Honours Programme
     text: My second year in the track for students who want more than the standard curriculum.
+    de:
+      title: Honours Programme der Saxion
+      text: Mein zweites Jahr in dem Programm für Studierende, die mehr wollen als den normalen Lehrplan.
 next:
   - European Project Semester at TH Augsburg, March to August 2027.
   - Then an internship and a graduation project in industry.
+de:
+  next:
+    - European Project Semester an der TH Augsburg, März bis August 2027.
+    - Danach ein Praktikum und eine Abschlussarbeit in der Industrie.

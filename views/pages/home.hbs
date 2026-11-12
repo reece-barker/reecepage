@@ -3,9 +3,9 @@
     <h1 class="hero-name matte-words" id="hero-title">{{matteWords site.name}}</h1>
     <p class="hero-lede load-fade load-fade--2">{{home.hero_lede}}</p>
     <div class="hero-actions load-fade load-fade--3">
-      <a class="button" href="/projects" data-track="Home: see projects">{{home.hero_button}} {{icon "arrow"}}</a>
-      <a class="link-action" href="/cv" data-track="Home: CV">{{home.hero_cv}}</a>
-      <a class="link-action" href="/contact" data-track="Home: get in touch">{{home.hero_link}}</a>
+      <a class="button" href="{{lp "/projects"}}" data-track="Home: see projects">{{home.hero_button}} {{icon "arrow"}}</a>
+      <a class="link-action" href="{{lp "/cv"}}" data-track="Home: CV">{{home.hero_cv}}</a>
+      <a class="link-action" href="{{lp "/contact"}}" data-track="Home: get in touch">{{home.hero_link}}</a>
     </div>
   </div>
 
@@ -25,7 +25,7 @@
         <h2 id="work-title">{{home.work_heading}}</h2>
         <p class="section-intro">{{home.work_intro}}</p>
       </div>
-      <a class="link-action" href="/projects">All projects {{icon "arrow"}}</a>
+      <a class="link-action" href="{{lp "/projects"}}">{{t "home.allProjects"}} {{icon "arrow"}}</a>
     </div>
     <ul class="project-list" role="list">
       {{#each featured}}{{> project-row}}{{/each}}
@@ -38,9 +38,9 @@
   <div class="container home-intro__grid">
     <div class="home-intro__text">
       <h2 id="intro-title">{{home.intro_heading}}</h2>
-      {{#if intro.durationSeconds}}<p class="updated-note">A video introduction, {{clock intro.durationSeconds}} long{{#if intro.captionsSrc}}, with captions{{/if}}</p>{{/if}}
+      {{#if intro.durationSeconds}}<p class="updated-note">{{t "home.videoLong" length=(clock intro.durationSeconds)}}{{#if intro.captionsSrc}}{{t "home.videoCaptions"}}{{/if}}</p>{{/if}}
       <p>{{#if intro.caption}}{{intro.caption}}{{else}}{{home.intro_text}}{{/if}}</p>
-      <p><a class="link-action" href="/media">More on the media page {{icon "arrow"}}</a></p>
+      <p><a class="link-action" href="/media">{{t "home.moreMedia"}} {{icon "arrow"}}</a></p>
     </div>
     <div class="home-intro__video">{{{introHtml}}}</div>
   </div>
@@ -52,22 +52,22 @@
 <section class="section" aria-labelledby="now-title">
   <div class="container home-now">
     <div>
-      <h2 id="now-title">Right now</h2>
-      <p class="updated-note">Updated <time datetime="{{isoDate now.updated}}">{{longDate now.updated}}</time></p>
+      <h2 id="now-title">{{t "home.now"}}</h2>
+      <p class="updated-note">{{t "home.updated"}} <time datetime="{{isoDate now.updated}}">{{longDate now.updated}}</time></p>
     </div>
     <div>
       <ul class="now-list" role="list">
         {{#each now.items}}
         <li data-reveal>
           <span class="pip" aria-hidden="true"></span>
-          <h3>{{#if link}}<a href="{{link}}">{{title}}</a>{{else}}{{title}}{{/if}}</h3>
+          <h3>{{#if link}}<a href="{{lp link}}">{{title}}</a>{{else}}{{title}}{{/if}}</h3>
           <p>{{text}}</p>
         </li>
         {{/each}}
       </ul>
       {{#if now.next}}
       <div class="now-next">
-        <h3>Next</h3>
+        <h3>{{t "home.next"}}</h3>
         <ul>{{#each now.next}}<li>{{this}}</li>{{/each}}</ul>
       </div>
       {{/if}}
@@ -87,8 +87,8 @@ the same cream --}}
     <div class="home-contact__ways">
       <a class="email-link" href="mailto:{{site.email}}" data-track="Email link">{{site.email}}</a>
       <div class="cluster">
-        <a class="button" href="/contact" data-track="Home: send a message">{{home.contact_button}} {{icon "arrow"}}</a>
-        <a class="link-action" href="/cv" data-track="Home: CV from contact">{{home.hero_cv}}</a>
+        <a class="button" href="{{lp "/contact"}}" data-track="Home: send a message">{{home.contact_button}} {{icon "arrow"}}</a>
+        <a class="link-action" href="{{lp "/cv"}}" data-track="Home: CV from contact">{{home.hero_cv}}</a>
       </div>
     </div>
   </div>

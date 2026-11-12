@@ -174,6 +174,33 @@ function buildPage({ data, html, headings, slug, file }) {
 
 const BUILDERS = { projects: buildProject, writing: buildArticle, tools: buildTool, pages: buildPage };
 
+/**
+ * The German version of an entry, from the de: block in its front matter: title, summary, kind and so on, plus a
+ * body in Markdown that is rendered like the English one. Only what was filled in is kept, the rest falls back to
+ * the English text when the page is shown (see localise.js)
+ */
+function buildGerman(raw, file) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+  const out = {};
+  for (const key of ["title", "summary", "description", "lead", "kind", "context", "period", "role", "team", "status"]) {
+    const value = typeof raw[key] === "number" ? String(raw[key]) : raw[key];
+    if (typeof value === "string" && value.trim()) out[key] = value.trim();
+  }
+  if (out.title && out.title.length > 120) throw new ContentError(file, "the German title is longer than 120 characters");
+  if (out.summary && out.summary.length > 260) throw new ContentError(file, "the German summary is longer than 260 characters");
+  for (const key of ["facts", "links"]) {
+    const list = asList(raw[key]).filter((item) => item && typeof item === "object");
+    if (list.length) out[key] = list;
+  }
+  if (typeof raw.body === "string" && raw.body.trim()) {
+    const { html, headings } = renderMarkdown(raw.body);
+    out.html = html;
+    out.headings = headings;
+    out.body = raw.body;
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 /** Is this entry on the site right now: published, and if it has a publish time, that time has passed */
 export function isLive(entry, now = new Date()) {
   if (entry.status !== "published") return false;
@@ -194,7 +221,10 @@ export function buildEntry(entry) {
   if (!builder) throw new ContentError(label, "unknown kind of content");
   const data = { ...(entry.meta || {}), title: entry.title };
   const { html, headings } = renderMarkdown(entry.body);
-  return { ...builder({ data, html, headings, slug: entry.slug, file: label, raw: entry.body, publishAt: entry.publishAt }), updatedAt: entry.updatedAt, publishAt: entry.publishAt || null };
+  const built = builder({ data, html, headings, slug: entry.slug, file: label, raw: entry.body, publishAt: entry.publishAt });
+  // Projects and pages can have a german version but writing stays english
+  const de = entry.type === "projects" || entry.type === "pages" ? buildGerman(data.de, label) : null;
+  return { ...built, ...(de ? { de } : {}), updatedAt: entry.updatedAt, publishAt: entry.publishAt || null };
 }
 
 export class ContentService {
