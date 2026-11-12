@@ -2,6 +2,7 @@
 
 const LONG = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 const LONG_DE = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+const MONTH_YEAR_DE = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric", timeZone: "UTC" });
 const MONTH_YEAR = new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
 
 /** Accepts a Date, "2026-10-12" or "2026-10" and returns a Date at midnight UTC, or null when it cant be read */
@@ -21,7 +22,7 @@ export function formatLongDate(value) {
   return date ? LONG.format(date) : "";
 }
 
-/** "12. Oktober 2026", for the German halves of the legal pages */
+/** "12. Oktober 2026" for the german halves of the legal pages and now the german pages too */
 export function formatLongDateGerman(value) {
   const date = toDate(value);
   return date ? LONG_DE.format(date) : "";
@@ -30,6 +31,12 @@ export function formatLongDateGerman(value) {
 export function formatMonthYear(value) {
   const date = toDate(value);
   return date ? MONTH_YEAR.format(date) : "";
+}
+
+/** "Oktober 2026" */
+export function formatMonthYearGerman(value) {
+  const date = toDate(value);
+  return date ? MONTH_YEAR_DE.format(date) : "";
 }
 
 export function isoDate(value) {

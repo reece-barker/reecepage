@@ -1,5 +1,5 @@
 {{#if meta.breadcrumbs}}
-<nav class="breadcrumbs" aria-label="Breadcrumb">
+<nav class="breadcrumbs" aria-label="{{t "breadcrumbs.label"}}">
   <ol>
     {{#each meta.breadcrumbs}}
     <li>{{#if @last}}<span aria-current="page">{{label}}</span>{{else}}<a href="{{href}}">{{label}}</a>{{/if}}</li>

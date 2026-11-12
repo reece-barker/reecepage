@@ -2,13 +2,13 @@
   <div class="container">
     <header class="page-head article-head">
       {{> breadcrumbs}}
-      <h1 class="match-cut-title">{{article.title}}</h1>
+      <h1 class="match-cut-title" lang="en">{{article.title}}</h1>
       <p class="lead load-fade">{{article.summary}}</p>
       <p class="meta-line">
-        <span>By <a href="/about" rel="author">{{site.name}}</a></span>
+        <span>{{t "writing.by"}} <a href="{{lp "/about"}}" rel="author">{{site.name}}</a></span>
         <time datetime="{{isoDate article.date}}">{{longDate article.date}}</time>
-        {{#if article.updated}}<span>Updated <time datetime="{{isoDate article.updated}}">{{longDate article.updated}}</time></span>{{/if}}
-        <span>{{article.readingMinutes}} min read</span>
+        {{#if article.updated}}<span>{{t "writing.updated"}} <time datetime="{{isoDate article.updated}}">{{longDate article.updated}}</time></span>{{/if}}
+        <span>{{t "writing.minutes" count=article.readingMinutes}}</span>
       </p>
     </header>
     <div class="with-aside project-body">
@@ -18,13 +18,13 @@
       </div>
       {{#if article.headings.length}}
       <aside class="toc" aria-labelledby="toc-title">
-        <h2 id="toc-title">On this page</h2>
+        <h2 id="toc-title">{{t "about.onThisPage"}}</h2>
         <ol>{{#each article.headings}}<li><a href="#{{id}}">{{text}}</a></li>{{/each}}</ol>
       </aside>
       {{/if}}
     </div>
-    <nav class="next-prev" aria-label="More writing">
-      <a class="next-prev__next" href="/writing"><small>Back to</small><strong>All writing</strong></a>
+    <nav class="next-prev" aria-label="{{t "writing.moreWriting"}}">
+      <a class="next-prev__next" href="{{lp "/writing"}}"><small>{{t "writing.backTo"}}</small><strong>{{t "writing.all"}}</strong></a>
     </nav>
   </div>
 </article>

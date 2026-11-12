@@ -1,3 +1,5 @@
+import { translator } from "../lib/i18n.js";
+
 // 404 and error pages. Visitors get a friendly page with the right status code, the details only go to the log.
 
 export class HttpError extends Error {
@@ -15,13 +17,8 @@ export function notFoundHandler() {
   return (req, res, next) => next(notFound());
 }
 
-const TITLES = {
-  403: "This form has expired",
-  404: "This page does not exist",
-  429: "Slow down a little",
-  500: "Something went wrong on my side",
-  503: "The site is having a short break"
-};
+// Wich text key each status uses and the actual words are in the language files
+const TITLE_KEYS = { 403: "errors.expired", 404: "errors.notFound", 429: "errors.slow", 500: "errors.wrong", 503: "errors.break" };
 
 /**
  * @param {{ logger: import("pino").Logger, seo: import("../services/seo-service.js").SeoService, csrf: ReturnType<import("./csrf.js").createCsrf> }} deps
@@ -47,8 +44,9 @@ export function errorHandler({ logger, seo, csrf, reporter }) {
     res.setHeader("X-Robots-Tag", "noindex");
 
     const view = status === 404 ? "errors/404" : "errors/error";
-    const title = TITLES[status] || TITLES[500];
-    const meta = seo.build({ title, description: title, path: req.path, noindex: true });
+    const lang = req.lang || "en";
+    const title = translator(lang)(TITLE_KEYS[status] || TITLE_KEYS[500]);
+    const meta = seo.build({ title, description: title, path: req.path, noindex: true, language: lang });
 
     if (req.accepts(["html", "json"]) === "json" && !req.accepts("html")) {
       return res.json({ error: title, status, requestId: req.id });

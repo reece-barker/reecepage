@@ -23,6 +23,37 @@ stack:
 todo:
   - What the server at home runs and on what hardware
   - A simple diagram of what runs where
+de:
+  title: Meine Server und mein Home-Lab
+  summary: >-
+    Die Server hinter dieser Website und hinter Kino: ein Server mit nginx vor meinen Apps, Deployments aus GitHub
+    bei jedem Push, Netzwerkspeicher für die Mediathek und ein Server bei mir zu Hause.
+  kind: Privat
+  context: Privates Projekt
+  period: "2026"
+  status: Läuft
+  role: Allein eingerichtet und betrieben
+  body: |
+    ## Was wo läuft
+
+    Ein Server betreibt nginx vor allem anderen. Jede App, diese Website (Node.js) und [Kino](/de/projects/kino) (Python),
+    lauscht nur auf dem Server selbst, nginx ist die einzige Tür nach außen. Die Domains liegen bei Cloudflare DNS. Die
+    Mediathek liegt auf einem Netzwerkspeicher, der per SSH eingebunden ist, und die nächtlichen Backups von Kino landen
+    ebenfalls dort.
+
+    Zu Hause betreibe ich außerdem einen eigenen Server.
+
+    ## Deployments
+
+    Beide Seiten deployen sich selbst. Jeder Push auf main startet zuerst die Prüfungen in GitHub Actions und meldet sich
+    dann mit einem Schlüssel an, der nur einen einzigen Update-Befehl ausführen darf, sonst nichts. Dieser Befehl holt den
+    Code, baut ihn, startet die App neu und lässt den Lauf fehlschlagen, wenn die Seite danach nicht wieder erreichbar ist.
+
+    ## Sicherheit
+
+    - SSH nur mit Schlüsseln, und fail2ban bei wiederholten fehlgeschlagenen Anmeldungen.
+    - Kein App-Port ist im Internet offen, nur nginx.
+    - Kino ist nur für Personen aus einer Liste erlaubter Netzwerke oder Geräte erreichbar.
 ---
 
 ## What runs where

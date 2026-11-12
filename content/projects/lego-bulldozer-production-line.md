@@ -30,6 +30,56 @@ facts:
     value: Eight ABB robots
 todo:
   - Photos or a layout drawing of the transport system once it exists
+de:
+  title: Eine Produktionslinie für einen LEGO-Bulldozer
+  summary: >-
+    Ein Team aus dreizehn Studierenden im Minor Industrial Automation der Saxion entwirft eine Linie, die alle
+    fünf Minuten einen LEGO-Technic-Bulldozer baut. Sie arbeitet mit acht ABB-Robotern, Bildverarbeitung und
+    SPSen.
+  kind: Kursprojekt
+  context: Saxion, Minor Industrial Automation
+  period: 09/2026 bis 02/2027
+  status: In Arbeit
+  role: Verantwortlich für das Transportsystem zwischen den Stationen
+  team: Dreizehn Studierende
+  facts:
+    - label: Produkt
+      value: LEGO Technic 42163 Heavy-Duty Bulldozer, 195 Teile
+    - label: Ziel
+      value: Das erste Exemplar nach 20 Minuten, danach alle 5 Minuten eines
+    - label: Roboter
+      value: Acht ABB-Roboter
+  body: |
+    ## Die Aufgabe
+
+    Das Produkt ist der LEGO Technic Heavy-Duty Bulldozer mit 195 Teilen. Die Linie muss den ersten in zwanzig Minuten
+    bauen und danach alle fünf Minuten einen weiteren.
+
+    Sie soll wie eine echte Fertigungslinie arbeiten. Bildverarbeitungssysteme prüfen die Teile, SPSen steuern die
+    Stationen. Eine LEGO-Eisenbahn transportiert die Teile zwischen den Robotern, und ein SCADA-System überwacht alles. Die
+    Stationen folgen einem modularen, standardisierten Aufbau, sodass sich eine Station ändern lässt, ohne den Rest neu zu
+    entwerfen.
+
+    ## Mein Teil: das Transportsystem
+
+    Ich bin für das Transportteam verantwortlich, das regelt, wie die Teile von einer Station zur nächsten kommen. Dazu
+    gehören eine präzise Bewegung mit pneumatischen Anschlägen und die Programmierung, die dafür sorgt, dass die richtigen
+    Teile zur richtigen Zeit an jeder Station ankommen. Außerdem verfolgen wir, wo sich jedes Teil im Prozess gerade
+    befindet.
+
+    ## Die Werkzeuge
+
+    Wir haben acht ABB-Roboter mit pneumatischen Greifern und Zylindern sowie Festo-Hardware. Die Roboter werden in ABB
+    RobotStudio programmiert und simuliert, und Ignition betreibt das SCADA-System.
+
+    Neben der Linie lerne ich, ABB-Roboter ordentlich zu programmieren, zuerst offline in RobotStudio und dann an einem
+    echten IRB 1100 im Labor.
+
+    ## Stand
+
+    Die ersten Phasen sind der Produktstrukturplan (Product Breakdown Structure) und die Montagereihenfolge. Das heißt, den
+    Bulldozer auf dem Papier zu zerlegen und festzulegen, welcher Roboter was in welcher Reihenfolge übernimmt. Im Februar
+    2027 muss die Linie fertig sein.
 ---
 
 ## The brief

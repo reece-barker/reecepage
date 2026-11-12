@@ -3,12 +3,12 @@
   data-analytics-provider="{{analyticsSetup.provider}}"
   {{#if (eq analyticsSetup.provider "plausible")}}data-analytics-src="{{analyticsSetup.plausible.script_url}}" data-analytics-domain="{{analyticsSetup.plausible.domain}}" data-analytics-api="{{analyticsSetup.plausible.api_host}}/api/event"{{/if}}
   {{#if (eq analyticsSetup.provider "umami")}}data-analytics-src="{{analyticsSetup.umami.script_url}}" data-analytics-website-id="{{analyticsSetup.umami.website_id}}"{{/if}}>
-  <h2 id="consent-title">Can I count your visit?</h2>
-  <p>With your permission I use {{#if (eq analyticsSetup.provider "umami")}}Umami{{else}}Plausible{{/if}} to count visits anonymously, without advertising cookies. The site works the same either way. <a href="/cookies">Details and settings</a></p>
+  <h2 id="consent-title">{{t "consent.title"}}</h2>
+  <p>{{t "consent.text" provider=(analyticsName analyticsSetup.provider)}} <a href="/cookies">{{t "consent.details"}}</a></p>
   <form method="post" action="/cookies" class="cluster" data-consent-form>
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
     <input type="hidden" name="return_to" value="{{returnTo}}">
-    <button class="button button--small button--secondary" type="submit" name="choice" value="accept">Allow counting</button>
-    <button class="button button--small button--secondary" type="submit" name="choice" value="reject">No thanks</button>
+    <button class="button button--small button--secondary" type="submit" name="choice" value="accept">{{t "consent.accept"}}</button>
+    <button class="button button--small button--secondary" type="submit" name="choice" value="reject">{{t "consent.reject"}}</button>
   </form>
 </section>

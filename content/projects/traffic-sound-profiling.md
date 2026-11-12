@@ -28,6 +28,40 @@ todo:
   - The third model that was compared
   - The accuracy of each model, from the MATLAB results
   - Screenshots of the MATLAB results and a photo of the setup
+de:
+  title: Verkehrsprofile aus Geräuschen
+  summary: >-
+    Ein Raspberry Pi hört dem vorbeifahrenden Verkehr zu und erstellt allein anhand des Klangs ein Profil davon,
+    um etwas über Emissionen zu erfahren, ganz ohne Kamera. Dafür gab es eine 9 von 10.
+  kind: Kursprojekt
+  context: Saxion, Mustererkennung in Zeitreihen
+  period: "2026"
+  status: Abgeschlossen
+  role: Einzelprojekt
+  facts:
+    - label: Note
+      value: 9 von 10
+    - label: Sensor
+      value: Ein Mikrofon, keine Kamera
+  body: |
+    ## Warum Klang
+
+    Ziel war es, allein aus dem Klang etwas über den vorbeifahrenden Verkehr und damit über seine Emissionen zu erfahren,
+    ganz ohne Kamera.
+
+    Es ist außerdem das zweite Mal, dass sich meine beiden alten Interessen getroffen haben, nach meiner Extended Essay
+    über die Ultra Low Emission Zone in London: Daten und Umwelt.
+
+    ## So funktioniert es
+
+    Ein Raspberry Pi nimmt den Verkehr auf und klassifiziert, was er hört. Um auffällige Momente im Datenstrom zu finden,
+    nutzt das Projekt CUSUM, ein Verfahren zur Änderungserkennung, das kleine Abweichungen aufsummiert, bis daraus ein
+    klares Signal wird. Die Analyse wurde in MATLAB gemacht.
+
+    Ich habe das Projekt allein durchgeführt. Zur Klassifikation der Geräusche habe ich drei Modelle verglichen, darunter
+    k-nächste-Nachbarn (k-NN) und ein eindimensionales Convolutional Neural Network (1D-CNN), und die Ergebnisse waren gut.
+
+    Das Projekt wurde mündlich geprüft und mit neun von zehn Punkten bewertet.
 ---
 
 ## Why sound

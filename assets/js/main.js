@@ -42,8 +42,9 @@
   function setupThemeToggle() {
     var button = $("[data-theme-toggle]");
     if (!button) return;
+    // The words come from the page so the label is allways in the language of the page
     function label() {
-      button.setAttribute("aria-label", currentTheme() === "dark" ? "Use the light theme" : "Use the dark theme");
+      button.setAttribute("aria-label", currentTheme() === "dark" ? button.getAttribute("data-label-light") : button.getAttribute("data-label-dark"));
     }
     button.addEventListener("click", function () {
       var next = currentTheme() === "dark" ? "light" : "dark";
@@ -54,6 +55,32 @@
     });
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", label);
     label();
+  }
+
+  /* Language menu. It is a details element, so it works without this. The script closes it on Escape (and gives focus
+     back to the button), on a click somewhere else and when keyboard focus moves out of it */
+  function setupLanguageMenu() {
+    var menu = $("[data-language-menu]");
+    if (!menu) return;
+    var button = $("summary", menu);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && menu.open) {
+        menu.open = false;
+        button.focus();
+      }
+    });
+    document.addEventListener("click", function (event) {
+      if (menu.open && !menu.contains(event.target)) menu.open = false;
+    });
+    menu.addEventListener("focusout", function (event) {
+      if (menu.open && event.relatedTarget && !menu.contains(event.relatedTarget)) menu.open = false;
+    });
+    // Opening the burger menu and this one at the same time would stack two panels on a phone
+    var burger = $("[data-menu-button]");
+    if (burger) burger.addEventListener("click", function () { menu.open = false; });
+    menu.addEventListener("toggle", function () {
+      if (menu.open && burger && burger.getAttribute("aria-expanded") === "true") burger.click();
+    });
   }
 
   /* Things slide up into place the first time they scroll into view. Siblings follow each other by 60ms */
@@ -99,8 +126,8 @@
       var status = $("[data-copy-status]");
       button.addEventListener("click", function () {
         var text = button.getAttribute("data-copy");
-        var done = function () { if (status) status.textContent = "Copied " + text; };
-        var failed = function () { if (status) status.textContent = "Could not copy, please select the address above"; };
+        var done = function () { if (status) status.textContent = button.getAttribute("data-copied") + " " + text; };
+        var failed = function () { if (status) status.textContent = button.getAttribute("data-failed"); };
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, failed);
         else failed();
       });
@@ -118,9 +145,11 @@
     var counter = $("[data-char-count]", form);
     if (textarea && counter) {
       var max = Number(textarea.getAttribute("maxlength")) || 5000;
+      var locale = root.lang || "en-GB";
+      var fill = function (text, count) { return text.replace("{count}", count.toLocaleString(locale)); };
       var update = function () {
         var left = max - textarea.value.length;
-        counter.textContent = left >= 0 ? left.toLocaleString("en-GB") + " characters left" : "Too long by " + (-left).toLocaleString("en-GB");
+        counter.textContent = left >= 0 ? fill(form.getAttribute("data-left"), left) : fill(form.getAttribute("data-over"), -left);
         counter.classList.toggle("is-over", left < 0);
       };
       textarea.addEventListener("input", update);
@@ -132,7 +161,7 @@
       var label = $("[data-submit-label]", form);
       if (button.getAttribute("aria-busy") === "true") return;
       button.setAttribute("aria-busy", "true");
-      if (label) label.textContent = "Sending";
+      if (label) label.textContent = form.getAttribute("data-sending") || "Sending";
     });
   }
 
@@ -291,6 +320,7 @@
     setupErrorReporting();
     setupMenu();
     setupThemeToggle();
+    setupLanguageMenu();
     setupReveals();
     setupHeader();
     setupCopy();

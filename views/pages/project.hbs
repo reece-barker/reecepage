@@ -9,6 +9,7 @@
       </p>
       <h1 class="match-cut-title">{{project.title}}</h1>
       <p class="lead load-fade">{{project.summary}}</p>
+      {{#if (and (eq lang "de") (not project.translated))}}<p class="alert alert--note">{{icon "info"}}<span>{{t "project.notTranslated"}}</span></p>{{/if}}
     </header>
 
     <div class="with-aside project-body">
@@ -24,16 +25,16 @@
         {{/if}}
       </div>
       <aside class="facts" aria-labelledby="facts-title">
-        <h2 id="facts-title">At a glance</h2>
+        <h2 id="facts-title">{{t "project.atAGlance"}}</h2>
         <dl>
-          {{#if project.context}}<div><dt>Where</dt><dd>{{project.context}}</dd></div>{{/if}}
-          {{#if project.role}}<div><dt>Role</dt><dd>{{project.role}}</dd></div>{{/if}}
-          {{#if project.team}}<div><dt>Team</dt><dd>{{project.team}}</dd></div>{{/if}}
-          {{#if project.status}}<div><dt>Status</dt><dd>{{project.status}}</dd></div>{{/if}}
+          {{#if project.context}}<div><dt>{{t "project.where"}}</dt><dd>{{project.context}}</dd></div>{{/if}}
+          {{#if project.role}}<div><dt>{{t "project.role"}}</dt><dd>{{project.role}}</dd></div>{{/if}}
+          {{#if project.team}}<div><dt>{{t "project.team"}}</dt><dd>{{project.team}}</dd></div>{{/if}}
+          {{#if project.status}}<div><dt>{{t "project.status"}}</dt><dd>{{project.status}}</dd></div>{{/if}}
           {{#each project.facts}}<div><dt>{{label}}</dt><dd>{{value}}</dd></div>{{/each}}
           {{#if project.stack.length}}
           <div>
-            <dt>Tools and methods</dt>
+            <dt>{{t "project.stack"}}</dt>
             <dd><ul class="stack-list" role="list">{{#each project.stack}}<li>{{this}}</li>{{/each}}</ul></dd>
           </div>
           {{/if}}
@@ -41,9 +42,9 @@
       </aside>
     </div>
 
-    <nav class="next-prev" aria-label="More projects">
-      {{#if previous}}<a href="{{previous.url}}" rel="prev"><small>Previous project</small><strong>{{previous.title}}</strong></a>{{/if}}
-      {{#if following}}<a class="next-prev__next" href="{{following.url}}" rel="next"><small>Next project</small><strong>{{following.title}}</strong></a>{{else}}<a class="next-prev__next" href="/projects"><small>Back to</small><strong>All projects</strong></a>{{/if}}
+    <nav class="next-prev" aria-label="{{t "project.moreProjects"}}">
+      {{#if previous}}<a href="{{lp previous.url}}" rel="prev"><small>{{t "project.previous"}}</small><strong>{{previous.title}}</strong></a>{{/if}}
+      {{#if following}}<a class="next-prev__next" href="{{lp following.url}}" rel="next"><small>{{t "project.next"}}</small><strong>{{following.title}}</strong></a>{{else}}<a class="next-prev__next" href="{{lp "/projects"}}"><small>{{t "project.backTo"}}</small><strong>{{t "project.allProjects"}}</strong></a>{{/if}}
     </nav>
   </div>
 </article>

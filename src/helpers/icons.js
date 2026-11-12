@@ -9,6 +9,8 @@ const PATHS = {
   menu: '<path d="M2 4h16v2.4H2zM2 8.8h16v2.4H2zM2 13.6h16V16H2z"/>',
   close: '<path d="M4.3 2.6L10 8.3l5.7-5.7 1.7 1.7L11.7 10l5.7 5.7-1.7 1.7L10 11.7l-5.7 5.7-1.7-1.7L8.3 10 2.6 4.3z"/>',
   sun: '<circle cx="10" cy="10" r="4"/><path d="M9 0h2v3H9zM9 17h2v3H9zM0 9h3v2H0zM17 9h3v2h-3zM2.6 4l1.4-1.4 2 2L4.6 6zM14 15.4l1.4-1.4 2 2-1.4 1.4zM14 4.6l2-2L17.4 4l-2 2zM2.6 16l2-2L6 15.4l-2 2z"/>',
+  globe: '<path fill-rule="evenodd" d="M10 1a9 9 0 1 1 0 18 9 9 0 0 1 0-18zm0 1.8a7.2 7.2 0 1 0 0 14.4 7.2 7.2 0 0 0 0-14.4z"/><path d="M9.1 2h1.8v16H9.1zM2 9.1h16v1.8H2zM3.5 5.2h13v1.7h-13zM3.5 13.1h13v1.7h-13z"/>',
+  chevron: '<path d="M3 7h14l-7 7z"/>',
   moon: '<path d="M12.5 1.5a8.5 8.5 0 1 0 6 13.9A7.2 7.2 0 0 1 12.5 1.5z"/>',
   copy: '<path d="M7 2h11v11h-2.2V4.2H7z"/><path d="M2 7h11v11H2z"/>',
   check: '<path d="M1.8 10.2l2.6-2.6 3.8 3.8 7.4-7.4 2.6 2.6-10 10z"/>',

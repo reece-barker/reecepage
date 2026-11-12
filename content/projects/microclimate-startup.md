@@ -30,6 +30,61 @@ links:
     url: mailto:hello@cognitiveatmospherics.com
 todo:
   - A photo or diagram of the prototype, as far as you want to show it
+de:
+  title: Cognitive Atmospherics
+  summary: >-
+    Das Startup, das ich mit drei Kommilitonen mitgegründet habe. Unsere KI steuert Heizung, Kühlung, Luft und
+    Licht, die ein Gebäude ohnehin hat, gemeinsam und stimmt sie auf die Menschen im Raum ab.
+  kind: Startup
+  context: An der Saxion mitgegründet
+  period: Seit 06/2026
+  status: Zweiter Prototyp in Arbeit
+  role: Mitgründer, Betrieb, Software und Finanzen
+  team: Vier Mitgründer
+  facts:
+    - label: Förderung
+      value: 2.500 € aus dem Entrepreneurship-Programm der Saxion
+    - label: Märkte
+      value: Privathaushalte, Industrie und Gesundheitswesen
+  links:
+    - label: "cognitiveatmospherics.com"
+      url: https://cognitiveatmospherics.com
+    - label: "hello@cognitiveatmospherics.com"
+      url: mailto:hello@cognitiveatmospherics.com
+  body: |
+    ## Die Idee
+
+    Jeder Raum hat ein Klima: Temperatur, Luftfeuchtigkeit, Luftqualität und Licht. In den meisten Gebäuden gibt es bereits
+    Anlagen, die jeden dieser Bereiche regeln.
+
+    Unsere Software verbindet sich mit den Anlagen, die ein Gebäude schon hat, und steuert sie gemeinsam, abgestimmt auf die
+    Menschen, die tatsächlich da sind. Wir bauen keine eigenen Heizungen oder Klimaanlagen. Unser Produkt ist die
+    Steuerungsebene über der Klimaanlage, der Lüftung, den Heizkörpern und der Beleuchtung, die bereits installiert sind.
+
+    ## Woher es kommt
+
+    Cognitive Atmospherics ist aus AI-Powered Microclimate Guardian entstanden, einem Forschungsprojekt der Saxion, das
+    per Crowdfunding finanziert wurde. Im Juni 2026 haben wir daraus das Unternehmen gegründet.
+
+    ## Mein Teil
+
+    Ich kümmere mich um den Betrieb, die Software und die geschäftliche Seite: Investoren, die Finanzierung des
+    Unternehmens und darum, dass alle im Team das erledigt bekommen, was gerade ansteht.
+
+    ## Wo es hilft
+
+    - **Zu Hause:** Komfort bei weniger verschwendeter Energie.
+    - **In der Industrie:** stabile Bedingungen für Menschen, Produkte und Maschinen.
+    - **Im Gesundheitswesen,** wo es am meisten bewirkt: ein Raum, der auf jede Patientin und jeden Patienten abgestimmt
+      ist, für bessere Versorgung und Genesung.
+
+    Der Plan ist, mit Privathaushalten zu beginnen und danach Schulen und Krankenhäuser zu erschließen.
+
+    ## Stand
+
+    Wir vier haben die rechtlichen Grundlagen geschaffen und eine Roadmap für zwölf Monate. Das
+    Entrepreneurship-Programm der Saxion hat uns 2.500 € zugesprochen, und wir bauen jetzt unseren zweiten Prototyp.
+    Fragen zum Unternehmen gehen an [hello@cognitiveatmospherics.com](mailto:hello@cognitiveatmospherics.com).
 ---
 
 ## The idea

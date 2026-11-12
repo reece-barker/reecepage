@@ -155,3 +155,10 @@
     I started school on the south coast of England before my family moved to Munich, where I grew up at Munich
     International School.
   cv: false
+  de:
+    when: Kindheit
+    title: Grundschule in West Sussex, dann München
+    place: England und Deutschland
+    text: >-
+      Ich bin an der Südküste Englands zur Schule gegangen, bevor meine Familie nach München zog, wo ich an der Munich
+      International School aufgewachsen bin.

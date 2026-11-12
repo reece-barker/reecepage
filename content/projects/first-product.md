@@ -8,6 +8,15 @@ period: Age fifteen
 sort_date: 2020-06
 status: Released
 page: false
+de:
+  title: Mein erstes Produkt, mit fünfzehn
+  summary: >-
+    Eine Echtzeit-Erweiterung für ein Web-Framework, dazu eine halbstündige Anleitung, die genau erklärt, wie sie
+    funktioniert.
+  kind: Privat
+  context: Mit fünfzehn
+  period: Mit fünfzehn
+  status: Veröffentlicht
 ---
 
 

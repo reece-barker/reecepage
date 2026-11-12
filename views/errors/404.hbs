@@ -1,11 +1,11 @@
 <div class="container error-page">
   <div class="fallen-leaf" aria-hidden="true"></div>
-  <h1>This page does not exist</h1>
-  <p class="lead">The address may be mistyped, or the page has moved. Everything on the site is reachable from these:</p>
+  <h1>{{t "errors.notFound"}}</h1>
+  <p class="lead">{{t "errors.notFoundText"}}</p>
   <div class="cluster">
-    <a class="button" href="/">Home page {{icon "arrow"}}</a>
-    <a class="link-action" href="/projects">Projects</a>
-    <a class="link-action" href="/about">About</a>
-    <a class="link-action" href="/contact">Contact</a>
+    <a class="button" href="{{lp "/"}}">{{t "errors.homePage"}} {{icon "arrow"}}</a>
+    <a class="link-action" href="{{lp "/projects"}}">{{t "nav.projects"}}</a>
+    <a class="link-action" href="{{lp "/about"}}">{{t "nav.about"}}</a>
+    <a class="link-action" href="{{lp "/contact"}}">{{t "nav.contact"}}</a>
   </div>
 </div>

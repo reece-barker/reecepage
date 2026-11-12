@@ -24,6 +24,37 @@ stack:
 links:
   - label: How this site is built
     url: /writing/how-this-site-is-built
+de:
+  title: Diese Website und die Taubenmarke
+  summary: >-
+    Die Marke hinter reece.page, von der Taube und den Farben bis zu den Werkzeugen für meine Visitenkarten,
+    Briefe und Präsentationen, und die Website, die Sie gerade lesen.
+  kind: Privat
+  context: Privates Projekt
+  period: "2026"
+  status: Online
+  role: Gestaltung und Entwicklung
+  links:
+    - label: "So ist diese Website gebaut (Artikel auf Englisch)"
+      url: /de/writing/how-this-site-is-built
+  body: |
+    ## Die Marke
+
+    Das Zeichen ist eine Taube. Die Palette besteht aus Olive, Salbei, Rosa und Creme, als Schrift dienen Young Serif für
+    Überschriften und Nunito Sans für alles andere.
+
+    Drumherum habe ich kleine Werkzeuge gebaut, die alles einheitlich halten: Generatoren für Visitenkarten, Briefe,
+    Rechnungen, Verträge, Präsentationen, Social-Media-Beiträge und App-Icons. Alle arbeiten mit denselben Farben,
+    derselben Schrift und denselben Details, sodass nichts von Hand neu gezeichnet werden muss.
+
+    ## Die Website
+
+    Die Startseite ist ein Baum mit drei Ästen: Code, Umwelt und Menschen. Jedes Projekt auf dieser Seite wächst aus einem
+    davon und trägt dessen Farbe. Die Blätter sind kleine Quadrate, denn es ist ein Informatik-Baum.
+
+    Unter der Oberfläche ist es eine serverseitig gerenderte Express-Anwendung. Der
+    [Artikel darüber, wie die Seite gebaut ist](/de/writing/how-this-site-is-built) (auf Englisch), geht die
+    Entscheidungen durch.
 ---
 
 ## The brand

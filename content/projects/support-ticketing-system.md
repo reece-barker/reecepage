@@ -21,6 +21,29 @@ facts:
     value: Almost ten
 todo:
   - Screenshots of the ticket flow
+de:
+  title: Ein Support- und Ticketsystem
+  summary: >-
+    Ein Support- und Ticketsystem für Online-Communitys im Unterhaltungsbereich, gebaut auf Discord und angebunden
+    an die APIs, auf die diese Communitys ohnehin setzen. Fast zehn Kunden haben es gekauft.
+  kind: Freelance-Produkt
+  context: Freelance
+  period: 03/2021 bis 11/2023
+  status: Kommerziell verkauft
+  role: Entworfen, gebaut und verkauft
+  facts:
+    - label: Kunden
+      value: Fast zehn
+  body: |
+    ## Was es ist
+
+    In Online-Communitys gehen den ganzen Tag Fragen, Meldungen und Anliegen ein. Dieses System macht aus jedem davon ein
+    Ticket direkt in Discord, wo die Community ohnehin ist, und verbindet sich mit den externen APIs, auf die diese
+    Communitys bereits setzen.
+
+    Ich habe es in meinen Freelance-Jahren gebaut und kommerziell auf zwei Marktplätzen verkauft, an fast zehn Kunden. Es
+    bearbeitet Support in Echtzeit, mit rollenbasiertem Zugriff und Tickets, die automatisch in Kategorien einsortiert
+    werden.
 ---
 
 ## What it is

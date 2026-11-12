@@ -20,7 +20,7 @@ export function canonicalRedirects(config) {
       if (wrongHost || insecure) return res.redirect(301, `${base.origin}${req.path}${query}`);
     }
 
-    // /projects/ -> /projects (but leave "/" alone)
+    // /projects/ -> /projects (but leave "/" alone). german pages keep there /de infront and /de/projects/ gets trimmed to
     if (req.path.length > 1 && req.path.endsWith("/")) {
       // Leading slashes are collapsed too: "//evil.example/" must never turn into a redirect to another site
       const trimmed = `/${req.path.replace(/^\/+/, "").replace(/\/+$/, "")}`;
