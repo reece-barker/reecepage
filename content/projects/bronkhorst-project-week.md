@@ -9,7 +9,7 @@ context: Saxion, International Project Week
 period: 2025/26
 sort_date: 2026-01
 status: Delivered
-role: Team member, built in close collaboration with AI tools
+role: Team member, using AI tools throughout to deliver in one week
 team: International Project Week team
 featured: false
 order: 6
@@ -28,7 +28,7 @@ de:
   context: Saxion, International Project Week
   period: "2025/26"
   status: Abgeschlossen
-  role: Teammitglied, in enger Zusammenarbeit mit KI-Werkzeugen gebaut
+  role: Teammitglied, mit KI-Werkzeugen von Anfang an, um in einer Woche zu liefern
   team: Team der International Project Week
   facts:
     - label: Zeit

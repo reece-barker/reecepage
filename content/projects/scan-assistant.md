@@ -9,7 +9,7 @@ context: Munich International School, IT
 period: 2026
 sort_date: 2026-09
 status: In use
-role: The idea, the design and the prototype were mine, built largely with AI coding tools
+role: The idea, the design and the prototype were mine, built by directing AI coding agents
 featured: true
 order: 4
 stack:
@@ -31,7 +31,7 @@ de:
   period: "2026"
   status: Im Einsatz
   role: >-
-    Idee, Design und Prototyp stammen von mir, gebaut überwiegend mit KI-Coding-Werkzeugen
+    Idee, Design und Prototyp stammen von mir, gebaut mit KI-Coding-Agenten, die ich angeleitet habe
   body: |
     ## Das Problem
 
@@ -52,8 +52,8 @@ de:
     ## Wie es entstanden ist
 
     Die Idee und der erste Prototyp stammen von mir: Ich habe entworfen, wie ein Scan-Durchlauf ablaufen soll und was das
-    Team dafür braucht. Der größte Teil des Codes wurde dann mit KI-Coding-Werkzeugen geschrieben, wobei ich entschieden
-    habe, was er tun soll.
+    Team dafür braucht. Gebaut habe ich es dann, indem ich KI-Coding-Agenten angeleitet habe: Ich habe entschieden, was es
+    tun soll, die Anweisungen geschrieben, nach denen sie gearbeitet haben, und geprüft, was zurückkam.
 
     ## Entscheidungen unterwegs
 
@@ -79,7 +79,8 @@ meant finding each device and typing serial numbers by hand, then comparing the 
 ## How it was made
 
 The idea and the first prototype were mine: I designed how a scanning run should work and what the team needed
-from it. Most of the code was then written with AI coding tools, with me deciding what it should do.
+from it. I then built it by directing AI coding agents: I decided what it should do, wrote the instructions they worked from
+and checked what came back.
 
 ## Choices along the way
 
